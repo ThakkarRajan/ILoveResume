@@ -1,0 +1,27 @@
+{
+  "name": "I Love Resumes - AI-Powered Resume Builder",
+  "short_name": "I Love Resumes",
+  "description": "Transform your resume with AI-powered insights. Get personalized suggestions, optimize structure, and align keywords with job descriptions.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#3B82F6",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "business", "education"],
+  "lang": "en",
+  "dir": "ltr"
+} 

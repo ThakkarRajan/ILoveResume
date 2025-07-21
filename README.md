@@ -21,6 +21,10 @@ I Love Resumes is a full-stack web application that intelligently analyzes and c
 
 ☁️ Firebase Storage + Firestore for file handling and metadata
 
+🔍 SEO Optimized with comprehensive meta tags, structured data, and search engine optimization
+
+📱 PWA Ready with web app manifest and mobile-friendly design
+
 🛠️ Tech Stack
 Frontend: Next.js 15 App Router, Tailwind CSS, NextAuth
 
@@ -30,8 +34,31 @@ Storage: Firebase (Storage + Firestore)
 
 Document Export: docx, file-saver
 
+SEO: Structured data (JSON-LD), Open Graph, Twitter Cards, Sitemap, Robots.txt
+
 📌 Use Case
 Perfect for job seekers who want to tailor their resume to different job descriptions quickly and effectively—boosting their chances of passing ATS filters and standing out to recruiters.
+
+## SEO Features
+
+This application includes comprehensive SEO optimization:
+
+- **Meta Tags**: Complete set of meta tags for search engines
+- **Open Graph**: Social media sharing optimization
+- **Twitter Cards**: Enhanced Twitter sharing
+- **Structured Data**: JSON-LD schema markup for better search understanding
+- **Sitemap**: XML sitemap for search engine crawling
+- **Robots.txt**: Search engine crawling instructions
+- **Favicon**: Custom favicon using logo.png
+- **Web App Manifest**: PWA support for mobile devices
+- **Performance**: Preconnect and DNS prefetch for faster loading
+
+## SEO Files
+
+- `public/manifest.json` - Web app manifest for PWA
+- `public/robots.txt` - Search engine crawling rules
+- `public/sitemap.xml` - XML sitemap for all pages
+- `src/app/layout.js` - Comprehensive meta tags and structured data
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
