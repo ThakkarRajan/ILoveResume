@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../utils/firebase";
@@ -24,9 +22,11 @@ import {
   Settings,
   Briefcase
 } from "lucide-react";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import "../../utils/firebase.js";
 
 export default function MyProfilePage() {
-  const { data: session, status } = useSession();
+  const [user, setUser] = useState(null);
   const [submissions, setSubmissions] = useState([]);
   const [expanded, setExpanded] = useState({});
   const [loading, setLoading] = useState(true);
@@ -36,13 +36,24 @@ export default function MyProfilePage() {
   const router = useRouter();
 
   useEffect(() => {
-    if (status === "authenticated") fetchUserSubmissions();
-    if (status === "unauthenticated") router.push("/");
-  }, [status]);
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (!firebaseUser) {
+        router.push("/");
+      } else {
+        setUser(firebaseUser);
+      }
+    });
+    return () => unsubscribe();
+  }, [router]);
+
+  useEffect(() => {
+    if (user) fetchUserSubmissions();
+  }, [user]);
 
   const fetchUserSubmissions = async () => {
     try {
-      const email = session?.user?.email;
+      const email = user?.email;
       const entriesRef = collection(db, `submissions/${email}/entries`);
       const snapshot = await getDocs(entriesRef);
       const fetched = [];
@@ -123,21 +134,8 @@ export default function MyProfilePage() {
     setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const user = session?.user;
-
-  if (status === "loading" || loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="text-center"
-        >
-          <div className="w-16 h-16 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-600 font-medium">Loading your profile...</p>
-        </motion.div>
-      </div>
-    );
+  if (!user) {
+    return <div>Loading...</div>;
   }
 
   if (processing) {
@@ -197,9 +195,9 @@ export default function MyProfilePage() {
         >
           <div className="flex flex-col md:flex-row items-center gap-6">
             <div className="relative">
-              {user?.image ? (
-                <Image
-                  src={user.image}
+              {user?.photoURL ? (
+                <img
+                  src={user.photoURL}
                   alt="Profile"
                   width={80}
                   height={80}
@@ -213,7 +211,7 @@ export default function MyProfilePage() {
             </div>
             <div className="text-center md:text-left">
               <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-                {user?.name}
+                {user?.displayName}
               </h2>
               <p className="text-gray-600 mb-3">{user?.email}</p>
               <div className="flex flex-wrap justify-center md:justify-start gap-4">

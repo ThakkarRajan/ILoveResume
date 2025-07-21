@@ -1,7 +1,6 @@
 // app/contact/page.js
 "use client";
 
-import { useSession } from "next-auth/react";
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
@@ -22,12 +21,13 @@ import {
   Loader2
 } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
-
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import "../../utils/firebase.js";
 
 
 export default function Contact() {
-  const { data: session, status } = useSession();
-  const router = useRouter();
+  const [user, setUser] = useState(null);
+  const { push } = useRouter();
   const formRef = useRef();
   const [formData, setFormData] = useState({
     name: '',
@@ -39,10 +39,20 @@ export default function Contact() {
   const [submitStatus, setSubmitStatus] = useState(null); // 'success', 'error', null
 
   useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/");
-    }
-  }, [status, router]);
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (!firebaseUser) {
+        push("/");
+      } else {
+        setUser(firebaseUser);
+      }
+    });
+    return () => unsubscribe();
+  }, [push]);
+
+  if (!user) {
+    return <div>Loading...</div>;
+  }
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -107,25 +117,6 @@ export default function Contact() {
       setIsSubmitting(false);
     }
   };
-
-  if (status === "loading") {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="text-center"
-        >
-          <div className="w-16 h-16 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-600 font-medium">Checking session...</p>
-        </motion.div>
-      </div>
-    );
-  }
-
-  if (status === "unauthenticated") {
-    return null; // So UI doesn't flash before redirect
-  }
 
   const contactMethods = [
     {
@@ -436,7 +427,7 @@ export default function Contact() {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => router.push("/dashboard")}
+              onClick={() => push("/dashboard")}
               className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 px-8 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl flex items-center gap-2 mx-auto"
             >
               <Sparkles className="w-4 h-4" />

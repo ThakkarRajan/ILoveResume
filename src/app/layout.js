@@ -1,6 +1,5 @@
 "use client";
 
-import { SessionProvider } from "next-auth/react";
 import NavbarWrapper from "../components/NavbarWrapper";
 import "./globals.css";
 
@@ -46,7 +45,7 @@ export default function RootLayout({ children }) {
         <meta name="msapplication-TileColor" content="#3B82F6" />
         <meta name="application-name" content="I Love Resumes" />
         <meta name="apple-mobile-web-app-title" content="I Love Resumes" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         
         {/* Canonical URL */}
@@ -125,10 +124,8 @@ export default function RootLayout({ children }) {
         <link rel="dns-prefetch" href="//accounts.google.com" />
       </head>
       <body>
-        <SessionProvider>
           <NavbarWrapper />
           <main>{children}</main>
-        </SessionProvider>
       </body>
     </html>
   );

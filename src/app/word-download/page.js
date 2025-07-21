@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { saveAs } from "file-saver";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
@@ -28,23 +27,31 @@ import {
   Clock,
   Zap
 } from "lucide-react";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import "../../utils/firebase.js";
 
 export default function WordDownloadPage() {
+  const [user, setUser] = useState(null);
   const [resumeData, setResumeData] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [pdfUrl, setPdfUrl] = useState("");
   const [downloadType, setDownloadType] = useState("");
   const router = useRouter();
-  const { data: session, status } = useSession();
 
   useEffect(() => {
-    if (status === "loading") return;
-    if (status === "unauthenticated") {
-      router.push("/");
-      return;
-    }
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (!firebaseUser) {
+        router.push("/");
+      } else {
+        setUser(firebaseUser);
+      }
+    });
+    return () => unsubscribe();
+  }, [router]);
 
+  useEffect(() => {
     try {
       const stored = localStorage.getItem("tailoredResume");
       if (!stored) throw new Error("No resume data found.");
@@ -56,7 +63,7 @@ export default function WordDownloadPage() {
       setError("Failed to load resume. Redirecting...");
       setTimeout(() => router.push("/result"), 3000);
     }
-  }, [status, router]);
+  }, [router]);
 
   const generateDocx = () => {
     const sectionHeader = (text) => [
@@ -631,6 +638,10 @@ export default function WordDownloadPage() {
       setDownloadType("");
     }
   };
+
+  if (!user) {
+    return <div>Loading...</div>;
+  }
 
   if (!resumeData && !error) {
     return (

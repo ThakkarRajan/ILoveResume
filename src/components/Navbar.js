@@ -1,7 +1,7 @@
 "use client";
 
+import "../utils/firebase.js";
 import Link from "next/link";
-import { useSession, signOut } from "next-auth/react";
 import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -16,13 +16,22 @@ import {
   Mail,
   Crown
 } from "lucide-react";
+import { getAuth, onAuthStateChanged, signOut as firebaseSignOut } from "firebase/auth";
 
 export default function Navbar() {
-  const { data: session, status } = useSession();
+  const [user, setUser] = useState(null);
   const [showMenu, setShowMenu] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const menuRef = useRef();
+
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(firebaseUser);
+    });
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -45,10 +54,9 @@ export default function Navbar() {
 
 
   const handleLogout = () => {
-    localStorage.removeItem("tailoredResume");
-    setShowModal(false);
-    setShowMenu(false);
-    signOut({ callbackUrl: "/" });
+    firebaseSignOut(getAuth());
+    // Optionally redirect to home
+    window.location.href = "/";
   };
 
 
@@ -99,7 +107,7 @@ export default function Navbar() {
             </Link>
 
             {/* Mobile Branding */}
-            {status === "authenticated" && (
+            {user && (
               <div className="flex flex-direction-row sm:hidden items-center gap-2">
                 <Image
                   src="/Iloveresumelogotext.png"
@@ -115,7 +123,7 @@ export default function Navbar() {
 
           {/* Right Side: Profile Button */}
           <div className="relative" ref={menuRef}>
-            {status === "authenticated" ? (
+            {user ? (
               <>
                 <motion.button
                   whileHover={{ scale: 1.02 }}
@@ -128,7 +136,7 @@ export default function Navbar() {
                   </div>
                   <div className="hidden sm:block text-left">
                     <div className="font-semibold text-sm">
-                      {session?.user?.name?.split(' ')[0] || 'Profile'}
+                      {user?.displayName?.split(' ')[0] || 'Profile'}
                     </div>
                     <div className="text-xs text-white/80">Premium User</div>
                   </div>
@@ -148,9 +156,9 @@ export default function Navbar() {
                       <div className="p-4 sm:p-6 border-b border-gray-100 bg-gradient-to-r from-purple-50 to-pink-50">
                         <div className="flex items-center gap-4">
                           <div className="relative">
-                            {session?.user?.image ? (
+                            {user?.photoURL ? (
                               <Image
-                                src={session.user.image}
+                                src={user.photoURL}
                                 alt="Profile"
                                 width={56}
                                 height={56}
@@ -167,11 +175,11 @@ export default function Navbar() {
                           </div>
                           <div className="flex-1 min-w-0">
                             <h3 className="font-bold text-gray-900 text-base sm:text-lg truncate">
-                              {session?.user?.name}
+                              {user?.displayName}
                             </h3>
                             <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
                               <Mail className="w-3 h-3" />
-                              <span className="truncate">{session?.user?.email}</span>
+                              <span className="truncate">{user?.email}</span>
                             </div>
                             <div className="flex items-center gap-1 mt-1">
                               <Crown className="w-3 h-3 text-yellow-500" />
@@ -203,7 +211,7 @@ export default function Navbar() {
                           onClick={() => setShowMenu(false)}
                         >
                           <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 rounded-lg sm:rounded-xl flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                            <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
+                            <User className="w-4 h-4 sm:w-5 sm:h-5" />
                           </div>
                           <div className="flex-1">
                             <div className="font-medium text-xs sm:text-base">My Profile</div>

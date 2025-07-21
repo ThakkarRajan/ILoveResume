@@ -1,6 +1,5 @@
 "use client";
 
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
@@ -12,7 +11,7 @@ import {
   deleteObject,
 } from "firebase/storage";
 import { collection, addDoc, Timestamp } from "firebase/firestore";
-import { storage, db } from "../../utils/firebase";
+import { storage, db } from "../../utils/firebase.js";
 import { Toaster } from "react-hot-toast";
 import { 
   showSuccess, 
@@ -52,11 +51,10 @@ import {
   Edit3,
   Home
 } from "lucide-react";
-
+import { getAuth, signInWithCredential, GoogleAuthProvider, onAuthStateChanged } from "firebase/auth";
 
 
 export default function Dashboard() {
-  const { data: session, status } = useSession();
   const router = useRouter();
   const [jobText, setJobText] = useState("");
   const [pdfFile, setPdfFile] = useState(null);
@@ -78,17 +76,26 @@ export default function Dashboard() {
   const fileInputRef = useRef(null);
   const [loadingPhase, setLoadingPhase] = useState('idle'); // 'idle' | 'upload' | 'extract' | 'ai'
   const [uploadAttempts, setUploadAttempts] = useState(0);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    if (status === "unauthenticated") router.push("/");
-  }, [status]);
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (!firebaseUser) {
+        router.push("/");
+      } else {
+        setUser(firebaseUser);
+      }
+    });
+    return () => unsubscribe();
+  }, [router]);
 
   useEffect(() => { 
-    if (status === "authenticated") {
+    if (user) {
       fetchUploadedResumes();
       loadRecentResults();
     }
-  }, [status]);
+  }, [user]);
 
   // Cleanup effect to reset states when component unmounts
   useEffect(() => {
@@ -127,12 +134,12 @@ export default function Dashboard() {
   }, []);
 
   const fetchUploadedResumes = async () => {
-    if (!session?.user?.email) return;
+    if (!user?.email) return;
 
     try {
       const folderRef = ref(
         storage,
-        `resumes/${session.user.email.toLowerCase()}/`
+        `resumes/${user.email.toLowerCase()}/`
       );
       const result = await listAll(folderRef);
 
@@ -168,7 +175,7 @@ export default function Dashboard() {
     try {
       await deleteObject(ref(storage, file.path));
 
-      const email = session.user.email.toLowerCase();
+      const email = user.email.toLowerCase();
       const entriesRef = collection(db, `submissions/${email}/entries`);
       const q = query(entriesRef, where("fileName", "==", file.name));
       const snapshot = await getDocs(q);
@@ -217,6 +224,239 @@ export default function Dashboard() {
     }, intervalTime);
   };
 
+  // Refactored: Upload resume (PDF or text)
+  const uploadResume = async () => {
+    let fileURL = "";
+    let fileName = "";
+    let resumeText = "";
+    if (uploadMode === "pdf") {
+      if (pdfFile) {
+        setLoadingPhase("upload");
+        setUploadAttempts(1);
+        const userEmail = user.email.toLowerCase();
+        fileName = pdfFile.name;
+        const storageRef = ref(storage, `resumes/${userEmail}/${fileName}`);
+        const uploadToast = showLoading('Uploading PDF ...');
+        let uploadSuccess = false;
+        let uploadAttemptsLocal = 0;
+        while (!uploadSuccess && uploadAttemptsLocal < 3) {
+          try {
+            await uploadBytes(storageRef, pdfFile);
+            fileURL = await getDownloadURL(storageRef);
+            if (!fileURL) throw new Error("File upload failed. Please try again.");
+            dismissToast(uploadToast);
+            showFileUploadSuccess();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            uploadSuccess = true;
+          } catch (uploadError) {
+            uploadAttemptsLocal++;
+            setUploadAttempts(uploadAttemptsLocal + 1);
+            if (uploadAttemptsLocal >= 3) {
+              dismissToast(uploadToast);
+              showFileUploadError();
+              setLoading(false);
+              setProgress(0);
+              setLoadingPhase('idle');
+              setUploadAttempts(0);
+              return { success: false };
+            }
+            await new Promise(resolve => setTimeout(resolve, 1000 * (uploadAttemptsLocal + 1)));
+          }
+        }
+        setUploadAttempts(0);
+        if (!uploadSuccess || !fileURL) {
+          showFileUploadError("No valid file URL. Please try again.");
+          setLoading(false);
+          setProgress(0);
+          setLoadingPhase('idle');
+          return { success: false };
+        }
+      } else if (selectedResume) {
+        setLoadingPhase("extract");
+        try {
+          const fileRef = ref(storage, selectedResume.path);
+          const url = await getDownloadURL(fileRef);
+          fileURL = url;
+          fileName = selectedResume.name;
+          if (!fileURL) throw new Error("Selected file not accessible. Please try again.");
+        } catch (urlError) {
+          showFileUploadError("Selected file not accessible. Please try again.");
+          setLoading(false);
+          setProgress(0);
+          setLoadingPhase('idle');
+          return { success: false };
+        }
+      }
+      if (!fileURL) {
+        showFileUploadError("No valid file URL. Please try again.");
+        setLoading(false);
+        setProgress(0);
+        setLoadingPhase('idle');
+        return { success: false };
+      }
+      const firestoreEmail = user?.email?.toLowerCase();
+      try {
+        await addDoc(collection(db, `submissions/${firestoreEmail}/entries`), {
+          jobText,
+          resumeUrl: fileURL,
+          uploadedAt: Timestamp.now(),
+          fileName: fileName,
+        });
+      } catch (firestoreError) {}
+      return { success: true, fileURL, fileName };
+    } else {
+      // Text resume
+      fileName = `text-resume-${Date.now()}.txt`;
+      const email = user?.email?.toLowerCase();
+      try {
+        await addDoc(collection(db, `submissions/${email}/entries`), {
+          jobText,
+          resumeText: textResume,
+          uploadedAt: Timestamp.now(),
+          fileName: fileName,
+        });
+      } catch (firestoreError) {}
+      return { success: true, fileName };
+    }
+  };
+
+  // Refactored: Extract resume text
+  const extractResumeText = async ({ fileURL, fileName }) => {
+    let resumeText = "";
+    if (uploadMode === "pdf") {
+      if (pdfFile) {
+        setLoadingPhase("extract");
+        const extractToast = showLoading('Extracting text from PDF...');
+        try {
+          if (!navigator.onLine) throw new Error("No internet connection. Please check your network.");
+          if (pdfFile.size > 10 * 1024 * 1024) throw new Error("File size too large. Please upload a PDF under 10MB.");
+          const formData = new FormData();
+          formData.append("file", pdfFile);
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 45000);
+          const extractRes = await fetch(
+            "https://jobdraftai-backend-production.up.railway.app/extract",
+            { method: "POST", body: formData, signal: controller.signal }
+          );
+          clearTimeout(timeoutId);
+          if (!extractRes.ok) throw new Error("Please try again.");
+          const json = await extractRes.json();
+          if (!json.text || json.text.trim() === '') throw new Error("No text extracted from PDF. Please ensure the PDF contains readable text.");
+          if (json.text.trim().length < 100) throw new Error("Extracted text is too short. Please ensure the PDF contains a complete resume.");
+          resumeText = json.text;
+          const resumeKeywords = ["resume", "experience", "skills", "education", "projects", "summary", "work", "employment"];
+          const textLower = json.text.toLowerCase();
+          const keywordMatches = resumeKeywords.filter(keyword => textLower.includes(keyword));
+          if (keywordMatches.length < 2) throw new Error("The uploaded file doesn't appear to be a resume. Please upload a valid resume PDF.");
+          dismissToast(extractToast);
+        } catch (extractError) {
+          dismissToast(extractToast);
+          setLoading(false);
+          setProgress(0);
+          setLoadingPhase('idle');
+          if (extractError.name === 'AbortError') {
+            showAIProcessingError();
+          } else if (extractError.message.includes('network') || extractError.message.includes('fetch') || extractError.name === 'TypeError') {
+            showNetworkRetry();
+          } else {
+            showAIProcessingError();
+          }
+          return { success: false };
+        }
+      } else if (selectedResume) {
+        setLoadingPhase("extract");
+        const extractToast = showLoading('Extracting text from selected resume...');
+        try {
+          if (!navigator.onLine) throw new Error("No internet connection. Please check your network.");
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 45000);
+          const extractRes = await fetch(
+            "https://jobdraftai-backend-production.up.railway.app/extract-from-url",
+            { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ url: fileURL }), signal: controller.signal }
+          );
+          clearTimeout(timeoutId);
+          if (!extractRes.ok) throw new Error("Please try again.");
+          const json = await extractRes.json();
+          if (!json.text || json.text.trim() === '') throw new Error("No text extracted from resume. Please try a different file.");
+          if (json.text.trim().length < 100) throw new Error("Extracted text is too short. Please ensure the file contains a complete resume.");
+          resumeText = json.text;
+          const resumeKeywords = ["resume", "experience", "skills", "education", "projects", "summary", "work", "employment"];
+          const textLower = json.text.toLowerCase();
+          const keywordMatches = resumeKeywords.filter(keyword => textLower.includes(keyword));
+          if (keywordMatches.length < 2) throw new Error("The uploaded file doesn't appear to be a resume. Please upload a valid resume PDF.");
+          dismissToast(extractToast);
+        } catch (extractError) {
+          dismissToast(extractToast);
+          setLoading(false);
+          setProgress(0);
+          setLoadingPhase('idle');
+          if (extractError.name === 'AbortError') {
+            showAIProcessingError();
+          } else if (extractError.message.includes('network') || extractError.message.includes('fetch') || extractError.name === 'TypeError') {
+            showNetworkRetry();
+          } else {
+            showAIProcessingError();
+          }
+          return { success: false };
+        }
+      }
+      return { success: true, resumeText, fileName };
+    } else {
+      // Text resume
+      return { success: true, resumeText: textResume, fileName };
+    }
+  };
+
+  // Refactored: Run AI
+  const runAI = async (resumeText, jobText, fileName) => {
+    setLoadingPhase("ai");
+    let aiData = null;
+    let retryCount = 0;
+    const maxRetries = 5;
+    const aiToast = showLoading('AI is analyzing your resume and job description...');
+    while (retryCount < maxRetries) {
+      try {
+        const processRes = await fetch(
+          "https://jobdraftai-backend-production.up.railway.app/process-text",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              text: `Resume:\n${resumeText}\n\nJob Description:\n${jobText}`,
+            }),
+          }
+        );
+        if (!processRes.ok) throw new Error("Please try again.");
+        aiData = await processRes.json();
+        if (!aiData?.structured) throw new Error("Invalid AI response structure");
+        dismissToast(aiToast);
+        break;
+      } catch (processError) {
+        retryCount++;
+        if (retryCount >= maxRetries) {
+          dismissToast(aiToast);
+          showAIProcessingError();
+          setLoading(false);
+          setProgress(0);
+          setLoadingPhase('idle');
+          return { success: false };
+        }
+        await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
+        showAIProcessingError(retryCount, maxRetries);
+      }
+    }
+    localStorage.setItem("tailoredResume", JSON.stringify(aiData.structured));
+    setAiData(aiData.structured);
+    saveToRecentResults(aiData.structured, jobText);
+    setShowResultSkeleton(true);
+    setLoadingPhase('idle');
+    setTimeout(() => {
+      router.push("/result");
+    }, 2000);
+    return { success: true };
+  };
+
+  // Refactored handleSubmit
   const handleSubmit = async () => {
     if (!jobText.trim()) return showValidationError("Please enter job description.");
     if (uploadMode === "pdf" && !pdfFile && !selectedResume) {
@@ -234,216 +474,14 @@ export default function Dashboard() {
     setProgress(0);
     simulateProgress();
     try {
-      let resumeText = "";
-      let fileName = "";
-      let fileURL = "";
-      if (uploadMode === "pdf") {
-        if (pdfFile) {
-          setLoadingPhase("upload");
-          setUploadAttempts(1);
-          const userEmail = session.user.email.toLowerCase();
-          fileName = pdfFile.name;
-          const storageRef = ref(storage, `resumes/${userEmail}/${fileName}`);
-          const uploadToast = showLoading('Uploading PDF ...');
-          let uploadSuccess = false;
-          let uploadAttemptsLocal = 0;
-          while (!uploadSuccess && uploadAttemptsLocal < 3) {
-            try {
-              await uploadBytes(storageRef, pdfFile);
-              fileURL = await getDownloadURL(storageRef);
-              if (!fileURL) throw new Error("File upload failed. Please try again.");
-              dismissToast(uploadToast);
-              showFileUploadSuccess();
-              await new Promise(resolve => setTimeout(resolve, 500));
-              uploadSuccess = true;
-            } catch (uploadError) {
-              uploadAttemptsLocal++;
-              setUploadAttempts(uploadAttemptsLocal + 1);
-              if (uploadAttemptsLocal >= 3) {
-                dismissToast(uploadToast);
-                showFileUploadError();
-                setLoading(false);
-                setProgress(0);
-                setLoadingPhase('idle');
-                setUploadAttempts(0);
-                return; // <-- EARLY RETURN, do not proceed!
-              }
-              await new Promise(resolve => setTimeout(resolve, 1000 * (uploadAttemptsLocal + 1)));
-            }
-          }
-          setUploadAttempts(0);
-
-          // Only proceed if uploadSuccess and fileURL
-          if (!uploadSuccess || !fileURL) {
-            showFileUploadError("No valid file URL. Please try again.");
-            setLoading(false);
-            setProgress(0);
-            setLoadingPhase('idle');
-            return; // <-- EARLY RETURN, do not proceed!
-          }
-        } else if (selectedResume) {
-          setLoadingPhase("extract");
-          try {
-            const fileRef = ref(storage, selectedResume.path);
-            const url = await getDownloadURL(fileRef);
-            fileURL = url;
-            fileName = selectedResume.name;
-            if (!fileURL) throw new Error("Selected file not accessible. Please try again.");
-          } catch (urlError) {
-            showFileUploadError("Selected file not accessible. Please try again.");
-            setLoading(false);
-            setProgress(0);
-            setLoadingPhase('idle');
-            return;
-          }
-        }
-        if (!fileURL) {
-          showFileUploadError("No valid file URL. Please try again.");
-          setLoading(false);
-          setProgress(0);
-          setLoadingPhase('idle');
-          return;
-        }
-        const firestoreEmail = session?.user?.email?.toLowerCase();
-        try {
-          await addDoc(collection(db, `submissions/${firestoreEmail}/entries`), {
-            jobText,
-            resumeUrl: fileURL,
-            uploadedAt: Timestamp.now(),
-            fileName: fileName,
-          });
-        } catch (firestoreError) {}
-        if (pdfFile) {
-          setLoadingPhase("extract");
-          const extractToast = showLoading('Extracting text from PDF...');
-          try {
-            if (!navigator.onLine) throw new Error("No internet connection. Please check your network.");
-            if (pdfFile.size > 10 * 1024 * 1024) throw new Error("File size too large. Please upload a PDF under 10MB.");
-            const formData = new FormData();
-            formData.append("file", pdfFile);
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 45000);
-            const extractRes = await fetch(
-              "https://jobdraftai-backend-production.up.railway.app/extract",
-              { method: "POST", body: formData, signal: controller.signal }
-            );
-            clearTimeout(timeoutId);
-            if (!extractRes.ok) throw new Error("Please try again.");
-            const json = await extractRes.json();
-            if (!json.text || json.text.trim() === '') throw new Error("No text extracted from PDF. Please ensure the PDF contains readable text.");
-            if (json.text.trim().length < 100) throw new Error("Extracted text is too short. Please ensure the PDF contains a complete resume.");
-            resumeText = json.text;
-            const resumeKeywords = ["resume", "experience", "skills", "education", "projects", "summary", "work", "employment"];
-            const textLower = json.text.toLowerCase();
-            const keywordMatches = resumeKeywords.filter(keyword => textLower.includes(keyword));
-            if (keywordMatches.length < 2) throw new Error("The uploaded file doesn't appear to be a resume. Please upload a valid resume PDF.");
-            dismissToast(extractToast);
-          } catch (extractError) {
-            dismissToast(extractToast);
-            setLoading(false);
-            setProgress(0);
-            setLoadingPhase('idle');
-            if (extractError.name === 'AbortError') {
-              showAIProcessingError();
-            } else if (extractError.message.includes('network') || extractError.message.includes('fetch') || extractError.name === 'TypeError') {
-              showNetworkRetry();
-            } else {
-              showAIProcessingError();
-            }
-            return;
-          }
-        } else if (selectedResume) {
-          setLoadingPhase("extract");
-          const extractToast = showLoading('Extracting text from selected resume...');
-          try {
-            if (!navigator.onLine) throw new Error("No internet connection. Please check your network.");
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 45000);
-            const extractRes = await fetch(
-              "https://jobdraftai-backend-production.up.railway.app/extract-from-url",
-              { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ url: fileURL }), signal: controller.signal }
-            );
-            clearTimeout(timeoutId);
-            if (!extractRes.ok) throw new Error("Please try again.");
-            const json = await extractRes.json();
-            if (!json.text || json.text.trim() === '') throw new Error("No text extracted from resume. Please try a different file.");
-            if (json.text.trim().length < 100) throw new Error("Extracted text is too short. Please ensure the file contains a complete resume.");
-            resumeText = json.text;
-            const resumeKeywords = ["resume", "experience", "skills", "education", "projects", "summary", "work", "employment"];
-            const textLower = json.text.toLowerCase();
-            const keywordMatches = resumeKeywords.filter(keyword => textLower.includes(keyword));
-            if (keywordMatches.length < 2) throw new Error("The uploaded file doesn't appear to be a resume. Please upload a valid resume PDF.");
-            dismissToast(extractToast);
-          } catch (extractError) {
-            dismissToast(extractToast);
-            setLoading(false);
-            setProgress(0);
-            setLoadingPhase('idle');
-            if (extractError.name === 'AbortError') {
-              showAIProcessingError();
-            } else if (extractError.message.includes('network') || extractError.message.includes('fetch') || extractError.name === 'TypeError') {
-              showNetworkRetry();
-            } else {
-              showAIProcessingError();
-            }
-            return;
-          }
-        }
-      } else {
-        resumeText = textResume;
-        fileName = `text-resume-${Date.now()}.txt`;
-        const email = session?.user?.email?.toLowerCase();
-        await addDoc(collection(db, `submissions/${email}/entries`), {
-          jobText,
-          resumeText: textResume,
-          uploadedAt: Timestamp.now(),
-          fileName: fileName,
-        });
-      }
-      setLoadingPhase("ai");
-      let aiData = null;
-      let retryCount = 0;
-      const maxRetries = 5;
-      const aiToast = showLoading('AI is analyzing your resume and job description...');
-      while (retryCount < maxRetries) {
-        try {
-          const processRes = await fetch(
-            "https://jobdraftai-backend-production.up.railway.app/process-text",
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                text: `Resume:\n${resumeText}\n\nJob Description:\n${jobText}`,
-              }),
-            }
-          );
-          if (!processRes.ok) throw new Error("Please try again.");
-          aiData = await processRes.json();
-          if (!aiData?.structured) throw new Error("Invalid AI response structure");
-          dismissToast(aiToast);
-          break;
-        } catch (processError) {
-          retryCount++;
-          if (retryCount >= maxRetries) {
-            dismissToast(aiToast);
-            showAIProcessingError();
-            setLoading(false);
-            setProgress(0);
-            setLoadingPhase('idle');
-            return;
-          }
-          await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
-          showAIProcessingError(retryCount, maxRetries);
-        }
-      }
-      localStorage.setItem("tailoredResume", JSON.stringify(aiData.structured));
-      setAiData(aiData.structured);
-      saveToRecentResults(aiData.structured, jobText);
-      setShowResultSkeleton(true);
-      setLoadingPhase('idle');
-      setTimeout(() => {
-        router.push("/result");
-      }, 2000);
+      // 1. Upload
+      const uploadResult = await uploadResume();
+      if (!uploadResult?.success) return;
+      // 2. Extract
+      const extractResult = await extractResumeText(uploadResult);
+      if (!extractResult?.success) return;
+      // 3. AI
+      await runAI(extractResult.resumeText, jobText, extractResult.fileName);
     } catch (err) {
       setLoadingPhase('idle');
       if (err.name === 'TypeError' && err.message.includes('fetch')) {
@@ -555,7 +593,7 @@ export default function Dashboard() {
   // Load recent results from localStorage
   const loadRecentResults = () => {
     try {
-      const stored = localStorage.getItem(`recentResults_${session?.user?.email}`);
+      const stored = localStorage.getItem(`recentResults_${user?.email}`);
       if (stored) {
         const parsed = JSON.parse(stored);
         setRecentResults(parsed);
@@ -569,7 +607,7 @@ export default function Dashboard() {
   // Save result to recent results (only keep the latest one)
   const saveToRecentResults = (resultData, jobText) => {
     try {
-      const email = session?.user?.email;
+      const email = user?.email;
       if (!email) return;
 
       const newResult = {
@@ -611,7 +649,7 @@ export default function Dashboard() {
   // Delete the recent result
   const deleteRecentResult = () => {
     try {
-      const email = session?.user?.email;
+      const email = user?.email;
       if (!email) return;
 
       localStorage.removeItem(`recentResults_${email}`);
@@ -623,98 +661,8 @@ export default function Dashboard() {
     }
   };
 
-  if (status === "loading") {
-    return (
-      <>
-        {/* Enhanced Session Loading Screen - Responsive */}
-        <div className="fixed inset-0 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 z-[9999] flex flex-col items-center justify-center overflow-hidden min-h-screen w-full">
-          {/* Animated Background Elements */}
-          <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute -top-40 -right-40 w-60 h-60 sm:w-80 sm:h-80 bg-gradient-to-br from-blue-400/20 to-purple-600/20 rounded-full blur-3xl animate-pulse"></div>
-            <div className="absolute -bottom-40 -left-40 w-60 h-60 sm:w-80 sm:h-80 bg-gradient-to-tr from-indigo-400/20 to-pink-600/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 sm:w-96 sm:h-96 bg-gradient-to-r from-purple-400/10 to-pink-400/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
-          </div>
-
-          {/* Loading Content */}
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="text-center relative z-10 max-w-xs sm:max-w-md mx-auto px-2 sm:px-6"
-          >
-            {/* Enhanced Logo and Brand */}
-            <motion.div
-              initial={{ opacity: 0, y: -30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.6 }}
-              className="flex flex-col items-center gap-4 sm:gap-6 mb-8 sm:mb-12"
-            >
-              <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl blur-xl opacity-40 group-hover:opacity-60 transition-opacity duration-500"></div>
-                <Image
-                  src="/logo.png"
-                  alt="I Love Resumes Logo"
-                  width={70}
-                  height={70}
-                  priority
-                  className="relative z-10 rounded-3xl shadow-2xl w-16 h-16 sm:w-[100px] sm:h-[100px]"
-                  style={{ width: "auto", height: "auto" }}
-                />
-              </div>
-              <div className="flex flex-col items-center gap-2 sm:gap-3">
-                <Image
-                  src="/Iloveresumelogotext.png"
-                  alt="I Love Resume Logo"
-                  width={180}
-                  height={50}
-                  priority
-                  className="h-10 sm:h-20 object-contain"
-                  style={{ width: "auto", height: "auto" }}
-                />
-                <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm px-3 sm:px-4 py-1 sm:py-2 rounded-full shadow-lg">
-                  <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500 animate-pulse" />
-                  <span className="text-xs sm:text-sm font-medium text-gray-700">AI-Powered Resume Builder</span>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Enhanced Loading Spinner */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.6 }}
-              className="relative w-20 h-20 sm:w-32 sm:h-32 mb-6 sm:mb-8 mx-auto"
-            >
-              <div className="absolute inset-0 w-20 h-20 sm:w-32 sm:h-32 border-4 border-purple-200/30 rounded-full"></div>
-              <div className="absolute inset-0 w-20 h-20 sm:w-32 sm:h-32 border-4 border-transparent border-t-purple-600 rounded-full animate-spin"></div>
-              <div className="absolute inset-2 w-16 h-16 sm:w-28 sm:h-28 border-4 border-pink-200/30 rounded-full"></div>
-              <div className="absolute inset-2 w-16 h-16 sm:w-28 sm:h-28 border-4 border-transparent border-t-pink-500 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-8 h-8 sm:w-16 sm:h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-lg">
-                  <Sparkles className="w-5 h-5 sm:w-8 sm:h-8 text-white animate-pulse" />
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Enhanced Loading Text */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 0.6 }}
-              className="space-y-2 sm:space-y-4"
-            >
-              <h3 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Initializing...
-              </h3>
-              <p className="text-gray-600 font-medium text-base sm:text-lg">Checking your session</p>
-              <div className="flex items-center justify-center gap-2 text-xs sm:text-sm text-gray-500">
-                <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
-                <span>Verifying authentication</span>
-              </div>
-            </motion.div>
-          </motion.div>
-        </div>
-      </>
-    );
+  if (!user) {
+    return <div>Loading...</div>;
   }
 
   if (loading) {
@@ -1062,7 +1010,7 @@ export default function Dashboard() {
             <Home className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
           </div>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2 sm:mb-3">
-            Welcome back, {session?.user?.name}!
+            Welcome back, {user?.name}!
         </h1>
           <p className="text-gray-600 text-base sm:text-xl">Let's create your perfect resume</p>
           

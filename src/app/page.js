@@ -1,10 +1,11 @@
 "use client";
 
-import { useSession, signIn } from "next-auth/react";
+import "../utils/firebase.js";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "firebase/auth";
 
 import {
   ArrowRight,
@@ -20,16 +21,21 @@ import {
 } from "lucide-react";
 
 export default function Home() {
-  const { data: session, status } = useSession();
   const router = useRouter();
-
+  // Track Firebase user
+  const [user, setUser] = useState(null);
   useEffect(() => {
-    if (status === "authenticated") {
-      router.push("/dashboard");
-    }
-  }, [status, router]);
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(firebaseUser);
+      if (firebaseUser) {
+        router.push("/dashboard");
+      }
+    });
+    return () => unsubscribe();
+  }, [router]);
 
-  if (status === "authenticated") {
+  if (user) {
     return null;
   }
 
@@ -129,7 +135,18 @@ export default function Home() {
             transition={{ delay: 0.8, duration: 0.8 }}
             whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+            onClick={async () => {
+              const auth = getAuth();
+              const provider = new GoogleAuthProvider();
+              try {
+                await signInWithPopup(auth, provider);
+                // Optionally redirect to dashboard after sign-in
+                router.push("/dashboard");
+              } catch (error) {
+                // Optionally show error to user
+                console.error("Firebase sign-in failed:", error);
+              }
+            }}
             className="group flex items-center justify-center gap-2 sm:gap-3 bg-white/80 backdrop-blur-sm text-gray-800 px-4 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 font-semibold text-base sm:text-lg relative overflow-hidden w-full max-w-xs sm:max-w-sm sm:w-auto"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>

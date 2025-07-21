@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 import { Toaster } from "react-hot-toast";
 import { 
   showSuccess, 
@@ -43,6 +42,8 @@ import {
   ArrowLeft,
   Star
 } from "lucide-react";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import "../../utils/firebase.js";
 
 // Highlights Editor Component
 const HighlightsEditor = ({ highlights = [], onChange, placeholder = "Enter highlights..." }) => {
@@ -135,28 +136,40 @@ const HighlightsEditor = ({ highlights = [], onChange, placeholder = "Enter high
 };
 
 export default function ResultPage() {
+  // All hooks at the top
+  const [user, setUser] = useState(null);
   const [resumeData, setResumeData] = useState(null);
   const [error, setError] = useState("");
   const router = useRouter();
-  const { data: session, status } = useSession();
   const [fieldErrors, setFieldErrors] = useState({});
   const [showSavePopup, setShowSavePopup] = useState(false);
   const [activeSection, setActiveSection] = useState("personal");
   const [isDownloading, setIsDownloading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [autoSaveStatus, setAutoSaveStatus] = useState("saved"); // "saving", "saved", "error"
+  const [showDownloadSkeleton, setShowDownloadSkeleton] = useState(false);
 
-  // ✅ Always call hooks before any conditionals
   useEffect(() => {
-    if (status !== "authenticated") return;
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (!firebaseUser) {
+        router.push("/");
+      } else {
+        setUser(firebaseUser);
+      }
+    });
+    return () => unsubscribe();
+  }, [router]);
 
+  // Load resumeData from localStorage after user is authenticated
+  useEffect(() => {
+    if (!user) return;
     const stored = localStorage.getItem("tailoredResume");
     if (!stored) {
       setError("No resume data found. Redirecting to dashboard...");
       setTimeout(() => router.push("/dashboard"), 3000);
       return;
     }
-
     try {
       const parsed = JSON.parse(stored);
       if (!parsed || Object.keys(parsed).length === 0) {
@@ -166,26 +179,38 @@ export default function ResultPage() {
       }
       setResumeData(parsed);
     } catch (err) {
-      console.error("Resume parsing error:", err);
       setError("Resume is corrupted. Redirecting to dashboard...");
       setTimeout(() => router.push("/dashboard"), 3000);
     }
-  }, [status, router]);
+  }, [user, router]);
 
   useEffect(() => {
     const handleRouteChange = () => {
       setShowSavePopup(false);
     };
-
     router.events?.on("routeChangeStart", handleRouteChange);
-
     return () => {
       router.events?.off("routeChangeStart", handleRouteChange);
     };
   }, [router]);
 
+  // Only after all hooks:
+  if (!user) {
+    console.log("Waiting for user...");
+    return <div>Loading user...</div>;
+  }
+  if (error) {
+    console.log("Error:", error);
+    return <div>{error}</div>;
+  }
+  if (!resumeData) {
+    console.log("Waiting for resumeData...");
+    return <div>Loading result...</div>;
+  }
+  console.log("Rendering result", resumeData);
+
   // ✅ Rendering logic AFTER hooks
-  if (status === "loading") {
+  if (showDownloadSkeleton) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center px-4">
         <motion.div
@@ -194,20 +219,15 @@ export default function ResultPage() {
           className="text-center"
         >
           <div className="relative w-16 h-16 sm:w-20 sm:h-20 mb-4 sm:mb-6">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 border-4 border-purple-200/20 border-t-purple-500 rounded-full animate-spin" />
+            <div className="w-16 h-16 sm:w-20 sm:h-20 border-4 border-blue-200/20 border-t-blue-500 rounded-full animate-spin" />
             <div className="absolute inset-0 flex items-center justify-center">
-              <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-purple-400 animate-pulse" />
+              <Download className="w-6 h-6 sm:w-8 sm:h-8 text-blue-400 animate-pulse" />
             </div>
-        </div>
-          <p className="text-gray-600 font-medium text-base sm:text-lg">Loading your resume...</p>
+          </div>
+          <p className="text-gray-600 font-medium text-base sm:text-lg">Preparing your Word document...</p>
         </motion.div>
       </div>
     );
-  }
-
-  if (status === "unauthenticated") {
-    router.push("/");
-    return null;
   }
 
   const validateResume = () => {
@@ -339,7 +359,7 @@ export default function ResultPage() {
         localStorage.setItem("tailoredResume", JSON.stringify(updated));
         
         // Update recent result in dashboard
-        const email = session?.user?.email;
+        const email = user?.email;
         if (email) {
           const existing = localStorage.getItem(`recentResults_${email}`);
           if (existing) {
@@ -373,7 +393,7 @@ export default function ResultPage() {
         localStorage.setItem("tailoredResume", JSON.stringify(updated));
         
         // Update recent result in dashboard
-        const email = session?.user?.email;
+        const email = user?.email;
         if (email) {
           const existing = localStorage.getItem(`recentResults_${email}`);
           if (existing) {
@@ -412,7 +432,7 @@ export default function ResultPage() {
       
       // Update recent results in dashboard
       try {
-        const email = session?.user?.email;
+        const email = user?.email;
         if (email) {
           const existing = localStorage.getItem(`recentResults_${email}`);
           let recentResults = existing ? JSON.parse(existing) : [];
@@ -450,23 +470,19 @@ export default function ResultPage() {
     if (!valid) return;
 
     setIsDownloading(true);
-    
+    setShowDownloadSkeleton(true);
     try {
       // Show loading toast
       const loadingToast = showDownloadLoading();
 
       // Save data to localStorage
       localStorage.setItem("tailoredResume", JSON.stringify(resumeData));
-      
       // Simulate a small delay for better UX
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
       // Dismiss loading toast
       dismissToast(loadingToast);
-      
       // Show success toast
       showDownloadSuccess();
-      
       // Navigate to download page
       router.push("/word-download");
     } catch (error) {
