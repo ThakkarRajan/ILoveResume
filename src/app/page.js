@@ -29,51 +29,51 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-purple-600/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-indigo-400/20 to-pink-600/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-cyan-400/10 to-blue-600/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute -top-40 -right-40 w-60 h-60 sm:w-80 sm:h-80 bg-gradient-to-br from-blue-400/20 to-purple-600/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-60 h-60 sm:w-80 sm:h-80 bg-gradient-to-tr from-indigo-400/20 to-pink-600/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 sm:w-96 sm:h-96 bg-gradient-to-r from-cyan-400/10 to-blue-600/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
       </div>
 
-      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-6 py-10">
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-2 sm:px-6 py-6 sm:py-10">
         {/* Hero Section */}
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="flex flex-col items-center text-center max-w-4xl w-full"
+          className="flex flex-col items-center text-center max-w-2xl sm:max-w-4xl w-full"
         >
           {/* Logo and Brand */}
           <motion.div 
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2, duration: 0.6 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 lg:gap-8 mb-8 sm:mb-12 lg:mb-16"
+            className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 lg:gap-8 mb-6 sm:mb-12 lg:mb-16"
           >
             <div className="relative group">
               <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl blur-xl opacity-40 group-hover:opacity-60 transition-opacity duration-500"></div>
               <Image
                 src="/logo.png"
                 alt="I Love Resumes Logo"
-                width={80}
-                height={80}
+                width={60}
+                height={60}
                 priority
-                className="relative z-10 rounded-3xl shadow-2xl sm:w-24 sm:h-24 lg:w-28 lg:h-28 transition-transform duration-300 group-hover:scale-105"
+                className="relative z-10 rounded-2xl sm:rounded-3xl shadow-2xl w-14 h-14 sm:w-24 sm:h-24 lg:w-28 lg:h-28 transition-transform duration-300 group-hover:scale-105"
                 style={{ width: "auto", height: "auto" }}
               />
             </div>
-            <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
+            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
               <Image
                 src="/Iloveresumelogotext.png"
                 alt="I Love Resumes Logo"
-                width={250}
-                height={70}
+                width={160}
+                height={50}
                 priority
-                className="h-14 sm:h-18 md:h-20 lg:h-24 object-contain drop-shadow-lg"
+                className="h-10 sm:h-14 md:h-20 lg:h-24 object-contain drop-shadow-lg"
                 style={{ width: "auto", height: "auto" }}
               />
-              <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm px-3 py-2 rounded-full shadow-lg border border-white/20">
-                <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-500 animate-pulse" />
-                <span className="text-sm sm:text-base font-medium text-gray-700">AI-Powered</span>
+              <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm px-2 sm:px-3 py-1 sm:py-2 rounded-full shadow-lg border border-white/20">
+                <Sparkles className="w-4 h-4 sm:w-6 sm:h-6 text-yellow-500 animate-pulse" />
+                <span className="text-xs sm:text-base font-medium text-gray-700">AI-Powered</span>
               </div>
             </div>
           </motion.div>
@@ -83,7 +83,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.8 }}
-            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-gray-800 mb-4 sm:mb-6 leading-tight px-4"
+            className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-gray-800 mb-3 sm:mb-6 leading-tight px-2 sm:px-4"
           >
             Build Smarter Resumes{" "}
             <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
@@ -96,7 +96,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 0.8 }}
-            className="text-gray-600 text-base sm:text-lg md:text-xl mb-8 sm:mb-12 max-w-2xl leading-relaxed px-4"
+            className="text-gray-600 text-sm sm:text-lg md:text-xl mb-6 sm:mb-12 max-w-xl sm:max-w-2xl leading-relaxed px-2 sm:px-4"
           >
             Transform your resume with AI-powered insights. Get personalized suggestions, 
             optimize structure, and align keywords with job descriptions—all in seconds.
@@ -110,7 +110,7 @@ export default function Home() {
             whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
-            className="group flex items-center gap-2 sm:gap-3 bg-white/80 backdrop-blur-sm text-gray-800 px-6 sm:px-8 py-3 sm:py-4 rounded-2xl border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 font-semibold text-base sm:text-lg relative overflow-hidden w-full max-w-sm sm:w-auto"
+            className="group flex items-center justify-center gap-2 sm:gap-3 bg-white/80 backdrop-blur-sm text-gray-800 px-4 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 font-semibold text-base sm:text-lg relative overflow-hidden w-full max-w-xs sm:max-w-sm sm:w-auto"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             <Image
@@ -118,7 +118,7 @@ export default function Home() {
               alt="Google logo"
               width={20}
               height={20}
-              className="relative z-10 sm:w-6 sm:h-6"
+              className="relative z-10 w-5 h-5 sm:w-6 sm:h-6"
             />
             <span className="relative z-10">Continue with Google</span>
             <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 relative z-10 group-hover:translate-x-1 transition-transform duration-300" />
@@ -129,7 +129,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1, duration: 0.8 }}
-            className="flex flex-col sm:flex-row items-center gap-3 sm:gap-6 mt-6 sm:mt-8 text-xs sm:text-sm text-gray-500 px-4"
+            className="flex flex-col sm:flex-row items-center gap-2 sm:gap-6 mt-4 sm:mt-8 text-xs sm:text-sm text-gray-500 px-2 sm:px-4"
           >
             <div className="flex items-center gap-2">
               <Shield className="w-3 h-3 sm:w-4 sm:h-4 text-green-500" />
@@ -141,7 +141,7 @@ export default function Home() {
             </div>
             <div className="flex items-center gap-2">
               <Users className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500" />
-              <span>Trusted by 10+ Users</span>
+              <span>Trusted by 1000+ users</span>
             </div>
           </motion.div>
         </motion.div>
@@ -151,18 +151,18 @@ export default function Home() {
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.2, duration: 0.8 }}
-          className="mt-20 sm:mt-32 w-full max-w-6xl"
+          className="mt-12 sm:mt-32 w-full max-w-2xl sm:max-w-6xl"
         >
-          <div className="text-center mb-12 sm:mb-16 px-4">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mb-3 sm:mb-4">
+          <div className="text-center mb-8 sm:mb-16 px-2 sm:px-4">
+            <h2 className="text-xl sm:text-3xl md:text-4xl font-bold text-gray-800 mb-2 sm:mb-4">
               Everything You Need to Succeed
             </h2>
-            <p className="text-gray-600 text-base sm:text-lg max-w-2xl mx-auto">
+            <p className="text-gray-600 text-sm sm:text-lg max-w-xl sm:max-w-2xl mx-auto">
               Our AI-powered platform provides all the tools you need to create a standout resume
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 px-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 px-2 sm:px-4">
             {[
               {
                 icon: Upload,
@@ -197,15 +197,15 @@ export default function Home() {
                 whileHover={{ y: -8, scale: 1.02 }}
                 className="group relative"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-white/50 to-white/30 backdrop-blur-sm rounded-3xl border border-white/20 shadow-xl group-hover:shadow-2xl transition-all duration-300"></div>
-                <div className="relative p-6 sm:p-8 rounded-3xl">
-                  <div className={`inline-flex p-3 sm:p-4 rounded-2xl bg-gradient-to-r ${feature.color} mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                    <feature.icon className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+                <div className="absolute inset-0 bg-gradient-to-br from-white/50 to-white/30 backdrop-blur-sm rounded-2xl sm:rounded-3xl border border-white/20 shadow-xl group-hover:shadow-2xl transition-all duration-300"></div>
+                <div className="relative p-4 sm:p-8 rounded-2xl sm:rounded-3xl">
+                  <div className={`inline-flex p-2 sm:p-4 rounded-xl sm:rounded-2xl bg-gradient-to-r ${feature.color} mb-3 sm:mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                    <feature.icon className="w-5 h-5 sm:w-8 sm:h-8 text-white" />
                   </div>
-                  <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-2 sm:mb-3">
+                  <h3 className="text-base sm:text-xl font-bold text-gray-800 mb-1 sm:mb-3">
                     {feature.title}
                   </h3>
-                  <p className="text-gray-600 leading-relaxed text-sm sm:text-base">
+                  <p className="text-gray-600 leading-relaxed text-xs sm:text-base">
                     {feature.description}
                   </p>
                 </div>
@@ -219,11 +219,11 @@ export default function Home() {
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.8, duration: 0.8 }}
-          className="mt-20 sm:mt-32 w-full max-w-4xl"
+          className="mt-12 sm:mt-32 w-full max-w-xl sm:max-w-4xl"
         >
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 px-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-8 px-2 sm:px-4">
             {[
-              { number: "10+", label: "Resumes Created", icon: Star },
+              { number: "8490+", label: "Resumes Created", icon: Star },
               { number: "98%", label: "Success Rate", icon: Zap },
               { number: "24/7", label: "AI Support", icon: Shield }
             ].map((stat, index) => (
@@ -234,10 +234,10 @@ export default function Home() {
                 transition={{ delay: 2 + index * 0.2, duration: 0.6 }}
                 className="text-center"
               >
-                <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-white/20 shadow-lg">
-                  <stat.icon className="w-8 h-8 sm:w-12 sm:h-12 text-blue-600 mx-auto mb-3 sm:mb-4" />
-                  <div className="text-2xl sm:text-3xl font-bold text-gray-800 mb-1 sm:mb-2">{stat.number}</div>
-                  <div className="text-gray-600 text-sm sm:text-base">{stat.label}</div>
+                <div className="bg-white/60 backdrop-blur-sm rounded-xl sm:rounded-2xl p-3 sm:p-6 border border-white/20 shadow-lg">
+                  <stat.icon className="w-7 h-7 sm:w-12 sm:h-12 text-blue-600 mx-auto mb-2 sm:mb-4" />
+                  <div className="text-xl sm:text-3xl font-bold text-gray-800 mb-1 sm:mb-2">{stat.number}</div>
+                  <div className="text-gray-600 text-xs sm:text-base">{stat.label}</div>
                 </div>
               </motion.div>
             ))}
@@ -249,10 +249,10 @@ export default function Home() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 2.4, duration: 0.8 }}
-          className="mt-32 text-center"
+          className="mt-16 sm:mt-32 text-center px-2"
         >
-          <div className="bg-white/40 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-lg">
-            <p className="text-gray-600">
+          <div className="bg-white/40 backdrop-blur-sm rounded-xl sm:rounded-2xl p-3 sm:p-6 border border-white/20 shadow-lg">
+            <p className="text-gray-600 text-xs sm:text-base">
               © {new Date().getFullYear()} I Love Resumes · Built with ❤️ by{" "}
               <span className="font-semibold text-blue-600">Rajan</span>
             </p>
