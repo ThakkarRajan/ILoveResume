@@ -1,0 +1,15 @@
+{
+  "redirects": [
+    {
+      "source": "/:path*",
+      "destination": "https://iloveresumes.ca/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.iloveresumes.ca"
+        }
+      ],
+      "permanent": true
+    }
+  ]
+}
