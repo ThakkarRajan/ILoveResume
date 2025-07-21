@@ -704,53 +704,53 @@ export default function Dashboard() {
   if (status === "loading") {
     return (
       <>
-        {/* Enhanced Session Loading Screen */}
-        <div className="fixed inset-0 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 z-[9999] flex flex-col items-center justify-center overflow-hidden">
+        {/* Enhanced Session Loading Screen - Responsive */}
+        <div className="fixed inset-0 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 z-[9999] flex flex-col items-center justify-center overflow-hidden min-h-screen w-full">
           {/* Animated Background Elements */}
           <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-purple-600/20 rounded-full blur-3xl animate-pulse"></div>
-            <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-indigo-400/20 to-pink-600/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-purple-400/10 to-pink-400/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+            <div className="absolute -top-40 -right-40 w-60 h-60 sm:w-80 sm:h-80 bg-gradient-to-br from-blue-400/20 to-purple-600/20 rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute -bottom-40 -left-40 w-60 h-60 sm:w-80 sm:h-80 bg-gradient-to-tr from-indigo-400/20 to-pink-600/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 sm:w-96 sm:h-96 bg-gradient-to-r from-purple-400/10 to-pink-400/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
           </div>
 
           {/* Loading Content */}
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="text-center relative z-10 max-w-md mx-auto px-6"
+            className="text-center relative z-10 max-w-xs sm:max-w-md mx-auto px-2 sm:px-6"
           >
             {/* Enhanced Logo and Brand */}
-                        <motion.div
+            <motion.div
               initial={{ opacity: 0, y: -30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.6 }}
-              className="flex flex-col items-center gap-6 mb-12"
+              className="flex flex-col items-center gap-4 sm:gap-6 mb-8 sm:mb-12"
             >
               <div className="relative group">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl blur-xl opacity-40 group-hover:opacity-60 transition-opacity duration-500"></div>
                 <Image
                   src="/logo.png"
                   alt="I Love Resumes Logo"
-                  width={100}
-                  height={100}
+                  width={70}
+                  height={70}
                   priority
-                  className="relative z-10 rounded-3xl shadow-2xl"
+                  className="relative z-10 rounded-3xl shadow-2xl w-16 h-16 sm:w-[100px] sm:h-[100px]"
                   style={{ width: "auto", height: "auto" }}
                 />
               </div>
-              <div className="flex flex-col items-center gap-3">
+              <div className="flex flex-col items-center gap-2 sm:gap-3">
                 <Image
                   src="/Iloveresumelogotext.png"
                   alt="I Love Resume Logo"
-                  width={300}
-                  height={80}
+                  width={180}
+                  height={50}
                   priority
-                  className="h-20 sm:h-24 object-contain"
+                  className="h-10 sm:h-20 object-contain"
                   style={{ width: "auto", height: "auto" }}
                 />
-                <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg">
-                  <Sparkles className="w-4 h-4 text-yellow-500 animate-pulse" />
-                  <span className="text-sm font-medium text-gray-700">AI-Powered Resume Builder</span>
+                <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm px-3 sm:px-4 py-1 sm:py-2 rounded-full shadow-lg">
+                  <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500 animate-pulse" />
+                  <span className="text-xs sm:text-sm font-medium text-gray-700">AI-Powered Resume Builder</span>
                 </div>
               </div>
             </motion.div>
@@ -760,15 +760,15 @@ export default function Dashboard() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.6 }}
-              className="relative w-32 h-32 mb-8"
+              className="relative w-20 h-20 sm:w-32 sm:h-32 mb-6 sm:mb-8 mx-auto"
             >
-              <div className="absolute inset-0 w-32 h-32 border-4 border-purple-200/30 rounded-full"></div>
-              <div className="absolute inset-0 w-32 h-32 border-4 border-transparent border-t-purple-600 rounded-full animate-spin"></div>
-              <div className="absolute inset-2 w-28 h-28 border-4 border-pink-200/30 rounded-full"></div>
-              <div className="absolute inset-2 w-28 h-28 border-4 border-transparent border-t-pink-500 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
+              <div className="absolute inset-0 w-20 h-20 sm:w-32 sm:h-32 border-4 border-purple-200/30 rounded-full"></div>
+              <div className="absolute inset-0 w-20 h-20 sm:w-32 sm:h-32 border-4 border-transparent border-t-purple-600 rounded-full animate-spin"></div>
+              <div className="absolute inset-2 w-16 h-16 sm:w-28 sm:h-28 border-4 border-pink-200/30 rounded-full"></div>
+              <div className="absolute inset-2 w-16 h-16 sm:w-28 sm:h-28 border-4 border-transparent border-t-pink-500 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-lg">
-                  <Sparkles className="w-8 h-8 text-white animate-pulse" />
+                <div className="w-8 h-8 sm:w-16 sm:h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-lg">
+                  <Sparkles className="w-5 h-5 sm:w-8 sm:h-8 text-white animate-pulse" />
                 </div>
               </div>
             </motion.div>
@@ -778,13 +778,13 @@ export default function Dashboard() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.6 }}
-              className="space-y-4"
+              className="space-y-2 sm:space-y-4"
             >
-              <h3 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+              <h3 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                 Initializing...
               </h3>
-              <p className="text-gray-600 font-medium text-lg">Checking your session</p>
-              <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+              <p className="text-gray-600 font-medium text-base sm:text-lg">Checking your session</p>
+              <div className="flex items-center justify-center gap-2 text-xs sm:text-sm text-gray-500">
                 <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
                 <span>Verifying authentication</span>
               </div>
@@ -798,53 +798,53 @@ export default function Dashboard() {
   if (loading) {
     return (
       <>
-        {/* Enhanced AI Processing Loading Screen */}
-        <div className="fixed inset-0 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 z-[9999] flex flex-col items-center justify-center overflow-hidden">
+        {/* Enhanced AI Processing Loading Screen - Responsive */}
+        <div className="fixed inset-0 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 z-[9999] flex flex-col items-center justify-center overflow-hidden min-h-screen w-full">
           {/* Animated Background Elements */}
           <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-purple-600/20 rounded-full blur-3xl animate-pulse"></div>
-            <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-indigo-400/20 to-pink-600/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-purple-400/10 to-pink-400/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+            <div className="absolute -top-40 -right-40 w-60 h-60 sm:w-80 sm:h-80 bg-gradient-to-br from-blue-400/20 to-purple-600/20 rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute -bottom-40 -left-40 w-60 h-60 sm:w-80 sm:h-80 bg-gradient-to-tr from-indigo-400/20 to-pink-600/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 sm:w-96 sm:h-96 bg-gradient-to-r from-purple-400/10 to-pink-400/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
           </div>
 
           {/* Loading Content */}
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="text-center relative z-10 max-w-2xl mx-auto px-6"
+            className="text-center relative z-10 max-w-xs sm:max-w-2xl mx-auto px-2 sm:px-6"
           >
             {/* Enhanced Logo and Brand */}
             <motion.div 
               initial={{ opacity: 0, y: -30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.6 }}
-              className="flex flex-col items-center gap-6 mb-10"
+              className="flex flex-col items-center gap-4 sm:gap-6 mb-8 sm:mb-10"
             >
               <div className="relative group">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl blur-xl opacity-40 group-hover:opacity-60 transition-opacity duration-500"></div>
                 <Image
                   src="/logo.png"
                   alt="I Love Resumes Logo"
-                  width={100}
-                  height={100}
+                  width={70}
+                  height={70}
                   priority
-                  className="relative z-10 rounded-3xl shadow-2xl"
+                  className="relative z-10 rounded-3xl shadow-2xl w-16 h-16 sm:w-[100px] sm:h-[100px]"
                   style={{ width: "auto", height: "auto" }}
                 />
               </div>
-              <div className="flex flex-col items-center gap-3">
+              <div className="flex flex-col items-center gap-2 sm:gap-3">
                 <Image
                   src="/Iloveresumelogotext.png"
                   alt="I Love Resumes Logo"
-                  width={300}
-                  height={80}
+                  width={180}
+                  height={50}
                   priority
-                  className="h-20 sm:h-24 object-contain"
+                  className="h-10 sm:h-20 object-contain"
                   style={{ width: "auto", height: "auto" }}
                 />
-                <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg">
-                  <Sparkles className="w-4 h-4 text-yellow-500 animate-pulse" />
-                  <span className="text-sm font-medium text-gray-700">AI-Powered Resume Builder</span>
+                <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm px-3 sm:px-4 py-1 sm:py-2 rounded-full shadow-lg">
+                  <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500 animate-pulse" />
+                  <span className="text-xs sm:text-sm font-medium text-gray-700">AI-Powered Resume Builder</span>
                 </div>
               </div>
             </motion.div>
@@ -854,15 +854,15 @@ export default function Dashboard() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.6 }}
-              className="relative w-40 h-40 mb-8"
+              className="relative w-28 h-28 sm:w-40 sm:h-40 mb-6 sm:mb-8 mx-auto"
             >
-              <div className="absolute inset-0 w-40 h-40 border-4 border-purple-200/30 rounded-full"></div>
-              <div className="absolute inset-0 w-40 h-40 border-4 border-transparent border-t-purple-600 rounded-full animate-spin"></div>
-              <div className="absolute inset-3 w-34 h-34 border-4 border-pink-200/30 rounded-full"></div>
-              <div className="absolute inset-3 w-34 h-34 border-4 border-transparent border-t-pink-500 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
+              <div className="absolute inset-0 w-full h-full border-4 border-purple-200/30 rounded-full"></div>
+              <div className="absolute inset-0 w-full h-full border-4 border-transparent border-t-purple-600 rounded-full animate-spin"></div>
+              <div className="absolute inset-0 w-20 h-20 sm:w-32 sm:h-32 m-auto border-4 border-pink-200/30 rounded-full"></div>
+              <div className="absolute inset-0 w-20 h-20 sm:w-32 sm:h-32 m-auto border-4 border-transparent border-t-pink-500 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-lg">
-                  <Sparkles className="w-10 h-10 text-white animate-pulse" />
+                <div className="w-10 h-10 sm:w-20 sm:h-20 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-lg">
+                  <Sparkles className="w-6 h-6 sm:w-10 sm:h-10 text-white animate-pulse" />
                 </div>
               </div>
             </motion.div>
@@ -872,26 +872,25 @@ export default function Dashboard() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.6 }}
-              className="space-y-6"
+              className="space-y-3 sm:space-y-6"
             >
               <div>
-                <h3 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+                <h3 className="text-xl sm:text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-1 sm:mb-2">
                   AI is crafting your resume...
                 </h3>
-                <p className="text-gray-600 text-xl">This may take a few moments</p>
+                <p className="text-gray-600 text-base sm:text-xl">This may take a few moments</p>
               </div>
-              
               {/* Enhanced Progress Bar */}
-              <div className="w-full max-w-md mx-auto">
-                <div className="bg-gray-200/50 backdrop-blur-sm rounded-full h-4 mb-3 shadow-inner">
+              <div className="w-full max-w-xs sm:max-w-md mx-auto">
+                <div className="bg-gray-200/50 backdrop-blur-sm rounded-full h-3 sm:h-4 mb-2 sm:mb-3 shadow-inner">
                   <motion.div
-                    className="bg-gradient-to-r from-purple-500 to-pink-500 h-4 rounded-full shadow-lg"
+                    className="bg-gradient-to-r from-purple-500 to-pink-500 h-3 sm:h-4 rounded-full shadow-lg"
                     initial={{ width: 0 }}
                     animate={{ width: `${progress}%` }}
                     transition={{ duration: 0.5, ease: "easeOut" }}
                   />
                 </div>
-                <p className="text-sm text-gray-600 font-medium">{progress}% complete</p>
+                <p className="text-xs sm:text-sm text-gray-600 font-medium">{progress}% complete</p>
               </div>
             </motion.div>
 
@@ -900,18 +899,18 @@ export default function Dashboard() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8, duration: 0.6 }}
-              className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 text-sm"
+              className="mt-6 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm"
             >
-              <div className="flex items-center gap-3 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg">
-                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+              <div className="flex items-center gap-2 sm:gap-3 bg-white/80 backdrop-blur-sm px-3 sm:px-4 py-1 sm:py-2 rounded-full shadow-lg">
+                <div className="w-2 h-2 sm:w-3 sm:h-3 bg-green-500 rounded-full animate-pulse"></div>
                 <span className="font-medium text-gray-700">Uploading PDF/Text</span>
               </div>
-              <div className="flex items-center gap-3 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg">
-                <div className={`w-3 h-3 rounded-full animate-pulse ${progress > 30 ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+              <div className="flex items-center gap-2 sm:gap-3 bg-white/80 backdrop-blur-sm px-3 sm:px-4 py-1 sm:py-2 rounded-full shadow-lg">
+                <div className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full animate-pulse ${progress > 30 ? 'bg-green-500' : 'bg-gray-300'}`}></div>
                 <span className="font-medium text-gray-700">Extracting Text</span>
               </div>
-              <div className="flex items-center gap-3 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg">
-                <div className={`w-3 h-3 rounded-full animate-pulse ${progress > 70 ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+              <div className="flex items-center gap-2 sm:gap-3 bg-white/80 backdrop-blur-sm px-3 sm:px-4 py-1 sm:py-2 rounded-full shadow-lg">
+                <div className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full animate-pulse ${progress > 70 ? 'bg-green-500' : 'bg-gray-300'}`}></div>
                 <span className="font-medium text-gray-700">AI Processing</span>
               </div>
             </motion.div>
@@ -921,11 +920,11 @@ export default function Dashboard() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1.2, duration: 0.6 }}
-              className="mt-8 p-4 bg-blue-50/80 backdrop-blur-sm rounded-2xl border border-blue-200/50"
+              className="mt-6 sm:mt-8 p-3 sm:p-4 bg-blue-50/80 backdrop-blur-sm rounded-2xl border border-blue-200/50"
             >
               <div className="flex items-center gap-2 text-blue-700">
-                <Clock className="w-4 h-4" />
-                <span className="text-sm font-medium">Processing time varies based on content length</span>
+                <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="text-xs sm:text-sm font-medium">Processing time varies based on content length</span>
               </div>
             </motion.div>
           </motion.div>
@@ -937,41 +936,41 @@ export default function Dashboard() {
   if (showResultSkeleton) {
     return (
       <>
-        {/* Result Skeleton Loading Screen */}
-        <div className="fixed inset-0 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 z-[9999] flex flex-col items-center justify-center overflow-hidden">
+        {/* Result Skeleton Loading Screen - Responsive */}
+        <div className="fixed inset-0 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 z-[9999] flex flex-col items-center justify-center overflow-hidden min-h-screen w-full">
           {/* Animated Background Elements */}
           <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-purple-600/20 rounded-full blur-3xl animate-pulse"></div>
-            <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-indigo-400/20 to-pink-600/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-green-400/10 to-blue-400/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+            <div className="absolute -top-40 -right-40 w-60 h-60 sm:w-80 sm:h-80 bg-gradient-to-br from-blue-400/20 to-purple-600/20 rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute -bottom-40 -left-40 w-60 h-60 sm:w-80 sm:h-80 bg-gradient-to-tr from-indigo-400/20 to-pink-600/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 sm:w-96 sm:h-96 bg-gradient-to-r from-green-400/10 to-blue-400/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
           </div>
 
           {/* Skeleton Content */}
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="text-center relative z-10 max-w-4xl mx-auto px-6"
+            className="text-center relative z-10 max-w-xs sm:max-w-4xl mx-auto px-2 sm:px-6"
           >
             {/* Success Header */}
             <motion.div 
               initial={{ opacity: 0, y: -30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.6 }}
-              className="flex flex-col items-center gap-6 mb-12"
+              className="flex flex-col items-center gap-4 sm:gap-6 mb-8 sm:mb-12"
             >
               <div className="relative group">
                 <div className="absolute inset-0 bg-gradient-to-r from-green-600 to-blue-600 rounded-3xl blur-xl opacity-40 group-hover:opacity-60 transition-opacity duration-500"></div>
-                <div className="relative z-10 w-24 h-24 bg-gradient-to-r from-green-500 to-blue-500 rounded-3xl shadow-2xl flex items-center justify-center">
-                  <CheckCircle className="w-12 h-12 text-white" />
+                <div className="relative z-10 w-16 h-16 sm:w-24 sm:h-24 bg-gradient-to-r from-green-500 to-blue-500 rounded-3xl shadow-2xl flex items-center justify-center">
+                  <CheckCircle className="w-8 h-8 sm:w-12 sm:h-12 text-white" />
                 </div>
               </div>
-              <div className="flex flex-col items-center gap-3">
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+              <div className="flex flex-col items-center gap-2 sm:gap-3">
+                <h2 className="text-xl sm:text-3xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
                   Resume Generated Successfully!
                 </h2>
-                <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg">
-                  <Sparkles className="w-4 h-4 text-green-500 animate-pulse" />
-                  <span className="text-sm font-medium text-gray-700">AI-Powered Results Ready</span>
+                <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm px-3 sm:px-4 py-1 sm:py-2 rounded-full shadow-lg">
+                  <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 animate-pulse" />
+                  <span className="text-xs sm:text-sm font-medium text-gray-700">AI-Powered Results Ready</span>
                 </div>
               </div>
             </motion.div>
@@ -981,68 +980,67 @@ export default function Dashboard() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.6 }}
-              className="w-full max-w-7xl mx-auto"
+              className="w-full max-w-xs sm:max-w-7xl mx-auto"
             >
               {/* Header Skeleton */}
-              <div className="text-center mb-8">
-                <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-purple-200 to-pink-200 rounded-3xl mb-6 animate-pulse"></div>
-                <div className="h-12 bg-gradient-to-r from-purple-200 to-pink-200 rounded-lg animate-pulse mx-auto w-64 mb-3"></div>
-                <div className="h-6 bg-gray-200 rounded animate-pulse mx-auto w-48 mb-6"></div>
-                <div className="h-10 bg-white/80 backdrop-blur-sm rounded-xl animate-pulse mx-auto w-40"></div>
+              <div className="text-center mb-6 sm:mb-8">
+                <div className="inline-flex items-center justify-center w-12 h-12 sm:w-20 sm:h-20 bg-gradient-to-r from-purple-200 to-pink-200 rounded-3xl mb-4 sm:mb-6 animate-pulse"></div>
+                <div className="h-8 sm:h-12 bg-gradient-to-r from-purple-200 to-pink-200 rounded-lg animate-pulse mx-auto w-40 sm:w-64 mb-2 sm:mb-3"></div>
+                <div className="h-4 sm:h-6 bg-gray-200 rounded animate-pulse mx-auto w-32 sm:w-48 mb-4 sm:mb-6"></div>
+                <div className="h-8 sm:h-10 bg-white/80 backdrop-blur-sm rounded-xl animate-pulse mx-auto w-28 sm:w-40"></div>
               </div>
 
-              {/* Main Content Grid */}
-              <div className="grid lg:grid-cols-4 gap-8">
+              {/* Main Content Grid - Responsive */}
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-8">
                 {/* Sidebar Navigation Skeleton */}
                 <div className="lg:col-span-1">
-                  <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/50 p-6">
-                    <div className="h-6 bg-gray-200 rounded animate-pulse w-20 mb-4"></div>
-                    <div className="space-y-2">
+                  <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/50 p-4 sm:p-6">
+                    <div className="h-4 sm:h-6 bg-gray-200 rounded animate-pulse w-14 sm:w-20 mb-2 sm:mb-4"></div>
+                    <div className="space-y-1 sm:space-y-2">
                       {/* Navigation Items */}
                       {[1, 2, 3, 4, 5].map((item) => (
-                        <div key={item} className="flex items-center gap-3 px-4 py-3 rounded-xl">
-                          <div className="w-5 h-5 bg-gray-200 rounded animate-pulse"></div>
-                          <div className="h-4 bg-gray-200 rounded animate-pulse flex-1"></div>
+                        <div key={item} className="flex items-center gap-2 sm:gap-3 px-2 sm:px-4 py-2 sm:py-3 rounded-xl">
+                          <div className="w-3 h-3 sm:w-5 sm:h-5 bg-gray-200 rounded animate-pulse"></div>
+                          <div className="h-3 sm:h-4 bg-gray-200 rounded animate-pulse flex-1"></div>
                         </div>
                       ))}
                     </div>
-                    
                     {/* Action Buttons */}
-                    <div className="mt-8 space-y-3">
-                      <div className="h-12 bg-gradient-to-r from-green-200 to-emerald-200 rounded-xl animate-pulse"></div>
-                      <div className="h-12 bg-gradient-to-r from-blue-200 to-indigo-200 rounded-xl animate-pulse"></div>
+                    <div className="mt-4 sm:mt-8 space-y-2 sm:space-y-3">
+                      <div className="h-8 sm:h-12 bg-gradient-to-r from-green-200 to-emerald-200 rounded-xl animate-pulse"></div>
+                      <div className="h-8 sm:h-12 bg-gradient-to-r from-blue-200 to-indigo-200 rounded-xl animate-pulse"></div>
                     </div>
                   </div>
                 </div>
 
                 {/* Main Content Area Skeleton */}
                 <div className="lg:col-span-3">
-                  <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/50 p-8">
+                  <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/50 p-4 sm:p-8">
                     {/* Section Header */}
-                    <div className="flex items-center gap-3 mb-6">
-                      <div className="w-12 h-12 bg-purple-100 rounded-2xl animate-pulse"></div>
+                    <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+                      <div className="w-8 h-8 sm:w-12 sm:h-12 bg-purple-100 rounded-2xl animate-pulse"></div>
                       <div>
-                        <div className="h-7 bg-gray-200 rounded animate-pulse w-48 mb-2"></div>
-                        <div className="h-4 bg-gray-200 rounded animate-pulse w-32"></div>
+                        <div className="h-5 sm:h-7 bg-gray-200 rounded animate-pulse w-32 sm:w-48 mb-1 sm:mb-2"></div>
+                        <div className="h-3 sm:h-4 bg-gray-200 rounded animate-pulse w-20 sm:w-32"></div>
                       </div>
                     </div>
 
                     {/* Form Fields */}
-                    <div className="space-y-6">
+                    <div className="space-y-4 sm:space-y-6">
                       {/* Name Field */}
                       <div>
-                        <div className="h-4 bg-gray-200 rounded animate-pulse w-20 mb-2"></div>
-                        <div className="h-12 bg-gray-200 rounded-xl animate-pulse"></div>
+                        <div className="h-3 sm:h-4 bg-gray-200 rounded animate-pulse w-14 sm:w-20 mb-1 sm:mb-2"></div>
+                        <div className="h-8 sm:h-12 bg-gray-200 rounded-xl animate-pulse"></div>
                       </div>
 
                       {/* Contact Fields Grid */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-6">
                         {[1, 2, 3, 4].map((item) => (
                           <div key={item}>
-                            <div className="h-4 bg-gray-200 rounded animate-pulse w-16 mb-2"></div>
+                            <div className="h-3 sm:h-4 bg-gray-200 rounded animate-pulse w-10 sm:w-16 mb-1 sm:mb-2"></div>
                             <div className="relative">
-                              <div className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gray-200 rounded animate-pulse"></div>
-                              <div className="h-12 bg-gray-200 rounded-xl animate-pulse pl-10"></div>
+                              <div className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 w-3 h-3 sm:w-5 sm:h-5 bg-gray-200 rounded animate-pulse"></div>
+                              <div className="h-8 sm:h-12 bg-gray-200 rounded-xl animate-pulse pl-6 sm:pl-10"></div>
                             </div>
                           </div>
                         ))}
@@ -1050,23 +1048,23 @@ export default function Dashboard() {
 
                       {/* Summary Section */}
                       <div>
-                        <div className="h-4 bg-gray-200 rounded animate-pulse w-16 mb-2"></div>
-                        <div className="space-y-2">
-                          <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
-                          <div className="h-4 bg-gray-200 rounded animate-pulse w-5/6"></div>
-                          <div className="h-4 bg-gray-200 rounded animate-pulse w-4/6"></div>
-                          <div className="h-4 bg-gray-200 rounded animate-pulse w-3/6"></div>
+                        <div className="h-3 sm:h-4 bg-gray-200 rounded animate-pulse w-10 sm:w-16 mb-1 sm:mb-2"></div>
+                        <div className="space-y-1 sm:space-y-2">
+                          <div className="h-3 sm:h-4 bg-gray-200 rounded animate-pulse"></div>
+                          <div className="h-3 sm:h-4 bg-gray-200 rounded animate-pulse w-5/6"></div>
+                          <div className="h-3 sm:h-4 bg-gray-200 rounded animate-pulse w-4/6"></div>
+                          <div className="h-3 sm:h-4 bg-gray-200 rounded animate-pulse w-3/6"></div>
                         </div>
                       </div>
 
                       {/* Skills Section */}
                       <div>
-                        <div className="h-4 bg-gray-200 rounded animate-pulse w-20 mb-2"></div>
-                        <div className="bg-gray-50 rounded-xl p-4">
-                          <div className="h-4 bg-gray-200 rounded animate-pulse w-16 mb-2"></div>
-                          <div className="flex flex-wrap gap-2">
+                        <div className="h-3 sm:h-4 bg-gray-200 rounded animate-pulse w-14 sm:w-20 mb-1 sm:mb-2"></div>
+                        <div className="bg-gray-50 rounded-xl p-2 sm:p-4">
+                          <div className="h-3 sm:h-4 bg-gray-200 rounded animate-pulse w-10 sm:w-16 mb-1 sm:mb-2"></div>
+                          <div className="flex flex-wrap gap-1 sm:gap-2">
                             {[1, 2, 3, 4, 5, 6].map((item) => (
-                              <div key={item} className="h-6 bg-gray-200 rounded-full animate-pulse w-16"></div>
+                              <div key={item} className="h-4 sm:h-6 bg-gray-200 rounded-full animate-pulse w-10 sm:w-16"></div>
                             ))}
                           </div>
                         </div>
@@ -1074,33 +1072,32 @@ export default function Dashboard() {
 
                       {/* Experience Section */}
                       <div>
-                        <div className="flex items-center justify-between mb-6">
-                          <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 bg-green-100 rounded-2xl animate-pulse"></div>
+                        <div className="flex items-center justify-between mb-4 sm:mb-6">
+                          <div className="flex items-center gap-2 sm:gap-3">
+                            <div className="w-8 h-8 sm:w-12 sm:h-12 bg-green-100 rounded-2xl animate-pulse"></div>
                             <div>
-                              <div className="h-7 bg-gray-200 rounded animate-pulse w-40 mb-2"></div>
-                              <div className="h-4 bg-gray-200 rounded animate-pulse w-32"></div>
+                              <div className="h-5 sm:h-7 bg-gray-200 rounded animate-pulse w-28 sm:w-40 mb-1 sm:mb-2"></div>
+                              <div className="h-3 sm:h-4 bg-gray-200 rounded animate-pulse w-20 sm:w-32"></div>
                             </div>
                           </div>
-                          <div className="h-10 bg-gradient-to-r from-purple-200 to-pink-200 rounded-xl animate-pulse w-32"></div>
+                          <div className="h-8 sm:h-10 bg-gradient-to-r from-purple-200 to-pink-200 rounded-xl animate-pulse w-20 sm:w-32"></div>
                         </div>
-                        
                         {/* Experience Card */}
-                        <div className="bg-gray-50 rounded-2xl p-6 border border-gray-200">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div className="bg-gray-50 rounded-2xl p-3 sm:p-6 border border-gray-200">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-4 mb-2 sm:mb-4">
                             {[1, 2, 3, 4].map((item) => (
                               <div key={item}>
-                                <div className="h-4 bg-gray-200 rounded animate-pulse w-16 mb-2"></div>
-                                <div className="h-12 bg-gray-200 rounded-xl animate-pulse"></div>
+                                <div className="h-3 sm:h-4 bg-gray-200 rounded animate-pulse w-10 sm:w-16 mb-1 sm:mb-2"></div>
+                                <div className="h-8 sm:h-12 bg-gray-200 rounded-xl animate-pulse"></div>
                               </div>
                             ))}
                           </div>
-                          <div className="space-y-2">
-                            <div className="h-4 bg-gray-200 rounded animate-pulse w-20 mb-2"></div>
+                          <div className="space-y-1 sm:space-y-2">
+                            <div className="h-3 sm:h-4 bg-gray-200 rounded animate-pulse w-14 sm:w-20 mb-1 sm:mb-2"></div>
                             {[1, 2, 3].map((item) => (
-                              <div key={item} className="flex items-center gap-3">
-                                <div className="w-2 h-2 bg-gray-200 rounded-full animate-pulse"></div>
-                                <div className="h-4 bg-gray-200 rounded animate-pulse flex-1"></div>
+                              <div key={item} className="flex items-center gap-1 sm:gap-3">
+                                <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gray-200 rounded-full animate-pulse"></div>
+                                <div className="h-3 sm:h-4 bg-gray-200 rounded animate-pulse flex-1"></div>
                               </div>
                             ))}
                           </div>
@@ -1117,13 +1114,13 @@ export default function Dashboard() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8, duration: 0.6 }}
-              className="mt-8 space-y-4"
+              className="mt-6 sm:mt-8 space-y-2 sm:space-y-4"
             >
               <div className="flex items-center justify-center gap-2 text-green-600">
-                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="font-medium">Preparing your results...</span>
+                <div className="w-2 h-2 sm:w-3 sm:h-3 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="font-medium text-xs sm:text-sm">Preparing your results...</span>
               </div>
-              <p className="text-gray-600 text-sm">Redirecting to results page in a moment</p>
+              <p className="text-gray-600 text-xs sm:text-sm">Redirecting to results page in a moment</p>
             </motion.div>
           </motion.div>
         </div>
@@ -1203,30 +1200,7 @@ export default function Dashboard() {
               <FileCheck className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
               <span className="text-xs sm:text-sm font-medium text-gray-700">{uploadedResumes.length} Resumes</span>
             </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="flex items-center gap-2 bg-white/80 backdrop-blur-sm px-3 sm:px-4 py-2 rounded-full shadow-sm"
-            >
-              <Zap className="w-3 h-3 sm:w-4 sm:h-4 text-purple-600" />
-              <span className="text-xs sm:text-sm font-medium text-gray-700">AI Powered</span>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full shadow-sm ${
-                isOnline 
-                  ? 'bg-green-50 text-green-700' 
-                  : 'bg-red-50 text-red-700'
-              }`}
-            >
-              <div className={`w-2 h-2 rounded-full ${isOnline ? 'bg-green-500' : 'bg-red-500'}`} />
-              <span className="text-xs sm:text-sm font-medium">
-                {isOnline ? 'Online' : 'Offline'}
-              </span>
-            </motion.div>
+            
             {recentResults.length > 0 && (
               <motion.button
                 initial={{ opacity: 0, y: 20 }}
@@ -1457,6 +1431,7 @@ export default function Dashboard() {
                   <div>
                     <h2 className="text-xl font-semibold text-gray-900">Previous Resumes</h2>
                     <p className="text-gray-500">{uploadedResumes.length} files</p>
+                    <p className="text-sm text-gray-500">  Select resume to continue editing</p>
                   </div>
                 </div>
               </div>
@@ -1630,37 +1605,36 @@ export default function Dashboard() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4"
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full"
+              className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl w-full max-w-xs sm:max-w-2xl"
             >
               {/* Header */}
-              <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 sm:p-6 border-b border-gray-200 gap-2 sm:gap-0">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center">
-                    <Clock className="w-6 h-6 text-blue-600" />
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-2xl flex items-center justify-center">
+                    <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold text-gray-900">Recent Result</h3>
-                    <p className="text-gray-500 text-sm">Your last generated resume</p>
+                    <h3 className="text-lg sm:text-xl font-semibold text-gray-900">Recent Result</h3>
                   </div>
                 </div>
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                   onClick={() => setShowRecentResults(false)}
-                  className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
+                  className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors self-end sm:self-auto"
                 >
                   <X className="w-6 h-6" />
                 </motion.button>
               </div>
 
               {/* Content */}
-              <div className="p-6">
+              <div className="p-3 sm:p-6">
                 {recentResults.length === 0 ? (
                   <div className="text-center py-8">
                     <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -1676,32 +1650,32 @@ export default function Dashboard() {
                         key={result.id}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="bg-gray-50 rounded-2xl p-6 border border-gray-200"
+                        className="bg-gray-50 rounded-xl sm:rounded-2xl p-3 sm:p-6 border border-gray-200"
                       >
                         <div className="flex items-center gap-3 mb-4">
-                          <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
-                            <FileText className="w-5 h-5 text-white" />
+                          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
+                            <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                           </div>
                           <div className="flex-1">
-                            <h4 className="font-semibold text-gray-900">{result.fileName}</h4>
-                            <p className="text-sm text-gray-500">
+                            <h4 className="font-semibold text-gray-900 text-sm sm:text-base truncate max-w-[140px] sm:max-w-xs">{result.fileName}</h4>
+                            <p className="text-xs sm:text-sm text-gray-500">
                               {new Date(result.timestamp).toLocaleDateString()} at {new Date(result.timestamp).toLocaleTimeString()}
                             </p>
                           </div>
                         </div>
                         
-                        <div className="bg-white rounded-xl p-4 mb-4">
-                          <p className="text-sm text-gray-600">
-                            <span className="font-medium text-gray-700">Job Description:</span> {result.jobText}
+                        <div className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 mb-3 sm:mb-4">
+                          <p className="text-xs sm:text-sm text-gray-600">
+                            {result.jobText.length > 100 ? `${result.jobText.slice(0, 100)}...` : result.jobText}
                           </p>
                         </div>
                         
-                        <div className="flex items-center gap-3">
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
                           <motion.button
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             onClick={loadRecentResult}
-                            className="flex-1 px-4 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-xl hover:shadow-lg transition-all duration-200 font-medium"
+                            className="flex-1 px-3 py-2 sm:px-4 sm:py-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-lg sm:rounded-xl hover:shadow-lg transition-all duration-200 font-medium text-xs sm:text-base"
                           >
                             Continue Editing
                           </motion.button>
@@ -1709,10 +1683,10 @@ export default function Dashboard() {
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
                             onClick={deleteRecentResult}
-                            className="p-3 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-xl transition-colors"
+                            className="p-2 sm:p-3 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg sm:rounded-xl transition-colors"
                             title="Delete result"
                           >
-                            <Trash2 className="w-5 h-5" />
+                            <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
                           </motion.button>
                         </div>
                       </motion.div>
@@ -1722,21 +1696,8 @@ export default function Dashboard() {
               </div>
 
               {/* Footer */}
-              <div className="p-6 border-t border-gray-200 bg-gray-50">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm text-gray-500">
-                    Last updated: {recentResults.length > 0 ? new Date(recentResults[0].timestamp).toLocaleString() : 'Never'}
-                  </p>
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => setShowRecentResults(false)}
-                    className="px-6 py-2 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition-colors font-medium"
-                  >
-                    Close
-                  </motion.button>
-                </div>
-              </div>
+              {/* Removed unnecessary footer text */}
+              <div className="p-0 border-t-0 bg-transparent"></div>
             </motion.div>
           </motion.div>
         )}
