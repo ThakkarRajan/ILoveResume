@@ -266,12 +266,21 @@ export default function Dashboard() {
                 setProgress(0);
                 setLoadingPhase('idle');
                 setUploadAttempts(0);
-                return;
+                return; // <-- EARLY RETURN, do not proceed!
               }
               await new Promise(resolve => setTimeout(resolve, 1000 * (uploadAttemptsLocal + 1)));
             }
           }
           setUploadAttempts(0);
+
+          // Only proceed if uploadSuccess and fileURL
+          if (!uploadSuccess || !fileURL) {
+            showFileUploadError("No valid file URL. Please try again.");
+            setLoading(false);
+            setProgress(0);
+            setLoadingPhase('idle');
+            return; // <-- EARLY RETURN, do not proceed!
+          }
         } else if (selectedResume) {
           setLoadingPhase("extract");
           try {
@@ -394,7 +403,7 @@ export default function Dashboard() {
       setLoadingPhase("ai");
       let aiData = null;
       let retryCount = 0;
-      const maxRetries = 3;
+      const maxRetries = 5;
       const aiToast = showLoading('AI is analyzing your resume and job description...');
       while (retryCount < maxRetries) {
         try {

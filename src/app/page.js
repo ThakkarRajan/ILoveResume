@@ -66,15 +66,16 @@ export default function Home() {
             transition={{ delay: 0.2, duration: 0.6 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 lg:gap-8 mb-6 sm:mb-12 lg:mb-16"
           >
-            <div className="relative group">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl blur-xl opacity-40 group-hover:opacity-60 transition-opacity duration-500"></div>
+            <div className="relative flex items-center justify-center group">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl blur-xl opacity-30 group-hover:opacity-60 transition-opacity duration-300"></div>
               <Image
                 src="/logo.png"
                 alt="I Love Resumes Logo"
-                width={60}
-                height={60}
+                width={100}
+                height={100}
                 priority
-                className="relative z-10 rounded-2xl sm:rounded-3xl shadow-2xl w-14 h-14 sm:w-24 sm:h-24 lg:w-28 lg:h-28 transition-transform duration-300 group-hover:scale-105"
+                className="relative z-10 rounded-2xl shadow-lg w-24 h-24 transition-transform duration-300 group-hover:scale-105"
+                style={{ width: "100px", height: "100px" }}
               />
             </div>
             <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
