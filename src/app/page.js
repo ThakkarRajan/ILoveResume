@@ -6,7 +6,18 @@ import { useEffect } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 
-import { ArrowRight, Sparkles, Upload, Target, Edit3, Download, Star, Zap, Shield, Users } from "lucide-react";
+import {
+  ArrowRight,
+  Sparkles,
+  Upload,
+  Target,
+  Edit3,
+  Download,
+  Star,
+  Zap,
+  Shield,
+  Users,
+} from "lucide-react";
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -17,7 +28,7 @@ export default function Home() {
       router.push("/dashboard");
     }
   }, [status, router]);
-  
+
   if (status === "authenticated") {
     return null;
   }
@@ -30,20 +41,26 @@ export default function Home() {
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-60 h-60 sm:w-80 sm:h-80 bg-gradient-to-br from-blue-400/20 to-purple-600/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-60 h-60 sm:w-80 sm:h-80 bg-gradient-to-tr from-indigo-400/20 to-pink-600/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 sm:w-96 sm:h-96 bg-gradient-to-r from-cyan-400/10 to-blue-600/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div
+          className="absolute -bottom-40 -left-40 w-60 h-60 sm:w-80 sm:h-80 bg-gradient-to-tr from-indigo-400/20 to-pink-600/20 rounded-full blur-3xl animate-pulse"
+          style={{ animationDelay: "1s" }}
+        ></div>
+        <div
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 sm:w-96 sm:h-96 bg-gradient-to-r from-cyan-400/10 to-blue-600/10 rounded-full blur-3xl animate-pulse"
+          style={{ animationDelay: "2s" }}
+        ></div>
       </div>
 
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-2 sm:px-6 py-6 sm:py-10">
         {/* Hero Section */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           className="flex flex-col items-center text-center max-w-2xl sm:max-w-4xl w-full"
         >
           {/* Logo and Brand */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2, duration: 0.6 }}
@@ -58,7 +75,6 @@ export default function Home() {
                 height={60}
                 priority
                 className="relative z-10 rounded-2xl sm:rounded-3xl shadow-2xl w-14 h-14 sm:w-24 sm:h-24 lg:w-28 lg:h-28 transition-transform duration-300 group-hover:scale-105"
-                style={{ width: "auto", height: "auto" }}
               />
             </div>
             <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
@@ -73,13 +89,15 @@ export default function Home() {
               />
               <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm px-2 sm:px-3 py-1 sm:py-2 rounded-full shadow-lg border border-white/20">
                 <Sparkles className="w-4 h-4 sm:w-6 sm:h-6 text-yellow-500 animate-pulse" />
-                <span className="text-xs sm:text-base font-medium text-gray-700">AI-Powered</span>
+                <span className="text-xs sm:text-base font-medium text-gray-700">
+                  AI-Powered
+                </span>
               </div>
             </div>
           </motion.div>
 
           {/* Main Heading */}
-          <motion.h1 
+          <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.8 }}
@@ -92,14 +110,15 @@ export default function Home() {
           </motion.h1>
 
           {/* Subtitle */}
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 0.8 }}
             className="text-gray-600 text-sm sm:text-lg md:text-xl mb-6 sm:mb-12 max-w-xl sm:max-w-2xl leading-relaxed px-2 sm:px-4"
           >
-            Transform your resume with AI-powered insights. Get personalized suggestions, 
-            optimize structure, and align keywords with job descriptions—all in seconds.
+            Transform your resume with AI-powered insights. Get personalized
+            suggestions, optimize structure, and align keywords with job
+            descriptions—all in seconds.
           </motion.p>
 
           {/* CTA Button */}
@@ -125,7 +144,7 @@ export default function Home() {
           </motion.button>
 
           {/* Trust Indicators */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1, duration: 0.8 }}
@@ -147,7 +166,7 @@ export default function Home() {
         </motion.div>
 
         {/* Features Section */}
-        <motion.section 
+        <motion.section
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.2, duration: 0.8 }}
@@ -158,7 +177,8 @@ export default function Home() {
               Everything You Need to Succeed
             </h2>
             <p className="text-gray-600 text-sm sm:text-lg max-w-xl sm:max-w-2xl mx-auto">
-              Our AI-powered platform provides all the tools you need to create a standout resume
+              Our AI-powered platform provides all the tools you need to create
+              a standout resume
             </p>
           </div>
 
@@ -167,27 +187,31 @@ export default function Home() {
               {
                 icon: Upload,
                 title: "Smart Upload",
-                description: "Upload your resume in PDF format and let our AI analyze it instantly.",
-                color: "from-blue-500 to-cyan-500"
+                description:
+                  "Upload your resume in PDF format and let our AI analyze it instantly.",
+                color: "from-blue-500 to-cyan-500",
               },
               {
                 icon: Target,
                 title: "Job Alignment",
-                description: "Paste job descriptions and get tailored recommendations for better matches.",
-                color: "from-purple-500 to-pink-500"
+                description:
+                  "Paste job descriptions and get tailored recommendations for better matches.",
+                color: "from-purple-500 to-pink-500",
               },
               {
                 icon: Edit3,
                 title: "Live Editing",
-                description: "Edit suggestions in real-time with our intuitive interface.",
-                color: "from-green-500 to-emerald-500"
+                description:
+                  "Edit suggestions in real-time with our intuitive interface.",
+                color: "from-green-500 to-emerald-500",
               },
               {
                 icon: Download,
                 title: "Multiple Formats",
-                description: "Export your resume in Word, PDF, and other professional formats.",
-                color: "from-orange-500 to-red-500"
-              }
+                description:
+                  "Export your resume in Word, PDF, and other professional formats.",
+                color: "from-orange-500 to-red-500",
+              },
             ].map((feature, index) => (
               <motion.div
                 key={index}
@@ -199,7 +223,9 @@ export default function Home() {
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-white/50 to-white/30 backdrop-blur-sm rounded-2xl sm:rounded-3xl border border-white/20 shadow-xl group-hover:shadow-2xl transition-all duration-300"></div>
                 <div className="relative p-4 sm:p-8 rounded-2xl sm:rounded-3xl">
-                  <div className={`inline-flex p-2 sm:p-4 rounded-xl sm:rounded-2xl bg-gradient-to-r ${feature.color} mb-3 sm:mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                  <div
+                    className={`inline-flex p-2 sm:p-4 rounded-xl sm:rounded-2xl bg-gradient-to-r ${feature.color} mb-3 sm:mb-6 group-hover:scale-110 transition-transform duration-300`}
+                  >
                     <feature.icon className="w-5 h-5 sm:w-8 sm:h-8 text-white" />
                   </div>
                   <h3 className="text-base sm:text-xl font-bold text-gray-800 mb-1 sm:mb-3">
@@ -215,7 +241,7 @@ export default function Home() {
         </motion.section>
 
         {/* Stats Section */}
-        <motion.section 
+        <motion.section
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.8, duration: 0.8 }}
@@ -225,7 +251,7 @@ export default function Home() {
             {[
               { number: "8490+", label: "Resumes Created", icon: Star },
               { number: "98%", label: "Success Rate", icon: Zap },
-              { number: "24/7", label: "AI Support", icon: Shield }
+              { number: "24/7", label: "AI Support", icon: Shield },
             ].map((stat, index) => (
               <motion.div
                 key={index}
@@ -236,8 +262,12 @@ export default function Home() {
               >
                 <div className="bg-white/60 backdrop-blur-sm rounded-xl sm:rounded-2xl p-3 sm:p-6 border border-white/20 shadow-lg">
                   <stat.icon className="w-7 h-7 sm:w-12 sm:h-12 text-blue-600 mx-auto mb-2 sm:mb-4" />
-                  <div className="text-xl sm:text-3xl font-bold text-gray-800 mb-1 sm:mb-2">{stat.number}</div>
-                  <div className="text-gray-600 text-xs sm:text-base">{stat.label}</div>
+                  <div className="text-xl sm:text-3xl font-bold text-gray-800 mb-1 sm:mb-2">
+                    {stat.number}
+                  </div>
+                  <div className="text-gray-600 text-xs sm:text-base">
+                    {stat.label}
+                  </div>
                 </div>
               </motion.div>
             ))}
@@ -245,7 +275,7 @@ export default function Home() {
         </motion.section>
 
         {/* Footer */}
-        <motion.footer 
+        <motion.footer
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 2.4, duration: 0.8 }}
