@@ -24,6 +24,15 @@ import toast, { Toaster } from "react-hot-toast";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import "../../utils/firebase.js";
 
+// Utility to escape HTML special characters
+const escapeHtml = (unsafe) =>
+  unsafe
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
 
 export default function Contact() {
   const [user, setUser] = useState(null);
@@ -110,7 +119,6 @@ export default function Contact() {
         throw new Error('Failed to send message');
       }
     } catch (error) {
-      console.error('EmailJS Error:', error);
       setSubmitStatus('error');
       toast.error("Failed to send message. Please try again or contact us directly.");
     } finally {
@@ -305,7 +313,7 @@ export default function Contact() {
                   <input
                     type="text"
                     name="name"
-                    value={formData.name}
+                    value={escapeHtml(formData.name)}
                     onChange={handleInputChange}
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-gray-400 text-gray-500"
                     placeholder="Your name"
@@ -320,7 +328,7 @@ export default function Contact() {
                   <input
                     type="email"
                     name="email"
-                    value={formData.email}
+                    value={escapeHtml(formData.email)}
                     onChange={handleInputChange}
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-gray-400 text-gray-500"
                     placeholder="your@email.com"
@@ -335,7 +343,7 @@ export default function Contact() {
                   <input
                     type="text"
                     name="subject"
-                    value={formData.subject}
+                    value={escapeHtml(formData.subject)}
                     onChange={handleInputChange}
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-gray-400 text-gray-500"
                     placeholder="How can we help?"
@@ -349,7 +357,7 @@ export default function Contact() {
                   </label>
                   <textarea
                     name="message"
-                    value={formData.message}
+                    value={escapeHtml(formData.message)}
                     onChange={handleInputChange}
                     rows={4}
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 resize-none placeholder-gray-400 text-gray-500"
