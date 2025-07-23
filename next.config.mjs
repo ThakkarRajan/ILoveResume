@@ -18,16 +18,13 @@ const nextConfig = {
     ];
   },
   async headers() {
-    const isProd = process.env.NODE_ENV === "production";
     return [
       {
-        source: '/(.*)',
+        source: "/(.*)",
         headers: [
           {
-            key: 'Content-Security-Policy',
-            value: isProd
-              ? "default-src 'self'; img-src 'self' data: https://lh3.googleusercontent.com; script-src 'self' 'unsafe-inline' https://apis.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://jobdraftai-backend-production.up.railway.app https://identitytoolkit.googleapis.com https://firebasestorage.googleapis.com; frame-ancestors 'none'; object-src 'none'; base-uri 'self';"
-              : "default-src 'self'; img-src 'self' data: https://lh3.googleusercontent.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://apis.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://jobdraftai-backend-production.up.railway.app https://identitytoolkit.googleapis.com https://firebasestorage.googleapis.com; frame-ancestors 'none'; object-src 'none'; base-uri 'self';",
+            key: "Content-Security-Policy",
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://apis.google.com; style-src 'self' 'unsafe-inline'; frame-src 'self' https://*.firebaseapp.com https://*.firebaseio.com https://accounts.google.com https://apis.google.com; connect-src 'self' https://identitytoolkit.googleapis.com https://*.firebaseio.com https://firestore.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://firebasestorage.googleapis.com;",
           },
           {
             key: 'X-Frame-Options',
