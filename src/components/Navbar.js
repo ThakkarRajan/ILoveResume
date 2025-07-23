@@ -66,11 +66,7 @@ export default function Navbar() {
       <motion.nav
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className={`w-full px-2 sm:px-6 py-2 sm:py-4 sticky top-0 z-50 transition-all duration-300 ${
-          isScrolled 
-            ? 'bg-white/90 backdrop-blur-md shadow-lg border-b border-gray-200/50' 
-            : 'bg-white/95 backdrop-blur-sm shadow-sm'
-        }`}
+        className={`w-full px-2 sm:px-6 py-2 sm:py-4 sticky top-0 z-50 transition-all duration-300 bg-gradient-to-r from-white/80 via-purple-100/60 to-pink-100/60 backdrop-blur-lg border-b border-purple-100/40 shadow-md transition-shadow ${isScrolled ? 'shadow-lg' : 'shadow-md'}`}
       >
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           {/* Left Side: Logo & Links */}
@@ -87,10 +83,9 @@ export default function Navbar() {
                 <Image 
                   src="/logo.png" 
                   alt="Logo" 
-                  width={36} 
-                  height={36} 
-                  className="rounded-lg sm:rounded-xl shadow-sm w-9 h-9 sm:w-12 sm:h-12"
-                  style={{ width: "auto", height: "auto" }}
+                  width={112} 
+                  height={80} 
+                  className="w-18 h-16 sm:w-20 sm:h-16 rounded-xl shadow-sm group-hover:scale-110 transition-transform duration-200"
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </motion.div>
@@ -98,10 +93,9 @@ export default function Navbar() {
                 <Image
                   src="/Iloveresumelogotext.png"
                   alt="I Love Resumes Logo"
-                  width={120}
-                  height={24}
-                  className="h-6 sm:h-8 object-contain"
-                  style={{ width: "auto", height: "auto" }}
+                  width={240}
+                  height={64}
+                  className="w-40 h-12 sm:w-60 sm:h-16 object-contain"
                 />
               </div>
             </Link>
@@ -112,10 +106,9 @@ export default function Navbar() {
                 <Image
                   src="/Iloveresumelogotext.png"
                   alt="I Love Resumes Logo"
-                  width={90}
-                  height={18}
-                  className="h-4 object-contain"
-                  style={{ width: "auto", height: "auto" }}
+                  width={200}
+                  height={180}
+                  className="w-60 h-8 sm:w-48 sm:h-12 object-contain"
                 />
               </div>
             )}

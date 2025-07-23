@@ -701,7 +701,7 @@ export default function ResultPage() {
               transition={{ delay: 0.3 }}
               className="lg:col-span-3"
             >
-              <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/50 p-8">
+              <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/50 p-8 responsive-card">
                 <AnimatePresence mode="wait">
                   {/* Personal Info Section */}
                   {activeSection === "personal" && (

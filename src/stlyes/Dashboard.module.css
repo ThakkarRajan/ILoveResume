@@ -40,3 +40,8 @@
 .submitBtn:hover {
   background-color: #0059c1;
 }
+
+.responsive-card {
+  max-width: 100vw;
+  overflow-x: auto;
+}

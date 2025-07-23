@@ -1046,7 +1046,7 @@ export default function Dashboard() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/50 p-6 sm:p-8"
+              className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/50 p-6 sm:p-8 responsive-card"
             >
               <div className="flex items-center justify-between mb-4 sm:mb-6">
                 <div className="flex items-center">
@@ -1093,7 +1093,7 @@ export default function Dashboard() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/50 p-8"
+              className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/50 p-8 responsive-card"
             >
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center">
@@ -1243,7 +1243,7 @@ export default function Dashboard() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 }}
-              className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/50 p-6"
+              className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/50 p-6 responsive-card"
             >
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center">
@@ -1286,18 +1286,18 @@ export default function Dashboard() {
                       }}
                     >
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
+                        <div className="flex items-center space-x-3 min-w-0 flex-1">
                           <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
                             <FileText className="w-5 h-5 text-purple-600" />
                           </div>
                           <div className="min-w-0 flex-1">
-                            <p className="text-sm font-medium text-gray-900 truncate">
+                            <p className="text-sm font-medium text-gray-900 truncate max-w-[160px] md:max-w-[240px] lg:max-w-[320px]" title={resume.name}>
                               {escapeHtml(resume.name)}
                             </p>
                             <p className="text-xs text-gray-500">PDF Document</p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-shrink-0 ml-2">
                           <button
                             onClick={(e) => {
                               e.stopPropagation();

@@ -124,8 +124,8 @@ export default function RootLayout({ children }) {
         <link rel="dns-prefetch" href="//accounts.google.com" />
       </head>
       <body>
-          <NavbarWrapper />
-          <main>{children}</main>
+        <NavbarWrapper />
+        <main>{children}</main>
       </body>
     </html>
   );

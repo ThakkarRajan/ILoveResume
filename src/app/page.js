@@ -81,7 +81,7 @@ export default function Home() {
                 height={100}
                 priority
                 className="relative z-10 rounded-2xl shadow-lg w-24 h-24 transition-transform duration-300 group-hover:scale-105"
-                style={{ width: "100px", height: "100px" }}
+                style={{ width: "120px", height: "100px" }}
               />
             </div>
             <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
@@ -165,7 +165,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1, duration: 0.8 }}
-            className="flex flex-col sm:flex-row items-center gap-2 sm:gap-6 mt-4 sm:mt-8 text-xs sm:text-sm text-gray-500 px-2 sm:px-4"
+            className="flex flex-row flex-wrap items-center justify-center gap-4 sm:gap-6 mt-4 sm:mt-8 text-xs sm:text-sm text-gray-500 px-2 sm:px-4"
           >
             <div className="flex items-center gap-2">
               <Shield className="w-3 h-3 sm:w-4 sm:h-4 text-green-500" />
