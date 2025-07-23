@@ -62,7 +62,7 @@ export default function MyProfilePage() {
       });
       setSubmissions(fetched);
     } catch (err) {
-      console.error("Error fetching submissions:", err);
+      // console.error("Error fetching submissions:", err);
     } finally {
       setLoading(false);
     }
@@ -91,6 +91,21 @@ export default function MyProfilePage() {
       setProcessing(true);
       setProgress(0);
       simulateProgress();
+
+      // Sanitize the resumeUrl before sending to backend
+      const isValidUrl = (url) => {
+        try {
+          const parsed = new URL(url);
+          return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+        } catch {
+          return false;
+        }
+      };
+      if (!isValidUrl(submission.resumeUrl)) {
+        alert("Invalid resume URL detected. Operation aborted.");
+        setProcessing(false);
+        return;
+      }
 
       const extractRes = await fetch(
         "https://jobdraftai-backend-production.up.railway.app/extract-from-url",
@@ -123,7 +138,7 @@ export default function MyProfilePage() {
       localStorage.setItem("tailoredResume", JSON.stringify(aiData.structured));
       router.push("/result");
     } catch (error) {
-      console.error("Error processing submission:", error);
+      // console.error("Error processing submission:", error);
       alert("Something went wrong. Please try again later.");
     } finally {
       setProcessing(false);

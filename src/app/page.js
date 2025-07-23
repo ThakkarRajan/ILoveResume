@@ -144,7 +144,6 @@ export default function Home() {
                 router.push("/dashboard");
               } catch (error) {
                 // Optionally show error to user
-                console.error("Firebase sign-in failed:", error);
               }
             }}
             className="group flex items-center justify-center gap-2 sm:gap-3 bg-white/80 backdrop-blur-sm text-gray-800 px-4 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 font-semibold text-base sm:text-lg relative overflow-hidden w-full max-w-xs sm:max-w-sm sm:w-auto"
