@@ -1,6 +1,6 @@
 export const metadata = {
   title: "I Love Resumes | AI Resume Builder",
-  description: "Create and optimize your resume with AI-powered insights. Upload your resume, get personalized suggestions, and align with job descriptions in our intelligent dashboard.",
+  description: "Create and optimize your resume with AI. Upload, get personalized suggestions, and align with job descriptions.",
   keywords: "resume dashboard, AI resume builder, resume optimization, job application, career tools",
   openGraph: {
     title: "I Love Resumes",
