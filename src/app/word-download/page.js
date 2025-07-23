@@ -59,7 +59,6 @@ export default function WordDownloadPage() {
       setResumeData(parsed);
       generateAndSetPdf(parsed);
     } catch (err) {
-      console.error("Error loading resume from localStorage:", err);
       setError("Failed to load resume. Redirecting...");
       setTimeout(() => router.push("/result"), 3000);
     }
@@ -449,7 +448,6 @@ export default function WordDownloadPage() {
       const fileName = `${firstName}_resume.docx`;
       saveAs(blob, fileName);
     } catch (error) {
-      console.error("Word download error:", error);
       setError("Failed to generate Word document. Please try again.");
     } finally {
       setLoading(false);
@@ -631,7 +629,6 @@ export default function WordDownloadPage() {
       const fileName = `${firstName}_resume.pdf`;
       saveAs(blob, fileName);
     } catch (error) {
-      console.error("PDF download error:", error);
       setError("Failed to generate PDF document. Please try again.");
     } finally {
       setLoading(false);

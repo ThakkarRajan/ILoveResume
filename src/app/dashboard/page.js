@@ -599,7 +599,6 @@ export default function Dashboard() {
         setRecentResults(parsed);
       }
     } catch (error) {
-      console.error("Error loading recent results:", error);
       setRecentResults([]);
     }
   };
@@ -622,7 +621,7 @@ export default function Dashboard() {
       localStorage.setItem(`recentResults_${email}`, JSON.stringify([newResult]));
       setRecentResults([newResult]);
     } catch (error) {
-      console.error("Error saving recent result:", error);
+      // console.error("Error saving recent result:", error);
     }
   };
 
@@ -641,7 +640,6 @@ export default function Dashboard() {
         router.push("/result");
       }, 2000);
     } catch (error) {
-      console.error("Error loading recent result:", error);
       showError("Failed to load recent result");
     }
   };
@@ -656,10 +654,18 @@ export default function Dashboard() {
       setRecentResults([]);
       showSuccess("Recent result deleted");
     } catch (error) {
-      console.error("Error deleting recent result:", error);
       showError("Failed to delete recent result");
     }
   };
+
+  // Utility to escape HTML special characters
+  const escapeHtml = (unsafe) =>
+    unsafe
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
 
   if (!user) {
     return <div>Loading...</div>;
@@ -1066,7 +1072,7 @@ export default function Dashboard() {
         <textarea
                 className="w-full h-40 sm:h-48 p-4 sm:p-6 border border-gray-200 rounded-2xl text-gray-900 resize-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-base sm:text-lg"
                 placeholder="Copy and paste the job description, requirements, and responsibilities here..."
-          value={jobText}
+          value={escapeHtml(jobText)}
           onChange={(e) => setJobText(e.target.value)}
         />
 
@@ -1210,7 +1216,7 @@ export default function Dashboard() {
                     <textarea
                       className="w-full h-64 p-6 border border-gray-200 rounded-2xl text-gray-900 resize-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-lg"
                       placeholder="Enter your resume content here... Include your experience, skills, education, and any other relevant information..."
-                      value={textResume}
+                      value={escapeHtml(textResume)}
                       onChange={(e) => setTextResume(e.target.value)}
                     />
                     
@@ -1286,7 +1292,7 @@ export default function Dashboard() {
                           </div>
                           <div className="min-w-0 flex-1">
                             <p className="text-sm font-medium text-gray-900 truncate">
-                              {resume.name}
+                              {escapeHtml(resume.name)}
                             </p>
                             <p className="text-xs text-gray-500">PDF Document</p>
                           </div>
@@ -1387,7 +1393,7 @@ export default function Dashboard() {
                   Delete Resume
                 </h3>
                 <p className="text-gray-600 mb-6">
-                  Are you sure you want to delete "{fileToDelete?.name}"? This action cannot be undone.
+                  Are you sure you want to delete "{escapeHtml(fileToDelete?.name)}"? This action cannot be undone.
                 </p>
                 
                 <div className="flex gap-3">
@@ -1484,7 +1490,7 @@ export default function Dashboard() {
                             <FileText className="w-6 h-6 text-white" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h4 className="font-bold text-lg text-gray-900 truncate max-w-[180px] sm:max-w-xs">{result.fileName}</h4>
+                            <h4 className="font-bold text-lg text-gray-900 truncate max-w-[180px] sm:max-w-xs">{escapeHtml(result.fileName)}</h4>
                             <p className="text-xs text-gray-500">
                               {new Date(result.timestamp).toLocaleDateString()} at {new Date(result.timestamp).toLocaleTimeString()}
                             </p>
@@ -1492,7 +1498,7 @@ export default function Dashboard() {
                         </div>
                         <div className="bg-white/80 rounded-xl p-4 border border-purple-50 mb-2 shadow-sm">
                           <p className="text-sm text-gray-700">
-                            <span className="font-semibold text-purple-700">Job Description:</span> {result.jobText.length > 120 ? `${result.jobText.slice(0, 120)}...` : result.jobText}
+                            <span className="font-semibold text-purple-700">Job Description:</span> {escapeHtml(result.jobText).length > 120 ? `${escapeHtml(result.jobText).slice(0, 120)}...` : escapeHtml(result.jobText)}
                           </p>
                         </div>
                         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
