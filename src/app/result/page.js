@@ -45,6 +45,15 @@ import {
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import "../../utils/firebase.js";
 
+// Utility to escape HTML special characters
+const escapeHtml = (unsafe) =>
+  unsafe
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
 // Highlights Editor Component
 const HighlightsEditor = ({ highlights = [], onChange, placeholder = "Enter highlights..." }) => {
   const [inputValue, setInputValue] = useState("");
@@ -196,18 +205,14 @@ export default function ResultPage() {
 
   // Only after all hooks:
   if (!user) {
-    console.log("Waiting for user...");
     return <div>Loading user...</div>;
   }
   if (error) {
-    console.log("Error:", error);
     return <div>{error}</div>;
   }
   if (!resumeData) {
-    console.log("Waiting for resumeData...");
     return <div>Loading result...</div>;
   }
-  console.log("Rendering result", resumeData);
 
   // ✅ Rendering logic AFTER hooks
   if (showDownloadSkeleton) {
@@ -374,7 +379,6 @@ export default function ResultPage() {
         
         setAutoSaveStatus("saved");
       } catch (updateError) {
-        console.error('Error updating localStorage:', updateError);
         setAutoSaveStatus("error");
         // Don't fail the operation if localStorage update fails
       }
@@ -408,7 +412,6 @@ export default function ResultPage() {
         
         setAutoSaveStatus("saved");
       } catch (updateError) {
-        console.error('Error updating localStorage:', updateError);
         setAutoSaveStatus("error");
         // Don't fail the operation if localStorage update fails
       }
@@ -445,7 +448,6 @@ export default function ResultPage() {
           }
         }
       } catch (updateError) {
-        console.error('Error updating recent results:', updateError);
         // Don't fail the save operation if recent results update fails
       }
       
@@ -458,7 +460,6 @@ export default function ResultPage() {
       // Show success popup
       setShowSavePopup(true);
     } catch (error) {
-      console.error('Save error:', error);
       showSaveError();
     } finally {
       setIsSaving(false);
@@ -486,7 +487,6 @@ export default function ResultPage() {
       // Navigate to download page
       router.push("/word-download");
     } catch (error) {
-      console.error('Download error:', error);
       showDownloadError();
     } finally {
       setIsDownloading(false);
@@ -717,7 +717,7 @@ export default function ResultPage() {
                             Full Name
               </label>
               <input
-                value={resumeData.name || ""}
+                value={escapeHtml(resumeData.name || "")}
                 onChange={(e) => handleChange("name", null, e.target.value)}
                                                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-500"
                              placeholder="Enter your full name"
@@ -734,7 +734,7 @@ export default function ResultPage() {
                               <div className="relative">
                                 <Icon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                     <input
-                      value={val}
+                      value={escapeHtml(val)}
                                   onChange={(e) => handleChange("contact", key, e.target.value)}
                                                                      className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-500"
                                    placeholder={`Enter your ${key}`}
@@ -771,7 +771,7 @@ export default function ResultPage() {
                           Summary
                         </label>
               <textarea
-                value={resumeData.tailored_summary || ""}
+                value={escapeHtml(resumeData.tailored_summary || "")}
                           onChange={(e) => handleChange("tailored_summary", null, e.target.value)}
                                                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 resize-none text-gray-900 placeholder-gray-500"
                            rows={6}
@@ -807,7 +807,7 @@ export default function ResultPage() {
                               {category}
                             </label>
                     <input
-                      value={skills.join(", ")}
+                      value={escapeHtml(skills.join(", "))}
                               onChange={(e) => handleChange("tailored_skills", category, e.target.value)}
                                                              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-500"
                                placeholder={`Enter ${category} skills separated by commas`}
@@ -909,7 +909,7 @@ export default function ResultPage() {
                             />
                           ) : (
                             <input
-                              value={val}
+                              value={escapeHtml(val)}
                               onChange={(e) =>
                                           handleChange("tailored_experience", key, e.target.value, idx)
                               }
@@ -1022,7 +1022,7 @@ export default function ResultPage() {
                                       />
                                     ) : (
                                       <input
-                                        value={val}
+                                        value={escapeHtml(val)}
                                         onChange={(e) =>
                                           handleInputChange("education", idx, key, e.target.value)
                                         }
@@ -1132,7 +1132,7 @@ export default function ResultPage() {
                                       />
                                     ) : (
                             <input
-                              value={val}
+                              value={escapeHtml(val)}
                               onChange={(e) =>
                                           handleChange("projects", key, e.target.value, idx)
                               }

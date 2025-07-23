@@ -31,7 +31,7 @@ export default function PdfUploader({ onExtract }) {
       const data = await res.json();
       onExtract(data.text || "No text found in the PDF.");
     } catch (error) {
-      console.error("Upload failed:", error);
+      // console.error("Upload failed:", error);
     } finally {
       setLoading(false);
     }
