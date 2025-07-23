@@ -47,7 +47,7 @@ import "../../utils/firebase.js";
 
 // Utility to escape HTML special characters
 const escapeHtml = (unsafe) =>
-  unsafe
+  (typeof unsafe === "string" ? unsafe : String(unsafe ?? ""))
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
