@@ -14,7 +14,14 @@ import {
   showDownloadLoading,
   showDownloadSuccess,
   showDownloadError,
-  showHighlightAdded
+  showHighlightAdded,
+  showExperienceAdded,
+  showExperienceDeleted,
+  showEducationAdded,
+  showEducationDeleted,
+  showProjectAdded,
+  showProjectDeleted,
+  showHighlightError
 } from "../../utils/toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -62,7 +69,11 @@ const HighlightsEditor = ({ highlights = [], onChange, placeholder = "Enter high
   const safeHighlights = Array.isArray(highlights) ? highlights : [];
 
   const handleKeyPress = (e) => {
-    if (e.key === "Enter" && inputValue.trim()) {
+    if (e.key === "Enter") {
+      if (!inputValue.trim()) {
+        showHighlightError();
+        return;
+      }
       e.preventDefault();
       const newHighlights = [...safeHighlights, inputValue.trim()];
       onChange(newHighlights);
@@ -125,7 +136,7 @@ const HighlightsEditor = ({ highlights = [], onChange, placeholder = "Enter high
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={() => handleRemoveHighlight(index)}
-              className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full transition-all duration-200 opacity-0 group-hover:opacity-100"
+              className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full transition-all duration-200"
               title="Remove highlight"
             >
               <X className="w-4 h-4" />
@@ -320,7 +331,7 @@ export default function ResultPage() {
     setFieldErrors(errors);
 
     if (errorSections.size > 0) {
-      toast.error(
+      showError(
         `Please fix errors in: ${Array.from(errorSections).join(", ")}`,
         {
           style: {
@@ -840,7 +851,7 @@ export default function ResultPage() {
                         <motion.button
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
-                      onClick={() =>
+                      onClick={() => {
                         setResumeData((prev) => ({
                           ...prev,
                           tailored_experience: [
@@ -854,8 +865,9 @@ export default function ResultPage() {
                               highlights: ["", "", "", ""],
                             },
                           ],
-                        }))
-                      }
+                        }));
+                        showExperienceAdded();
+                      }}
                           className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
                     >
                           <Plus className="w-4 h-4" />
@@ -875,13 +887,14 @@ export default function ResultPage() {
                               <motion.button
                                 whileHover={{ scale: 1.1 }}
                                 whileTap={{ scale: 0.9 }}
-                        onClick={() =>
+                        onClick={() => {
                           setResumeData((prev) => {
                             const updated = [...prev.tailored_experience];
                             updated.splice(idx, 1);
                             return { ...prev, tailored_experience: updated };
-                          })
-                        }
+                          });
+                          showExperienceDeleted();
+                        }}
                                 className="absolute -top-2 -right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 shadow-lg transition-all duration-200"
                                 title="Remove experience"
                       >
@@ -953,7 +966,7 @@ export default function ResultPage() {
                         <motion.button
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
-                  onClick={() =>
+                  onClick={() => {
                     setResumeData((prev) => ({
                       ...prev,
                       education: [
@@ -967,8 +980,9 @@ export default function ResultPage() {
                                   highlights: ["", ""],
                         },
                       ],
-                    }))
-                  }
+                    }));
+                    showEducationAdded();
+                  }}
                           className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
                 >
                           <Plus className="w-4 h-4" />
@@ -988,13 +1002,14 @@ export default function ResultPage() {
                               <motion.button
                                 whileHover={{ scale: 1.1 }}
                                 whileTap={{ scale: 0.9 }}
-                      onClick={() =>
+                      onClick={() => {
                         setResumeData((prev) => {
                           const updated = [...prev.education];
                           updated.splice(idx, 1);
                           return { ...prev, education: updated };
-                        })
-                      }
+                        });
+                        showEducationDeleted();
+                      }}
                                 className="absolute -top-2 -right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 shadow-lg transition-all duration-200"
                                 title="Remove education"
                     >
@@ -1066,7 +1081,7 @@ export default function ResultPage() {
                         <motion.button
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
-                      onClick={() =>
+                      onClick={() => {
                         setResumeData((prev) => ({
                           ...prev,
                           projects: [
@@ -1077,8 +1092,9 @@ export default function ResultPage() {
                               highlights: ["", ""],
                             },
                           ],
-                        }))
-                      }
+                        }));
+                        showProjectAdded();
+                      }}
                           className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
                     >
                           <Plus className="w-4 h-4" />
@@ -1098,13 +1114,14 @@ export default function ResultPage() {
                               <motion.button
                                 whileHover={{ scale: 1.1 }}
                                 whileTap={{ scale: 0.9 }}
-                        onClick={() =>
+                        onClick={() => {
                           setResumeData((prev) => {
                             const updated = [...prev.projects];
                             updated.splice(idx, 1);
                             return { ...prev, projects: updated };
-                          })
-                        }
+                          });
+                          showProjectDeleted();
+                        }}
                                 className="absolute -top-2 -right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 shadow-lg transition-all duration-200"
                                 title="Remove project"
                       >

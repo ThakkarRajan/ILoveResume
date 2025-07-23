@@ -238,5 +238,20 @@ export const showFormCleared = () => {
   });
 };
 
+// Experience toasts
+export const showExperienceAdded = () => showSuccess("Experience added!", { duration: 1500 });
+export const showExperienceDeleted = () => showError("Experience deleted!", { duration: 2000 });
+
+// Education toasts
+export const showEducationAdded = () => showSuccess("Education added!", { duration: 1500 });
+export const showEducationDeleted = () => showError("Education deleted!", { duration: 2000 });
+
+// Project toasts
+export const showProjectAdded = () => showSuccess("Project added!", { duration: 1500 });
+export const showProjectDeleted = () => showError("Project deleted!", { duration: 2000 });
+
+// Highlight error
+export const showHighlightError = () => showError("Highlight cannot be empty!", { duration: 2000 });
+
 // Export default toast for backward compatibility
 export default toast; 
