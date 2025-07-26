@@ -1016,7 +1016,7 @@ export default function Dashboard() {
             <Home className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
           </div>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2 sm:mb-3">
-            Welcome back, {user?.name}!
+            Welcome back, {user?.displayName || 'User'}!
         </h1>
           <p className="text-gray-600 text-base sm:text-xl">Let's create your perfect resume</p>
           
