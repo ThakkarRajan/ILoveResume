@@ -5,7 +5,7 @@ I Love Resumes is a full-stack web application that intelligently analyzes and c
 🚀 Key Features
 🔐 Google Authentication (NextAuth)
 
-📄 PDF Resume Upload with 3MB file limit
+📄 PDF Resume Upload with 3MB file limit.
 
 📤 Resume Validation and text extraction (PyPDF2) 
 
