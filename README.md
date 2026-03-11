@@ -7,7 +7,7 @@ I Love Resumes is a full-stack web application that intelligently analyzes and c
 
 📄 PDF Resume Upload with 3MB file limit
 
-📤 Resume Validation and text extraction (PyPDF2)
+📤 Resume Validation and text extraction (PyPDF2) 
 
 🧠 AI-Powered Tailoring using GPT to generate a personalized resume
 
