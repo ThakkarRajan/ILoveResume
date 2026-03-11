@@ -129,7 +129,7 @@ export default function Contact() {
   const contactMethods = [
     {
       icon: Mail,
-      title: "Email",
+      title: "Rajan's Email",
       value: "thakkarrajanca@gmail.com",
       href: "mailto:thakkarrajanca@gmail.com",
       color: "from-blue-500 to-blue-600",
@@ -138,7 +138,7 @@ export default function Contact() {
     },
     {
       icon: Github,
-      title: "GitHub",
+      title: "Rajan's GitHub",
       value: "ThakkarRajan",
       href: "https://github.com/ThakkarRajan",
       color: "from-gray-700 to-gray-800",
@@ -147,9 +147,36 @@ export default function Contact() {
     },
     {
       icon: ExternalLink,
-      title: "Portfolio",
-      value: "portfolio-rajan-phi.vercel.app",
-      href: "https://portfolio-rajan-phi.vercel.app/",
+      title: "Rajan's Portfolio",
+      value: "rajan.codes",
+      href: "https://rajan.codes",
+      color: "from-purple-500 to-purple-600",
+      bgColor: "bg-purple-50",
+      iconColor: "text-purple-600"
+    },
+    {
+      icon: Mail,
+      title: "Aaftab's Email",
+      value: "aaftabvhora62@gmail.com",
+      href: "mailto:aaftabvhora62@gmail.com",
+      color: "from-blue-500 to-blue-600",
+      bgColor: "bg-blue-50",
+      iconColor: "text-blue-600"
+    },
+    {
+      icon: Github,
+      title: "Aaftab's GitHub",
+      value: "aaftab22",
+      href: "https://github.com/aaftab22",
+      color: "from-gray-700 to-gray-800",
+      bgColor: "bg-gray-50",
+      iconColor: "text-gray-700"
+    },
+    {
+      icon: ExternalLink,
+      title: "Aaftab's Portfolio",
+      value: "aaftab.tech",
+      href: "https://aaftab.tech",
       color: "from-purple-500 to-purple-600",
       bgColor: "bg-purple-50",
       iconColor: "text-purple-600"
@@ -240,15 +267,15 @@ export default function Contact() {
                     whileTap={{ scale: 0.98 }}
                     className="group p-4 sm:p-6 rounded-2xl border border-gray-200 hover:border-purple-300 transition-all duration-200 hover:shadow-lg"
                   >
-                    <div className="flex items-center gap-3 sm:gap-4">
-                      <div className={`w-10 h-10 sm:w-12 sm:h-12 ${method.bgColor} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                        <method.icon className={`w-5 h-5 sm:w-6 sm:h-6 ${method.iconColor}`} />
+                    <div className="flex flex-col items-center justify-center gap-3 text-center relative w-full">
+                      <ExternalLink className="absolute top-0 right-0 w-4 h-4 text-gray-400 group-hover:text-purple-600 transition-colors" />
+                      <div className={`w-12 h-12 sm:w-14 sm:h-14 ${method.bgColor} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                        <method.icon className={`w-6 h-6 sm:w-7 sm:h-7 ${method.iconColor}`} />
                       </div>
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-gray-900 mb-1 text-sm sm:text-base">{method.title}</h3>
-                        <p className="text-gray-600 text-xs sm:text-sm break-all">{method.value}</p>
+                      <div className="w-full overflow-hidden">
+                        <h3 className="font-semibold text-gray-900 mb-1 text-sm sm:text-base truncate">{method.title}</h3>
+                        <p className="text-gray-600 text-xs sm:text-sm truncate">{method.value}</p>
                       </div>
-                      <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400 group-hover:text-purple-600 transition-colors" />
                     </div>
                   </motion.a>
                 ))}
