@@ -51,8 +51,9 @@ import {
 } from "lucide-react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import "../../utils/firebase.js";
+import { unescapeHtml } from "../../utils/safeHtml";
 
-// Utility to escape HTML special characters
+// Utility to escape HTML special characters (display only, not inputs)
 const escapeHtml = (unsafe) =>
   (typeof unsafe === "string" ? unsafe : String(unsafe ?? ""))
     .replace(/&/g, "&amp;")
@@ -126,7 +127,7 @@ const HighlightsEditor = ({ highlights = [], onChange, placeholder = "Enter high
             <div className="flex-1 relative">
               <input
                 type="text"
-                value={highlight}
+                value={unescapeHtml(highlight)}
                 onChange={(e) => handleEditHighlight(index, e.target.value)}
                 className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-gray-900 text-sm"
                 placeholder="Edit highlight..."
@@ -203,16 +204,6 @@ export default function ResultPage() {
       setTimeout(() => router.push("/dashboard"), 3000);
     }
   }, [user, router]);
-
-  useEffect(() => {
-    const handleRouteChange = () => {
-      setShowSavePopup(false);
-    };
-    router.events?.on("routeChangeStart", handleRouteChange);
-    return () => {
-      router.events?.off("routeChangeStart", handleRouteChange);
-    };
-  }, [router]);
 
   // Only after all hooks:
   if (!user) {
@@ -354,7 +345,10 @@ export default function ResultPage() {
   const handleChange = (section, key, value, index) => {
     setResumeData((prev) => {
       const updated = { ...prev };
-      if (section === "contact") updated.contact[key] = value;
+      if (section === "contact") {
+        updated.contact = updated.contact || {};
+        updated.contact[key] = value;
+      }
       else if (
         section === "education" ||
         section === "tailored_experience" ||
@@ -728,7 +722,7 @@ export default function ResultPage() {
                             Full Name
               </label>
               <input
-                value={escapeHtml(resumeData.name || "")}
+                value={unescapeHtml(resumeData.name || "")}
                 onChange={(e) => handleChange("name", null, e.target.value)}
                                                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-500"
                              placeholder="Enter your full name"
@@ -745,7 +739,7 @@ export default function ResultPage() {
                               <div className="relative">
                                 <Icon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                     <input
-                      value={escapeHtml(val)}
+                      value={unescapeHtml(val)}
                                   onChange={(e) => handleChange("contact", key, e.target.value)}
                                                                      className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-500"
                                    placeholder={`Enter your ${key}`}
@@ -782,7 +776,7 @@ export default function ResultPage() {
                           Summary
                         </label>
               <textarea
-                value={escapeHtml(resumeData.tailored_summary || "")}
+                value={unescapeHtml(resumeData.tailored_summary || "")}
                           onChange={(e) => handleChange("tailored_summary", null, e.target.value)}
                                                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 resize-none text-gray-900 placeholder-gray-500"
                            rows={6}
@@ -818,7 +812,7 @@ export default function ResultPage() {
                               {category}
                             </label>
                     <input
-                      value={escapeHtml(skills.join(", "))}
+                      value={unescapeHtml(skills.join(", "))}
                               onChange={(e) => handleChange("tailored_skills", category, e.target.value)}
                                                              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-500"
                                placeholder={`Enter ${category} skills separated by commas`}
@@ -922,7 +916,7 @@ export default function ResultPage() {
                             />
                           ) : (
                             <input
-                              value={escapeHtml(val)}
+                              value={unescapeHtml(val)}
                               onChange={(e) =>
                                           handleChange("tailored_experience", key, e.target.value, idx)
                               }
@@ -1037,7 +1031,7 @@ export default function ResultPage() {
                                       />
                                     ) : (
                                       <input
-                                        value={escapeHtml(val)}
+                                        value={unescapeHtml(val)}
                                         onChange={(e) =>
                                           handleInputChange("education", idx, key, e.target.value)
                                         }
@@ -1149,7 +1143,7 @@ export default function ResultPage() {
                                       />
                                     ) : (
                             <input
-                              value={escapeHtml(val)}
+                              value={unescapeHtml(val)}
                               onChange={(e) =>
                                           handleChange("projects", key, e.target.value, idx)
                               }

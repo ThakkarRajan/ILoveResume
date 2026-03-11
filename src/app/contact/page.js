@@ -24,15 +24,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import "../../utils/firebase.js";
 
-// Utility to escape HTML special characters
-const escapeHtml = (unsafe) =>
-  unsafe
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-
+import { unescapeHtml } from "../../utils/safeHtml";
 
 export default function Contact() {
   const [user, setUser] = useState(null);
@@ -91,11 +83,15 @@ export default function Contact() {
     setSubmitStatus(null);
 
     try {
-      // EmailJS configuration
-      // You'll need to replace these with your actual EmailJS credentials
-      const serviceId = 'service_zzbkolu'; // Replace with your service ID
-      const templateId = 'template_buinhql'; // Replace with your template ID
-      const publicKey = 'N6ozcGGLHW_J-9dw6'; // Replace with your public key
+      const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
+      const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
+      const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
+
+      if (!serviceId || !templateId || !publicKey) {
+        toast.error("Email service not configured.");
+        setIsSubmitting(false);
+        return;
+      }
 
       const result = await emailjs.sendForm(
         serviceId,
@@ -340,7 +336,7 @@ export default function Contact() {
                   <input
                     type="text"
                     name="name"
-                    value={escapeHtml(formData.name)}
+                    value={unescapeHtml(formData.name)}
                     onChange={handleInputChange}
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-gray-400 text-gray-500"
                     placeholder="Your name"
@@ -355,7 +351,7 @@ export default function Contact() {
                   <input
                     type="email"
                     name="email"
-                    value={escapeHtml(formData.email)}
+                    value={unescapeHtml(formData.email)}
                     onChange={handleInputChange}
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-gray-400 text-gray-500"
                     placeholder="your@email.com"
@@ -370,7 +366,7 @@ export default function Contact() {
                   <input
                     type="text"
                     name="subject"
-                    value={escapeHtml(formData.subject)}
+                    value={unescapeHtml(formData.subject)}
                     onChange={handleInputChange}
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-gray-400 text-gray-500"
                     placeholder="How can we help?"
@@ -384,7 +380,7 @@ export default function Contact() {
                   </label>
                   <textarea
                     name="message"
-                    value={escapeHtml(formData.message)}
+                    value={unescapeHtml(formData.message)}
                     onChange={handleInputChange}
                     rows={4}
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 resize-none placeholder-gray-400 text-gray-500"

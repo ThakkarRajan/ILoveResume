@@ -3,12 +3,13 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { saveAs } from "file-saver";
-import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
+import { PDFDocument, rgb, StandardFonts, PDFName, PDFString } from "pdf-lib";
 import {
   Document,
   Packer,
   Paragraph,
   TextRun,
+  ExternalHyperlink,
   AlignmentType,
   BorderStyle,
   TabStopType,
@@ -29,6 +30,29 @@ import {
 } from "lucide-react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import "../../utils/firebase.js";
+
+// Normalize contact values to full URLs for hyperlinks
+const toGithubUrl = (val) => {
+  if (!val || typeof val !== "string") return null;
+  const v = val.trim();
+  if (!v) return null;
+  if (/^https?:\/\//i.test(v)) return v;
+  return `https://github.com/${v.replace(/^github\.com\/?/i, "")}`;
+};
+const toLinkedInUrl = (val) => {
+  if (!val || typeof val !== "string") return null;
+  const v = val.trim();
+  if (!v) return null;
+  if (/^https?:\/\//i.test(v)) return v;
+  return `https://linkedin.com/in/${v.replace(/^linkedin\.com\/in\/?/i, "")}`;
+};
+const toWebsiteUrl = (val) => {
+  if (!val || typeof val !== "string") return null;
+  const v = val.trim();
+  if (!v) return null;
+  if (/^https?:\/\//i.test(v)) return v;
+  return `https://${v}`;
+};
 
 export default function WordDownloadPage() {
   const [user, setUser] = useState(null);
@@ -64,6 +88,12 @@ export default function WordDownloadPage() {
     }
   }, [router]);
 
+  useEffect(() => {
+    return () => {
+      if (pdfUrl) URL.revokeObjectURL(pdfUrl);
+    };
+  }, [pdfUrl]);
+
   const generateDocx = () => {
     const sectionHeader = (text) => [
       new Paragraph({
@@ -91,21 +121,53 @@ export default function WordDownloadPage() {
       })
     );
 
-    const contactParts = [];
-    if (resumeData.contact?.location)
-      contactParts.push(resumeData.contact.location);
-    if (resumeData.contact?.email) contactParts.push(resumeData.contact.email);
-    if (resumeData.contact?.website)
-      contactParts.push(resumeData.contact.website);
-    if (resumeData.contact?.phone) contactParts.push(resumeData.contact.phone);
-    if (resumeData.contact?.github)
-      contactParts.push(resumeData.contact.github);
-    if (resumeData.contact?.linkedin)
-      contactParts.push(resumeData.contact.linkedin);
+    const sep = () => new TextRun({ text: " | ", size: 20 });
+    const contactChildren = [];
+    const contact = resumeData.contact || {};
+    const addPart = (child) => {
+      if (contactChildren.length) contactChildren.push(sep());
+      contactChildren.push(child);
+    };
+    if (contact.location) addPart(new TextRun({ text: contact.location, size: 20 }));
+    if (contact.email) addPart(new TextRun({ text: contact.email, size: 20 }));
+    if (contact.website) {
+      const url = toWebsiteUrl(contact.website);
+      addPart(
+        url
+          ? new ExternalHyperlink({
+              children: [new TextRun({ text: contact.website, size: 20, style: "Hyperlink" })],
+              link: url,
+            })
+          : new TextRun({ text: contact.website, size: 20 })
+      );
+    }
+    if (contact.phone) addPart(new TextRun({ text: contact.phone, size: 20 }));
+    if (contact.github) {
+      const url = toGithubUrl(contact.github);
+      addPart(
+        url
+          ? new ExternalHyperlink({
+              children: [new TextRun({ text: contact.github, size: 20, style: "Hyperlink" })],
+              link: url,
+            })
+          : new TextRun({ text: contact.github, size: 20 })
+      );
+    }
+    if (contact.linkedin) {
+      const url = toLinkedInUrl(contact.linkedin);
+      addPart(
+        url
+          ? new ExternalHyperlink({
+              children: [new TextRun({ text: contact.linkedin, size: 20, style: "Hyperlink" })],
+              link: url,
+            })
+          : new TextRun({ text: contact.linkedin, size: 20 })
+      );
+    }
 
-    sections.push(
+    if (contactChildren.length) sections.push(
       new Paragraph({
-        children: [new TextRun({ text: contactParts.join(" | "), size: 20 })],
+        children: contactChildren,
         alignment: AlignmentType.CENTER,
         spacing: { after: 200 },
       })
@@ -148,7 +210,7 @@ export default function WordDownloadPage() {
           ],
         })
       );
-      exp.highlights.forEach((hl) =>
+      (exp.highlights || []).forEach((hl) =>
         sections.push(
           new Paragraph({
             bullet: { level: 0 },
@@ -364,17 +426,59 @@ export default function WordDownloadPage() {
     };
 
     drawText(data.name || "", { size: 16, bold: true, align: "center" });
-    const contactLine = [
-      data.contact?.location,
-      data.contact?.email,
-      data.contact?.website,
-      data.contact?.phone,
-      data.contact?.github,
-      data.contact?.linkedin,
-    ]
-      .filter(Boolean)
-      .join(" | ");
-    drawText(contactLine, { size: 10, align: "center" });
+    const contact = data.contact || {};
+    const contactSegments = [];
+    if (contact.location) contactSegments.push({ text: contact.location });
+    if (contact.email) contactSegments.push({ text: contact.email });
+    if (contact.website) {
+      const url = toWebsiteUrl(contact.website);
+      contactSegments.push({ text: contact.website, url });
+    }
+    if (contact.phone) contactSegments.push({ text: contact.phone });
+    if (contact.github) {
+      const url = toGithubUrl(contact.github);
+      contactSegments.push({ text: contact.github, url });
+    }
+    if (contact.linkedin) {
+      const url = toLinkedInUrl(contact.linkedin);
+      contactSegments.push({ text: contact.linkedin, url });
+    }
+    if (contactSegments.length) {
+      const size = 10;
+      const sep = " | ";
+      const sepWidth = font.widthOfTextAtSize(sep, size);
+      let totalWidth = (contactSegments.length - 1) * sepWidth;
+      contactSegments.forEach((s) => {
+        totalWidth += font.widthOfTextAtSize(s.text, size);
+      });
+      let x = MARGIN_LEFT + (usableWidth - totalWidth) / 2;
+      if (y < MARGIN_BOTTOM + LINE_SPACING) newPage();
+      const linkRefs = [];
+      contactSegments.forEach((seg, i) => {
+        if (i) x += sepWidth;
+        const w = font.widthOfTextAtSize(seg.text, size);
+        page.drawText(seg.text, { x, y, size, font, color: rgb(0, 0, 0) });
+        if (seg.url) {
+          const linkAnnot = pdfDoc.context.obj({
+            Type: PDFName.of("Annot"),
+            Subtype: PDFName.of("Link"),
+            Rect: [x, y - 2, x + w, y + size + 2],
+            Border: [0, 0, 0],
+            A: {
+              Type: PDFName.of("Action"),
+              S: PDFName.of("URI"),
+              URI: PDFString.of(seg.url),
+            },
+          });
+          linkRefs.push(pdfDoc.context.register(linkAnnot));
+        }
+        x += w;
+      });
+      if (linkRefs.length) {
+        page.node.set(PDFName.of("Annots"), pdfDoc.context.obj(linkRefs));
+      }
+      y -= LINE_SPACING;
+    }
 
     sectionHeader("SUMMARY");
     drawText(data.tailored_summary || "", { size: 11 });
@@ -386,7 +490,7 @@ export default function WordDownloadPage() {
         bold: true,
       });
       drawText(`${exp.title} — ${exp.location}`, { size: 11, italics: true });
-      exp.highlights.forEach((hl) =>
+      (exp.highlights || []).forEach((hl) =>
         drawText(`•     ${hl}`, { size: 10, indent: 15 })
       );
       y -= 4;
@@ -554,17 +658,59 @@ export default function WordDownloadPage() {
       };
 
       drawText(resumeData.name || "", { size: 16, bold: true, align: "center" });
-      const contactLine = [
-        resumeData.contact?.location,
-        resumeData.contact?.email,
-        resumeData.contact?.website,
-        resumeData.contact?.phone,
-        resumeData.contact?.github,
-        resumeData.contact?.linkedin,
-      ]
-        .filter(Boolean)
-        .join(" | ");
-      drawText(contactLine, { size: 10, align: "center" });
+      const contact = resumeData.contact || {};
+      const contactSegments = [];
+      if (contact.location) contactSegments.push({ text: contact.location });
+      if (contact.email) contactSegments.push({ text: contact.email });
+      if (contact.website) {
+        const url = toWebsiteUrl(contact.website);
+        contactSegments.push({ text: contact.website, url });
+      }
+      if (contact.phone) contactSegments.push({ text: contact.phone });
+      if (contact.github) {
+        const url = toGithubUrl(contact.github);
+        contactSegments.push({ text: contact.github, url });
+      }
+      if (contact.linkedin) {
+        const url = toLinkedInUrl(contact.linkedin);
+        contactSegments.push({ text: contact.linkedin, url });
+      }
+      if (contactSegments.length) {
+        const size = 10;
+        const sep = " | ";
+        const sepWidth = font.widthOfTextAtSize(sep, size);
+        let totalWidth = (contactSegments.length - 1) * sepWidth;
+        contactSegments.forEach((s) => {
+          totalWidth += font.widthOfTextAtSize(s.text, size);
+        });
+        let x = MARGIN_LEFT + (usableWidth - totalWidth) / 2;
+        if (y < MARGIN_BOTTOM + LINE_SPACING) newPage();
+        const linkRefs = [];
+        contactSegments.forEach((seg, i) => {
+          if (i) x += sepWidth;
+          const w = font.widthOfTextAtSize(seg.text, size);
+          page.drawText(seg.text, { x, y, size, font, color: rgb(0, 0, 0) });
+          if (seg.url) {
+            const linkAnnot = pdfDoc.context.obj({
+              Type: PDFName.of("Annot"),
+              Subtype: PDFName.of("Link"),
+              Rect: [x, y - 2, x + w, y + size + 2],
+              Border: [0, 0, 0],
+              A: {
+                Type: PDFName.of("Action"),
+                S: PDFName.of("URI"),
+                URI: PDFString.of(seg.url),
+              },
+            });
+            linkRefs.push(pdfDoc.context.register(linkAnnot));
+          }
+          x += w;
+        });
+        if (linkRefs.length) {
+          page.node.set(PDFName.of("Annots"), pdfDoc.context.obj(linkRefs));
+        }
+        y -= LINE_SPACING;
+      }
 
       sectionHeader("SUMMARY");
       drawText(resumeData.tailored_summary || "", { size: 11 });
@@ -576,7 +722,7 @@ export default function WordDownloadPage() {
           bold: true,
         });
         drawText(`${exp.title} — ${exp.location}`, { size: 11, italics: true });
-        exp.highlights.forEach((hl) =>
+        (exp.highlights || []).forEach((hl) =>
           drawText(`•     ${hl}`, { size: 10, indent: 15 })
         );
         y -= 4;

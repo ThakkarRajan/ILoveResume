@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../utils/firebase";
+import { API_BASE } from "../../utils/api.js";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   User, 
@@ -53,7 +54,8 @@ export default function MyProfilePage() {
 
   const fetchUserSubmissions = async () => {
     try {
-      const email = user?.email;
+      const email = user?.email?.toLowerCase();
+      if (!email) return;
       const entriesRef = collection(db, `submissions/${email}/entries`);
       const snapshot = await getDocs(entriesRef);
       const fetched = [];
@@ -107,8 +109,7 @@ export default function MyProfilePage() {
         return;
       }
 
-      const extractRes = await fetch(
-        "https://jobdraftai-backend-production.up.railway.app/extract-from-url",
+      const extractRes = await fetch(`${API_BASE}/extract-from-url`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -118,24 +119,27 @@ export default function MyProfilePage() {
       const extractData = await extractRes.json();
       const resumeText = extractData?.text;
 
-      const processRes = await fetch(
-        "https://jobdraftai-backend-production.up.railway.app/process-text",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            text: `Resume:\n${resumeText}\n\nJob Description:\n${submission.jobText}`,
-          }),
-        }
-      );
+      const processRes = await fetch(`${API_BASE}/process-text`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          resume_text: resumeText,
+          job_description: submission.jobText,
+        }),
+      });
       const aiData = await processRes.json();
 
       if (!processRes.ok || !aiData?.structured) {
         alert("AI processing failed. Try again later.");
         return;
       }
+      // Normalize: backend may return certificates → map to tailored_certificates
+      const structured = aiData.structured;
+      if (structured.certificates !== undefined && structured.tailored_certificates === undefined) {
+        structured.tailored_certificates = structured.certificates;
+      }
 
-      localStorage.setItem("tailoredResume", JSON.stringify(aiData.structured));
+      localStorage.setItem("tailoredResume", JSON.stringify(structured));
       router.push("/result");
     } catch (error) {
       // console.error("Error processing submission:", error);

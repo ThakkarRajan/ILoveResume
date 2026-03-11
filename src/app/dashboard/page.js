@@ -52,7 +52,8 @@ import {
   Home
 } from "lucide-react";
 import { getAuth, signInWithCredential, GoogleAuthProvider, onAuthStateChanged } from "firebase/auth";
-
+import { wakeBackend, API_BASE } from "../../utils/api.js";
+import { unescapeHtml } from "../../utils/safeHtml";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -85,6 +86,7 @@ export default function Dashboard() {
         router.push("/");
       } else {
         setUser(firebaseUser);
+        wakeBackend(); // Ensure backend is awake before user submits resume
       }
     });
     return () => unsubscribe();
@@ -334,10 +336,11 @@ export default function Dashboard() {
           formData.append("file", pdfFile);
           const controller = new AbortController();
           const timeoutId = setTimeout(() => controller.abort(), 45000);
-          const extractRes = await fetch(
-            "https://jobdraftai-backend-production.up.railway.app/extract",
-            { method: "POST", body: formData, signal: controller.signal }
-          );
+          const extractRes = await fetch(`${API_BASE}/extract`, {
+            method: "POST",
+            body: formData,
+            signal: controller.signal,
+          });
           clearTimeout(timeoutId);
           if (!extractRes.ok) throw new Error("Please try again.");
           const json = await extractRes.json();
@@ -370,10 +373,12 @@ export default function Dashboard() {
           if (!navigator.onLine) throw new Error("No internet connection. Please check your network.");
           const controller = new AbortController();
           const timeoutId = setTimeout(() => controller.abort(), 45000);
-          const extractRes = await fetch(
-            "https://jobdraftai-backend-production.up.railway.app/extract-from-url",
-            { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ url: fileURL }), signal: controller.signal }
-          );
+          const extractRes = await fetch(`${API_BASE}/extract-from-url`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url: fileURL }),
+            signal: controller.signal,
+          });
           clearTimeout(timeoutId);
           if (!extractRes.ok) throw new Error("Please try again.");
           const json = await extractRes.json();
@@ -416,19 +421,22 @@ export default function Dashboard() {
     const aiToast = showLoading('AI is analyzing your resume and job description...');
     while (retryCount < maxRetries) {
       try {
-        const processRes = await fetch(
-          "https://jobdraftai-backend-production.up.railway.app/process-text",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              text: `Resume:\n${resumeText}\n\nJob Description:\n${jobText}`,
-            }),
-          }
-        );
+        const processRes = await fetch(`${API_BASE}/process-text`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            resume_text: resumeText,
+            job_description: jobText,
+          }),
+        });
         if (!processRes.ok) throw new Error("Please try again.");
         aiData = await processRes.json();
         if (!aiData?.structured) throw new Error("Invalid AI response structure");
+        // Normalize: backend may return certificates → map to tailored_certificates
+        const structured = aiData.structured;
+        if (structured.certificates !== undefined && structured.tailored_certificates === undefined) {
+          structured.tailored_certificates = structured.certificates;
+        }
         dismissToast(aiToast);
         break;
       } catch (processError) {
@@ -658,9 +666,8 @@ export default function Dashboard() {
     }
   };
 
-  // Utility to escape HTML special characters
   const escapeHtml = (unsafe) =>
-    unsafe
+    (typeof unsafe === "string" ? unsafe : String(unsafe ?? ""))
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
@@ -1072,7 +1079,7 @@ export default function Dashboard() {
         <textarea
                 className="w-full h-40 sm:h-48 p-4 sm:p-6 border border-gray-200 rounded-2xl text-gray-900 resize-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-base sm:text-lg"
                 placeholder="Copy and paste the job description, requirements, and responsibilities here..."
-          value={escapeHtml(jobText)}
+          value={unescapeHtml(jobText)}
           onChange={(e) => setJobText(e.target.value)}
         />
 
@@ -1216,7 +1223,7 @@ export default function Dashboard() {
                     <textarea
                       className="w-full h-64 p-6 border border-gray-200 rounded-2xl text-gray-900 resize-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-lg"
                       placeholder="Enter your resume content here... Include your experience, skills, education, and any other relevant information..."
-                      value={escapeHtml(textResume)}
+                      value={unescapeHtml(textResume)}
                       onChange={(e) => setTextResume(e.target.value)}
                     />
                     

@@ -1,6 +1,7 @@
 "use client";
 
 import "../utils/firebase.js";
+import { wakeBackend } from "../utils/api.js";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
@@ -140,7 +141,7 @@ export default function Home() {
               const provider = new GoogleAuthProvider();
               try {
                 await signInWithPopup(auth, provider);
-                // Optionally redirect to dashboard after sign-in
+                wakeBackend(); // Wake backend so it's ready when user reaches dashboard
                 router.push("/dashboard");
               } catch (error) {
                 // Optionally show error to user
@@ -301,7 +302,7 @@ export default function Home() {
           <div className="bg-white/40 backdrop-blur-sm rounded-xl sm:rounded-2xl p-3 sm:p-6 border border-white/20 shadow-lg">
             <p className="text-gray-600 text-xs sm:text-base">
               © {new Date().getFullYear()} I Love Resumes · Built with ❤️ by{" "}
-              <span className="font-semibold text-blue-600">Rajan</span>
+              <span className="font-semibold text-blue-600">Rajan and Aaftab </span>
             </p>
           </div>
         </motion.footer>
