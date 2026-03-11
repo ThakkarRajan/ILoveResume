@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { API_BASE } from "../utils/api.js";
 
 export default function PdfUploader({ onExtract }) {
   const [pdfFile, setPdfFile] = useState(null);
@@ -21,13 +22,10 @@ export default function PdfUploader({ onExtract }) {
     formData.append("file", pdfFile);
 
     try {
-      const res = await fetch(
-        "https://jobdraftai-backend-production.up.railway.app/extract",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
+      const res = await fetch(`${API_BASE}/extract`, {
+        method: "POST",
+        body: formData,
+      });
       const data = await res.json();
       onExtract(data.text || "No text found in the PDF.");
     } catch (error) {

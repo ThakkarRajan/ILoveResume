@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../utils/firebase";
-import { API_BASE } from "../../utils/api.js";
+import { API_BASE, processText } from "../../utils/api.js";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   User, 
@@ -119,14 +119,7 @@ export default function MyProfilePage() {
       const extractData = await extractRes.json();
       const resumeText = extractData?.text;
 
-      const processRes = await fetch(`${API_BASE}/process-text`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          resume_text: resumeText,
-          job_description: submission.jobText,
-        }),
-      });
+      const processRes = await processText(resumeText, submission.jobText);
       const aiData = await processRes.json();
 
       if (!processRes.ok || !aiData?.structured) {

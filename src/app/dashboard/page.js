@@ -52,7 +52,7 @@ import {
   Home
 } from "lucide-react";
 import { getAuth, signInWithCredential, GoogleAuthProvider, onAuthStateChanged } from "firebase/auth";
-import { wakeBackend, API_BASE } from "../../utils/api.js";
+import { wakeBackend, API_BASE, processText } from "../../utils/api.js";
 import { unescapeHtml } from "../../utils/safeHtml";
 
 export default function Dashboard() {
@@ -421,14 +421,7 @@ export default function Dashboard() {
     const aiToast = showLoading('AI is analyzing your resume and job description...');
     while (retryCount < maxRetries) {
       try {
-        const processRes = await fetch(`${API_BASE}/process-text`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            resume_text: resumeText,
-            job_description: jobText,
-          }),
-        });
+        const processRes = await processText(resumeText, jobText);
         if (!processRes.ok) throw new Error("Please try again.");
         aiData = await processRes.json();
         if (!aiData?.structured) throw new Error("Invalid AI response structure");

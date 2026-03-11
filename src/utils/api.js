@@ -16,4 +16,19 @@ export function wakeBackend() {
     .catch(() => {});
 }
 
+/**
+ * Call /process-text with resume_text and job_description (backend schema).
+ * Returns the fetch Response; caller should check res.ok and await res.json().
+ */
+export function processText(resumeText, jobDescription) {
+  return fetch(`${API_BASE}/process-text`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      resume_text: resumeText,
+      job_description: jobDescription,
+    }),
+  });
+}
+
 export { API_BASE };
