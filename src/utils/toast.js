@@ -219,13 +219,8 @@ export const showNetworkRetry = () => {
   });
 };
 
-// Toast for AI processing
-export const showAIProcessingError = (retryCount = 0, maxRetries = 3) => {
-  if (retryCount > 0) {
-    return showError(`Please try again. (${retryCount}/${maxRetries})`, {
-      duration: 2000,
-    });
-  }
+// Toast for AI processing (no technical details)
+export const showAIProcessingError = () => {
   return showError('Please try again.', {
     duration: 3000,
   });

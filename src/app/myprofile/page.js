@@ -2,9 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Toaster } from "react-hot-toast";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../utils/firebase";
 import { API_BASE, processText } from "../../utils/api.js";
+import { showError } from "../../utils/toast.js";
+import { getFriendlyError } from "../../utils/errorMessages.js";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   User, 
@@ -104,7 +107,7 @@ export default function MyProfilePage() {
         }
       };
       if (!isValidUrl(submission.resumeUrl)) {
-        alert("Invalid resume URL detected. Operation aborted.");
+        showError("Please enter a valid HTTP or HTTPS URL.");
         setProcessing(false);
         return;
       }
@@ -117,26 +120,54 @@ export default function MyProfilePage() {
         }
       );
       const extractData = await extractRes.json();
+      if (!extractRes.ok) {
+        showError(getFriendlyError(extractData?.error, "extract"));
+        setProcessing(false);
+        return;
+      }
       const resumeText = extractData?.text;
+      if (!resumeText || resumeText.trim().length < 100) {
+        showError("The PDF seems too short. Please upload a full resume.");
+        setProcessing(false);
+        return;
+      }
 
       const processRes = await processText(resumeText, submission.jobText);
       const aiData = await processRes.json();
-
-      if (!processRes.ok || !aiData?.structured) {
-        alert("AI processing failed. Try again later.");
+      if (!processRes.ok) {
+        showError(getFriendlyError(aiData?.error, "process"));
+        setProcessing(false);
         return;
       }
-      // Normalize: backend may return certificates → map to tailored_certificates
+      if (!aiData?.structured) {
+        showError("Something went wrong. Please try again.");
+        setProcessing(false);
+        return;
+      }
       const structured = aiData.structured;
       if (structured.certificates !== undefined && structured.tailored_certificates === undefined) {
         structured.tailored_certificates = structured.certificates;
       }
+      const toArray = (v) => (!v ? [] : Array.isArray(v) ? v : Object.values(v));
+      const normEdu = (edu) => {
+        if (!edu || typeof edu !== "object") return { program: "", school: "", location: "", start: "", end: "", highlights: ["", ""] };
+        return {
+          program: (edu.program || edu.degree || edu.area || edu.studyType || "").trim(),
+          school: (edu.school || edu.institution || edu.university || edu.college || "").trim(),
+          location: (edu.location || edu.city || "").trim(),
+          start: (edu.start || edu.startDate || "").trim(),
+          end: (edu.end || edu.endDate || "").trim(),
+          highlights: Array.isArray(edu.highlights) ? edu.highlights : edu.courses ? [].concat(edu.courses) : ["", ""],
+        };
+      };
+      structured.education = toArray(structured.education).map(normEdu);
+      structured.tailored_experience = toArray(structured.tailored_experience);
+      structured.projects = toArray(structured.projects);
 
       localStorage.setItem("tailoredResume", JSON.stringify(structured));
       router.push("/result");
     } catch (error) {
-      // console.error("Error processing submission:", error);
-      alert("Something went wrong. Please try again later.");
+      showError("Something went wrong. Please try again.");
     } finally {
       setProcessing(false);
     }
@@ -182,6 +213,7 @@ export default function MyProfilePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+      <Toaster position="top-center" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {/* Header Section */}
         <motion.div

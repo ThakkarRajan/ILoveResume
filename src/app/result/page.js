@@ -182,6 +182,26 @@ export default function ResultPage() {
     return () => unsubscribe();
   }, [router]);
 
+  // Ensure list fields (education, experience, projects) are always arrays
+  const normalizeList = (val) => {
+    if (!val) return [];
+    if (Array.isArray(val)) return val;
+    if (typeof val === "object") return Object.values(val);
+    return [];
+  };
+
+  // Map backend alternate keys (degree, institution, etc.) to our schema
+  const normalizeEducationEntry = (edu) => {
+    if (!edu || typeof edu !== "object") return { program: "", school: "", location: "", start: "", end: "", highlights: ["", ""] };
+    const program = (edu.program || edu.degree || edu.area || edu.studyType || "").trim();
+    const school = (edu.school || edu.institution || edu.university || edu.college || "").trim();
+    const location = (edu.location || edu.city || "").trim();
+    const start = (edu.start || edu.startDate || "").trim();
+    const end = (edu.end || edu.endDate || "").trim();
+    const highlights = Array.isArray(edu.highlights) ? edu.highlights : (edu.courses ? [].concat(edu.courses) : ["", ""]);
+    return { program, school, location, start, end, highlights };
+  };
+
   // Load resumeData from localStorage after user is authenticated
   useEffect(() => {
     if (!user) return;
@@ -198,7 +218,17 @@ export default function ResultPage() {
         setTimeout(() => router.push("/dashboard"), 3000);
         return;
       }
-      setResumeData(parsed);
+      // Normalize list fields (backend may return objects with numeric keys)
+      const normalized = { ...parsed };
+      normalized.education = normalizeList(parsed.education).map(normalizeEducationEntry);
+      normalized.tailored_experience = normalizeList(parsed.tailored_experience);
+      normalized.projects = normalizeList(parsed.projects);
+      normalized.tailored_certificates = Array.isArray(parsed.tailored_certificates)
+        ? parsed.tailored_certificates
+        : Array.isArray(parsed.certificates)
+          ? parsed.certificates
+          : [];
+      setResumeData(normalized);
     } catch (err) {
       setError("Resume is corrupted. Redirecting to dashboard...");
       setTimeout(() => router.push("/dashboard"), 3000);
@@ -271,26 +301,31 @@ export default function ResultPage() {
       });
     }
 
-    // Education validation
+    // Education validation (accept program/degree/area and school/institution)
     if (Array.isArray(resumeData.education)) {
       resumeData.education.forEach((edu, index) => {
-        if (!edu.program) {
-          errors[`education_program_${index}`] = "Program name is required.";
+        const program = (edu.program || edu.degree || edu.area || edu.studyType || "").trim();
+        const school = (edu.school || edu.institution || edu.university || edu.college || "").trim();
+        const location = (edu.location || edu.city || "").trim();
+        const start = (edu.start || edu.startDate || "").trim();
+        const end = (edu.end || edu.endDate || "").trim();
+        if (!program) {
+          errors[`education_program_${index}`] = "Program or degree is required.";
           errorSections.add("Education");
         }
-        if (!edu.school) {
-          errors[`education_school_${index}`] = "School name is required.";
+        if (!school) {
+          errors[`education_school_${index}`] = "School or institution is required.";
           errorSections.add("Education");
         }
-        if (!edu.location) {
+        if (!location) {
           errors[`education_location_${index}`] = "Location is required.";
           errorSections.add("Education");
         }
-        if (!edu.start) {
+        if (!start) {
           errors[`education_start_${index}`] = "Start date is required.";
           errorSections.add("Education");
         }
-        if (!edu.end) {
+        if (!end) {
           errors[`education_end_${index}`] = "End date is required.";
           errorSections.add("Education");
         }
@@ -322,8 +357,26 @@ export default function ResultPage() {
     setFieldErrors(errors);
 
     if (errorSections.size > 0) {
+      const sectionOrder = ["Experience", "Education", "Projects"];
+      const firstErrorSection = sectionOrder.find((s) => errorSections.has(s));
+      if (firstErrorSection) {
+        setActiveSection(firstErrorSection.toLowerCase());
+      }
+      const sectionIdMap = { Experience: "experience", Education: "education", Projects: "projects" };
+      const details = Array.from(errorSections).map((section) => {
+        const prefix = sectionIdMap[section] ? `${sectionIdMap[section]}_` : "";
+        const fields = Object.keys(errors)
+          .filter((k) => k.startsWith(prefix))
+          .map((k) => {
+            const m = k.replace(prefix, "").match(/^(\w+)_\d+$/);
+            return m ? m[1].replace(/^\w/, (c) => c.toUpperCase()) : null;
+          })
+          .filter(Boolean);
+        const unique = [...new Set(fields)];
+        return unique.length > 0 ? `${section} (${unique.join(", ")} required)` : section;
+      });
       showError(
-        `Please fix errors in: ${Array.from(errorSections).join(", ")}`,
+        `Please fix: ${details.join(" • ")}`,
         {
           style: {
             borderRadius: "10px",
@@ -456,9 +509,7 @@ export default function ResultPage() {
         // Don't fail the save operation if recent results update fails
       }
       
-      // Simulate a small delay for better UX
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
+      await new Promise(resolve => setTimeout(resolve, 150));
       // Dismiss loading toast
       dismissToast(loadingToast);
       
@@ -481,10 +532,8 @@ export default function ResultPage() {
       // Show loading toast
       const loadingToast = showDownloadLoading();
 
-      // Save data to localStorage
       localStorage.setItem("tailoredResume", JSON.stringify(resumeData));
-      // Simulate a small delay for better UX
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 150));
       // Dismiss loading toast
       dismissToast(loadingToast);
       // Show success toast

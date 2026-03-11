@@ -54,6 +54,12 @@ const toWebsiteUrl = (val) => {
   return `https://${v}`;
 };
 
+const getEduProgram = (edu) => (edu?.program || edu?.degree || edu?.area || edu?.studyType || "").trim() || "";
+const getEduSchool = (edu) => (edu?.school || edu?.institution || edu?.university || edu?.college || "").trim() || "";
+const getEduLocation = (edu) => (edu?.location || edu?.city || "").trim() || "";
+const getEduStart = (edu) => (edu?.start || edu?.startDate || "").trim() || "";
+const getEduEnd = (edu) => (edu?.end || edu?.endDate || "").trim() || "";
+
 export default function WordDownloadPage() {
   const [user, setUser] = useState(null);
   const [resumeData, setResumeData] = useState(null);
@@ -84,7 +90,7 @@ export default function WordDownloadPage() {
       generateAndSetPdf(parsed);
     } catch (err) {
       setError("Failed to load resume. Redirecting...");
-      setTimeout(() => router.push("/result"), 3000);
+      setTimeout(() => router.push("/result"), 1500);
     }
   }, [router]);
 
@@ -274,15 +280,20 @@ export default function WordDownloadPage() {
       ? resumeData.education
       : Object.values(resumeData.education || {});
     eduArray.forEach((edu) => {
+      const program = getEduProgram(edu);
+      const school = getEduSchool(edu);
+      const location = getEduLocation(edu);
+      const start = getEduStart(edu);
+      const end = getEduEnd(edu);
       sections.push(
         new Paragraph({
           tabStops: [
             { type: TabStopType.RIGHT, position: TabStopPosition.MAX },
           ],
           children: [
-            new TextRun({ text: edu.program, italics: true, size: 20 }),
+            new TextRun({ text: program, italics: true, size: 20 }),
             new TextRun({
-              text: `\t${edu.start} – ${edu.end}`,
+              text: `\t${start} – ${end}`,
               bold: true,
               size: 20,
             }),
@@ -295,8 +306,8 @@ export default function WordDownloadPage() {
             { type: TabStopType.RIGHT, position: TabStopPosition.MAX },
           ],
           children: [
-            new TextRun({ text: edu.school, bold: true, size: 20 }),
-            new TextRun({ text: `\t${edu.location}`, italics: true, size: 20 }),
+            new TextRun({ text: school, bold: true, size: 20 }),
+            new TextRun({ text: `\t${location}`, italics: true, size: 20 }),
           ],
         })
       );
@@ -522,11 +533,16 @@ export default function WordDownloadPage() {
       ? data.education
       : Object.values(data.education || {});
     eduArray.forEach((edu) => {
-      drawText(`${edu.program} (${edu.start} – ${edu.end})`, {
+      const program = getEduProgram(edu);
+      const school = getEduSchool(edu);
+      const location = getEduLocation(edu);
+      const start = getEduStart(edu);
+      const end = getEduEnd(edu);
+      drawText(`${program} (${start} – ${end})`, {
         size: 11,
         bold: true,
       });
-      drawText(`${edu.school} — ${edu.location}`, { size: 11, italics: true });
+      drawText(`${school} — ${location}`, { size: 11, italics: true });
     });
 
     sectionHeader("CERTIFICATES");
@@ -755,11 +771,16 @@ export default function WordDownloadPage() {
         ? resumeData.education
         : Object.values(resumeData.education || {});
       eduArray.forEach((edu) => {
-        drawText(`${edu.program} (${edu.start} – ${edu.end})`, {
+        const program = getEduProgram(edu);
+        const school = getEduSchool(edu);
+        const location = getEduLocation(edu);
+        const start = getEduStart(edu);
+        const end = getEduEnd(edu);
+        drawText(`${program} (${start} – ${end})`, {
           size: 11,
           bold: true,
         });
-        drawText(`${edu.school} — ${edu.location}`, { size: 11, italics: true });
+        drawText(`${school} — ${location}`, { size: 11, italics: true });
       });
 
       sectionHeader("CERTIFICATES");

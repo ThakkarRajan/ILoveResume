@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { API_BASE } from "../utils/api.js";
+import { showError } from "../utils/toast.js";
+import { getFriendlyError } from "../utils/errorMessages.js";
 
 export default function PdfUploader({ onExtract }) {
   const [pdfFile, setPdfFile] = useState(null);
@@ -27,9 +29,13 @@ export default function PdfUploader({ onExtract }) {
         body: formData,
       });
       const data = await res.json();
+      if (!res.ok) {
+        showError(getFriendlyError(data?.error, "extract"));
+        return;
+      }
       onExtract(data.text || "No text found in the PDF.");
     } catch (error) {
-      // console.error("Upload failed:", error);
+      showError("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }

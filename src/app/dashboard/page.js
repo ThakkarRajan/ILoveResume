@@ -28,6 +28,7 @@ import {
   showFileDeleteSuccess,
   showFileDeleteError
 } from "../../utils/toast";
+import { getFriendlyError } from "../../utils/errorMessages.js";
 import { motion, AnimatePresence } from "framer-motion";
 import { query, where, getDocs, deleteDoc } from "firebase/firestore";
 import { 
@@ -54,6 +55,9 @@ import {
 import { getAuth, signInWithCredential, GoogleAuthProvider, onAuthStateChanged } from "firebase/auth";
 import { wakeBackend, API_BASE, processText } from "../../utils/api.js";
 import { unescapeHtml } from "../../utils/safeHtml";
+
+const JOB_DESCRIPTION_MAX_CHARS = 15_000;
+const RESUME_TEXT_MAX_CHARS = 50_000;
 
 export default function Dashboard() {
   const router = useRouter();
@@ -248,7 +252,7 @@ export default function Dashboard() {
             if (!fileURL) throw new Error("File upload failed. Please try again.");
             dismissToast(uploadToast);
             showFileUploadSuccess();
-            await new Promise(resolve => setTimeout(resolve, 500));
+            await new Promise(resolve => setTimeout(resolve, 150));
             uploadSuccess = true;
           } catch (uploadError) {
             uploadAttemptsLocal++;
@@ -342,15 +346,44 @@ export default function Dashboard() {
             signal: controller.signal,
           });
           clearTimeout(timeoutId);
-          if (!extractRes.ok) throw new Error("Please try again.");
+          if (!extractRes.ok) {
+            const errData = await extractRes.json().catch(() => ({}));
+            showFileUploadError(getFriendlyError(errData?.error, "extract"));
+            dismissToast(extractToast);
+            setLoading(false);
+            setProgress(0);
+            setLoadingPhase('idle');
+            return { success: false };
+          }
           const json = await extractRes.json();
-          if (!json.text || json.text.trim() === '') throw new Error("No text extracted from PDF. Please ensure the PDF contains readable text.");
-          if (json.text.trim().length < 100) throw new Error("Extracted text is too short. Please ensure the PDF contains a complete resume.");
+          if (!json.text || json.text.trim() === '') {
+            showFileUploadError("PDF could not be read. Try a different file or ensure it has selectable text.");
+            dismissToast(extractToast);
+            setLoading(false);
+            setProgress(0);
+            setLoadingPhase('idle');
+            return { success: false };
+          }
+          if (json.text.trim().length < 100) {
+            showFileUploadError("The PDF seems too short. Please upload a full resume.");
+            dismissToast(extractToast);
+            setLoading(false);
+            setProgress(0);
+            setLoadingPhase('idle');
+            return { success: false };
+          }
           resumeText = json.text;
           const resumeKeywords = ["resume", "experience", "skills", "education", "projects", "summary", "work", "employment"];
           const textLower = json.text.toLowerCase();
           const keywordMatches = resumeKeywords.filter(keyword => textLower.includes(keyword));
-          if (keywordMatches.length < 2) throw new Error("The uploaded file doesn't appear to be a resume. Please upload a valid resume PDF.");
+          if (keywordMatches.length < 2) {
+            showFileUploadError("This doesn't look like a resume. Please upload a resume PDF.");
+            dismissToast(extractToast);
+            setLoading(false);
+            setProgress(0);
+            setLoadingPhase('idle');
+            return { success: false };
+          }
           dismissToast(extractToast);
         } catch (extractError) {
           dismissToast(extractToast);
@@ -358,11 +391,11 @@ export default function Dashboard() {
           setProgress(0);
           setLoadingPhase('idle');
           if (extractError.name === 'AbortError') {
-            showAIProcessingError();
+            showError("Request timed out. Please try again.");
           } else if (extractError.message.includes('network') || extractError.message.includes('fetch') || extractError.name === 'TypeError') {
             showNetworkRetry();
           } else {
-            showAIProcessingError();
+            showError("Something went wrong. Please try again.");
           }
           return { success: false };
         }
@@ -380,15 +413,44 @@ export default function Dashboard() {
             signal: controller.signal,
           });
           clearTimeout(timeoutId);
-          if (!extractRes.ok) throw new Error("Please try again.");
+          if (!extractRes.ok) {
+            const errData = await extractRes.json().catch(() => ({}));
+            showError(getFriendlyError(errData?.error, "extract"));
+            dismissToast(extractToast);
+            setLoading(false);
+            setProgress(0);
+            setLoadingPhase('idle');
+            return { success: false };
+          }
           const json = await extractRes.json();
-          if (!json.text || json.text.trim() === '') throw new Error("No text extracted from resume. Please try a different file.");
-          if (json.text.trim().length < 100) throw new Error("Extracted text is too short. Please ensure the file contains a complete resume.");
+          if (!json.text || json.text.trim() === '') {
+            showError("PDF could not be read. Try a different file or ensure it has selectable text.");
+            dismissToast(extractToast);
+            setLoading(false);
+            setProgress(0);
+            setLoadingPhase('idle');
+            return { success: false };
+          }
+          if (json.text.trim().length < 100) {
+            showError("The PDF seems too short. Please upload a full resume.");
+            dismissToast(extractToast);
+            setLoading(false);
+            setProgress(0);
+            setLoadingPhase('idle');
+            return { success: false };
+          }
           resumeText = json.text;
           const resumeKeywords = ["resume", "experience", "skills", "education", "projects", "summary", "work", "employment"];
           const textLower = json.text.toLowerCase();
           const keywordMatches = resumeKeywords.filter(keyword => textLower.includes(keyword));
-          if (keywordMatches.length < 2) throw new Error("The uploaded file doesn't appear to be a resume. Please upload a valid resume PDF.");
+          if (keywordMatches.length < 2) {
+            showError("This doesn't look like a resume. Please upload a resume PDF.");
+            dismissToast(extractToast);
+            setLoading(false);
+            setProgress(0);
+            setLoadingPhase('idle');
+            return { success: false };
+          }
           dismissToast(extractToast);
         } catch (extractError) {
           dismissToast(extractToast);
@@ -396,11 +458,11 @@ export default function Dashboard() {
           setProgress(0);
           setLoadingPhase('idle');
           if (extractError.name === 'AbortError') {
-            showAIProcessingError();
+            showError("Request timed out. Please try again.");
           } else if (extractError.message.includes('network') || extractError.message.includes('fetch') || extractError.name === 'TypeError') {
             showNetworkRetry();
           } else {
-            showAIProcessingError();
+            showError("Something went wrong. Please try again.");
           }
           return { success: false };
         }
@@ -422,14 +484,58 @@ export default function Dashboard() {
     while (retryCount < maxRetries) {
       try {
         const processRes = await processText(resumeText, jobText);
-        if (!processRes.ok) throw new Error("Please try again.");
+        if (!processRes.ok) {
+          const errData = await processRes.json().catch(() => ({}));
+          const msg = getFriendlyError(errData?.error, "process");
+          if (processRes.status === 503) {
+            retryCount++;
+            if (retryCount >= maxRetries) {
+              dismissToast(aiToast);
+              showError(msg);
+              setLoading(false);
+              setProgress(0);
+              setLoadingPhase('idle');
+              return { success: false };
+            }
+            await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
+            showError(msg);
+            continue;
+          }
+          dismissToast(aiToast);
+          showError(msg);
+          setLoading(false);
+          setProgress(0);
+          setLoadingPhase('idle');
+          return { success: false };
+        }
         aiData = await processRes.json();
-        if (!aiData?.structured) throw new Error("Invalid AI response structure");
-        // Normalize: backend may return certificates → map to tailored_certificates
+        if (!aiData?.structured) {
+          dismissToast(aiToast);
+          showError("Something went wrong. Please try again.");
+          setLoading(false);
+          setProgress(0);
+          setLoadingPhase('idle');
+          return { success: false };
+        }
         const structured = aiData.structured;
         if (structured.certificates !== undefined && structured.tailored_certificates === undefined) {
           structured.tailored_certificates = structured.certificates;
         }
+        const toArray = (v) => (!v ? [] : Array.isArray(v) ? v : Object.values(v));
+        const normEdu = (edu) => {
+          if (!edu || typeof edu !== "object") return { program: "", school: "", location: "", start: "", end: "", highlights: ["", ""] };
+          return {
+            program: (edu.program || edu.degree || edu.area || edu.studyType || "").trim(),
+            school: (edu.school || edu.institution || edu.university || edu.college || "").trim(),
+            location: (edu.location || edu.city || "").trim(),
+            start: (edu.start || edu.startDate || "").trim(),
+            end: (edu.end || edu.endDate || "").trim(),
+            highlights: Array.isArray(edu.highlights) ? edu.highlights : edu.courses ? [].concat(edu.courses) : ["", ""],
+          };
+        };
+        structured.education = toArray(structured.education).map(normEdu);
+        structured.tailored_experience = toArray(structured.tailored_experience);
+        structured.projects = toArray(structured.projects);
         dismissToast(aiToast);
         break;
       } catch (processError) {
@@ -443,7 +549,7 @@ export default function Dashboard() {
           return { success: false };
         }
         await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
-        showAIProcessingError(retryCount, maxRetries);
+        showError("Please try again in a moment.");
       }
     }
     localStorage.setItem("tailoredResume", JSON.stringify(aiData.structured));
@@ -451,9 +557,7 @@ export default function Dashboard() {
     saveToRecentResults(aiData.structured, jobText);
     setShowResultSkeleton(true);
     setLoadingPhase('idle');
-    setTimeout(() => {
-      router.push("/result");
-    }, 2000);
+    setTimeout(() => router.push("/result"), 400);
     return { success: true };
   };
 
@@ -635,11 +739,7 @@ export default function Dashboard() {
       localStorage.setItem("tailoredResume", JSON.stringify(result.resultData));
       setAiData(result.resultData);
       setShowResultSkeleton(true);
-      
-      // Redirect after showing skeleton for 2 seconds
-      setTimeout(() => {
-        router.push("/result");
-      }, 2000);
+      setTimeout(() => router.push("/result"), 400);
     } catch (error) {
       showError("Failed to load recent result");
     }
@@ -1055,7 +1155,7 @@ export default function Dashboard() {
                   </div>
                   <div>
                     <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">Job Description</h2>
-                    <p className="text-gray-500 text-sm sm:text-base">Paste the job posting details here</p>
+                    <p className="text-gray-500 text-sm sm:text-base">Paste the job posting details here (max {JOB_DESCRIPTION_MAX_CHARS.toLocaleString()} characters)</p>
                   </div>
                 </div>
                 <motion.button
@@ -1073,17 +1173,18 @@ export default function Dashboard() {
                 className="w-full h-40 sm:h-48 p-4 sm:p-6 border border-gray-200 rounded-2xl text-gray-900 resize-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-base sm:text-lg"
                 placeholder="Copy and paste the job description, requirements, and responsibilities here..."
           value={unescapeHtml(jobText)}
-          onChange={(e) => setJobText(e.target.value)}
+          onChange={(e) => setJobText(e.target.value.slice(0, JOB_DESCRIPTION_MAX_CHARS))}
+          maxLength={JOB_DESCRIPTION_MAX_CHARS}
         />
 
               {jobText && (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="mt-4 flex items-center gap-2 text-sm text-green-600"
+                  className={`mt-4 flex items-center gap-2 text-sm ${jobText.length >= JOB_DESCRIPTION_MAX_CHARS ? "text-amber-600" : "text-green-600"}`}
                 >
                   <CheckCircle className="w-4 h-4" />
-                  <span>{jobText.length} characters entered</span>
+                  <span>{jobText.length.toLocaleString()} / {JOB_DESCRIPTION_MAX_CHARS.toLocaleString()} characters</span>
                 </motion.div>
               )}
             </motion.div>
@@ -1209,7 +1310,7 @@ export default function Dashboard() {
                       <Edit3 className="w-5 h-5 text-purple-600" />
                       <div>
                         <p className="font-medium text-purple-900">Text Resume Input</p>
-                        <p className="text-sm text-purple-700">Type or paste your resume content directly</p>
+                        <p className="text-sm text-purple-700">Type or paste your resume content directly (max {RESUME_TEXT_MAX_CHARS.toLocaleString()} characters)</p>
                       </div>
         </div>
 
@@ -1217,17 +1318,18 @@ export default function Dashboard() {
                       className="w-full h-64 p-6 border border-gray-200 rounded-2xl text-gray-900 resize-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-lg"
                       placeholder="Enter your resume content here... Include your experience, skills, education, and any other relevant information..."
                       value={unescapeHtml(textResume)}
-                      onChange={(e) => setTextResume(e.target.value)}
+                      onChange={(e) => setTextResume(e.target.value.slice(0, RESUME_TEXT_MAX_CHARS))}
+                      maxLength={RESUME_TEXT_MAX_CHARS}
                     />
                     
                     {textResume && (
                       <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="flex items-center gap-2 text-sm text-green-600"
+                        className={`flex items-center gap-2 text-sm ${textResume.length >= RESUME_TEXT_MAX_CHARS ? "text-amber-600" : "text-green-600"}`}
                       >
                         <CheckCircle className="w-4 h-4" />
-                        <span>{textResume.length} characters entered</span>
+                        <span>{textResume.length.toLocaleString()} / {RESUME_TEXT_MAX_CHARS.toLocaleString()} characters</span>
                       </motion.div>
                     )}
                   </motion.div>
