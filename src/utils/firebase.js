@@ -13,10 +13,43 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-if (!firebaseConfig.apiKey) {
-  throw new Error("Missing Firebase config. Add NEXT_PUBLIC_FIREBASE_* vars to .env.local");
+const hasConfig = !!firebaseConfig.apiKey;
+let app = null;
+let _storage = null;
+let _db = null;
+
+if (hasConfig) {
+  app = initializeApp(firebaseConfig);
+  _storage = getStorage(app);
+  _db = getFirestore(app);
 }
 
-const app = initializeApp(firebaseConfig);
-export const storage = getStorage(app);
-export const db = getFirestore(app);
+const missingError =
+  "Missing Firebase config. Add NEXT_PUBLIC_FIREBASE_* vars to .env.local";
+
+function throwOnMissing(name) {
+  throw new Error(`${missingError} (required for ${name})`);
+}
+
+// Export real instances or proxies that throw on first use when config is missing
+export const storage = hasConfig
+  ? _storage
+  : new Proxy(
+      {},
+      {
+        get() {
+          throwOnMissing("storage");
+        },
+      }
+    );
+
+export const db = hasConfig
+  ? _db
+  : new Proxy(
+      {},
+      {
+        get() {
+          throwOnMissing("Firestore");
+        },
+      }
+    );
