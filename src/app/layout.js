@@ -8,9 +8,9 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <head>
         {/* Basic Meta Tags */}
-        <title>I Love Resumes - AI-Powered Resume Builder | Create Professional Resumes</title>
-        <meta name="description" content="Transform your resume with AI-powered insights. Get personalized suggestions, optimize structure, and align keywords with job descriptions. Create professional resumes in seconds with our intelligent resume builder." />
-        <meta name="keywords" content="resume builder, AI resume, job application, resume optimization, career tools, professional resume, CV builder, job search, career development, resume writing" />
+        <title>Free AI Resume Builder | ATS-Optimized | I Love Resumes</title>
+        <meta name="description" content="Free AI resume builder. Upload, match job descriptions, export to Word & PDF. ATS-optimized in seconds. Trusted by 1000+ users." />
+        <meta name="keywords" content="resume builder, AI resume, free resume builder, ATS resume, job application, resume optimization, Canada, Toronto" />
         <meta name="author" content="I Love Resumes" />
         <meta name="robots" content="index, follow" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -23,11 +23,11 @@ export default function RootLayout({ children }) {
         <link rel="mask-icon" href="/logo.png" color="#3B82F6" />
         
         {/* Open Graph Meta Tags */}
-        <meta property="og:title" content="I Love Resumes - AI-Powered Resume Builder" />
-        <meta property="og:description" content="Transform your resume with AI-powered insights. Get personalized suggestions, optimize structure, and align keywords with job descriptions—all in seconds." />
+        <meta property="og:title" content="Free AI Resume Builder | ATS-Optimized | I Love Resumes" />
+        <meta property="og:description" content="Free AI resume builder. Upload, match job descriptions, export to Word & PDF. ATS-optimized in seconds." />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://iloveresumes.com" />
-        <meta property="og:image" content="/logo.png" />
+        <meta property="og:url" content="https://iloveresumes.ca" />
+        <meta property="og:image" content="https://iloveresumes.ca/logo.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:site_name" content="I Love Resumes" />
@@ -35,9 +35,9 @@ export default function RootLayout({ children }) {
         
         {/* Twitter Card Meta Tags */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="I Love Resumes - AI-Powered Resume Builder" />
-        <meta name="twitter:description" content="Transform your resume with AI-powered insights. Get personalized suggestions, optimize structure, and align keywords with job descriptions—all in seconds." />
-        <meta name="twitter:image" content="/logo.png" />
+        <meta name="twitter:title" content="Free AI Resume Builder | ATS-Optimized | I Love Resumes" />
+        <meta name="twitter:description" content="Free AI resume builder. Upload, match job descriptions, export to Word & PDF. ATS-optimized in seconds." />
+        <meta name="twitter:image" content="https://iloveresumes.ca/logo.png" />
         <meta name="twitter:creator" content="@iloveresumes" />
         
         {/* Additional SEO Meta Tags */}
@@ -49,12 +49,31 @@ export default function RootLayout({ children }) {
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         
         {/* Canonical URL */}
-        <link rel="canonical" href="https://iloveresumes.com" />
+        <link rel="canonical" href="https://iloveresumes.ca" />
         
         {/* Web App Manifest */}
         <link rel="manifest" href="/manifest.json" />
         
-        {/* Structured Data */}
+        {/* WebSite Schema */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "name": "I Love Resumes",
+              "url": "https://iloveresumes.ca",
+              "description": "Free AI resume builder. ATS-optimized. Export to Word and PDF.",
+              "publisher": {
+                "@type": "Organization",
+                "name": "I Love Resumes",
+                "logo": { "@type": "ImageObject", "url": "https://iloveresumes.ca/logo.png" }
+              }
+            })
+          }}
+        />
+        
+        {/* WebApplication Schema */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -62,8 +81,8 @@ export default function RootLayout({ children }) {
               "@context": "https://schema.org",
               "@type": "WebApplication",
               "name": "I Love Resumes",
-              "description": "AI-powered resume builder that helps create professional resumes with intelligent suggestions and optimization",
-              "url": "https://iloveresumes.com",
+              "description": "AI-powered resume builder with job description matching and ATS optimization",
+              "url": "https://iloveresumes.ca",
               "applicationCategory": "ProductivityApplication",
               "operatingSystem": "Web Browser",
               "offers": {
@@ -74,19 +93,18 @@ export default function RootLayout({ children }) {
               "creator": {
                 "@type": "Organization",
                 "name": "I Love Resumes",
-                "url": "https://iloveresumes.com"
+                "url": "https://iloveresumes.ca"
               },
               "featureList": [
                 "AI-powered resume analysis",
                 "Job description alignment",
                 "Real-time editing",
-                "Multiple export formats",
-                "Professional templates"
+                "Word & PDF export"
               ],
-              "screenshot": "/logo.png",
+              "screenshot": "https://iloveresumes.ca/logo.png",
               "softwareVersion": "1.0.0",
               "datePublished": "2024-01-01",
-              "dateModified": "2024-01-01"
+              "dateModified": "2025-03-11"
             })
           }}
         />
@@ -99,29 +117,93 @@ export default function RootLayout({ children }) {
               "@context": "https://schema.org",
               "@type": "Organization",
               "name": "I Love Resumes",
-              "url": "https://iloveresumes.com",
-              "logo": "https://iloveresumes.com/logo.png",
+              "url": "https://iloveresumes.ca",
+              "logo": "https://iloveresumes.ca/logo.png",
               "description": "AI-powered resume builder helping professionals create standout resumes",
+              "addressCountry": "CA",
               "sameAs": [
-                "https://github.com/iloveresumes"
-              ],
+                "https://github.com/iloveresumes",
+                process.env.NEXT_PUBLIC_LINKEDIN_URL,
+                process.env.NEXT_PUBLIC_TWITTER_URL || process.env.NEXT_PUBLIC_X_URL,
+                process.env.NEXT_PUBLIC_FACEBOOK_URL,
+                process.env.NEXT_PUBLIC_INSTAGRAM_URL,
+                process.env.NEXT_PUBLIC_YOUTUBE_URL
+              ].filter(Boolean),
               "contactPoint": {
                 "@type": "ContactPoint",
                 "contactType": "customer service",
-                "url": "https://iloveresumes.com/contact"
+                "url": "https://iloveresumes.ca/contact",
+                "availableLanguage": "English"
               }
             })
           }}
         />
         
-        {/* Preconnect to external domains for performance */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://accounts.google.com" />
+        {/* FAQPage Schema - homepage FAQs */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              "mainEntity": [
+                {
+                  "@type": "Question",
+                  "name": "How does the AI resume builder work?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Upload your resume in PDF or paste as text. Paste a job description for keyword suggestions. Edit in real time. Export to Word or PDF."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "Is my resume data secure?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes. We use Google Sign-In. We do not share your data with third parties."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "Is I Love Resumes free?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes. Create and optimize resumes for free. Export to Word and PDF at no cost."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "Does it work for ATS?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes. We focus on ATS-friendly structure and keyword alignment so your resume gets past automated screening."
+                  }
+                }
+              ]
+            })
+          }}
+        />
         
-        {/* DNS Prefetch for performance */}
-        <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+        {/* Preconnect - accounts.google.com only (Google Sign-In) */}
+        <link rel="preconnect" href="https://accounts.google.com" />
         <link rel="dns-prefetch" href="//accounts.google.com" />
+        
+        {/* Google Analytics - add NEXT_PUBLIC_GA_ID=G-XXXXXXXX to .env.local to enable */}
+        {process.env.NEXT_PUBLIC_GA_ID && (
+          <>
+            <script async src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`} />
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+                  gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}');
+                `
+              }}
+            />
+          </>
+        )}
       </head>
       <body>
         <NavbarWrapper />

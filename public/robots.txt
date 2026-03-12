@@ -1,15 +1,10 @@
 User-agent: *
 Allow: /
-
-# Sitemap
-Sitemap: https://iloveresumes.com/sitemap.xml
-
-# Disallow admin and API routes
+Disallow: /dashboard
+Disallow: /result
+Disallow: /word-download
+Disallow: /myprofile
 Disallow: /admin/
 Disallow: /api/
 
-# Allow important pages
-Allow: /
-Allow: /contact
-Allow: /dashboard
-Allow: /result 
+Sitemap: https://iloveresumes.ca/sitemap.xml

@@ -1,0 +1,13 @@
+# I Love Resumes
+
+## Overview
+I Love Resumes is a free AI-powered resume builder. Upload your resume, match job descriptions, export to Word and PDF. ATS-optimized.
+
+## Key Pages
+- Homepage: https://iloveresumes.ca
+- Blog: https://iloveresumes.ca/blog
+- Contact: https://iloveresumes.ca/contact
+- FAQ: https://iloveresumes.ca/faq
+
+## Contact
+https://iloveresumes.ca/contact

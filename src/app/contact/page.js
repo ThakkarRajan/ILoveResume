@@ -42,18 +42,12 @@ export default function Contact() {
   useEffect(() => {
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      if (!firebaseUser) {
-        push("/");
-      } else {
-        setUser(firebaseUser);
-      }
+      setUser(firebaseUser); // Public page - show content for both logged-in and logged-out users
     });
     return () => unsubscribe();
-  }, [push]);
+  }, []);
 
-  if (!user) {
-    return <div>Loading...</div>;
-  }
+  // Contact page is now public - no auth gate
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -211,7 +205,7 @@ export default function Contact() {
         }}
       />
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         {/* Header Section */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
