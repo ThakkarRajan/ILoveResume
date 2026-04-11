@@ -79,6 +79,8 @@ export default function Navbar() {
                 alt="I Love Resumes"
                 width={200}
                 height={56}
+                sizes="(max-width: 768px) 11rem, 13rem"
+                quality={60}
                 className="hidden h-8 w-auto max-w-[11rem] object-contain sm:block md:max-w-[13rem]"
               />
             </Link>
@@ -288,6 +290,8 @@ export default function Navbar() {
               alt="I Love Resumes"
               width={160}
               height={48}
+              sizes="(max-width: 768px) 10rem, 12rem"
+              quality={60}
               className="hidden h-8 w-auto max-w-[10rem] object-contain sm:block md:max-w-[12rem]"
             />
           </Link>

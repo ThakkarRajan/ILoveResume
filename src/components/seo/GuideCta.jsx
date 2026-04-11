@@ -9,7 +9,7 @@ export default function GuideCta() {
       </p>
       <Link
         href="/"
-        className="mt-5 inline-flex min-h-[48px] items-center justify-center rounded-lg bg-zinc-900 px-6 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 focus-visible:ring-offset-2"
+        className="mt-5 inline-flex min-h-[48px] items-center justify-center rounded-lg bg-zinc-900 px-6 py-3 text-sm font-semibold !text-white shadow-sm transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 focus-visible:ring-offset-2"
       >
         Open the resume builder
       </Link>

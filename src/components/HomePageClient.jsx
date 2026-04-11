@@ -1,16 +1,16 @@
 "use client";
 
-import "../utils/firebase.js";
+import dynamic from "next/dynamic";
 import { wakeBackend } from "../utils/api.js";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "firebase/auth";
 
 import Link from "next/link";
-import SocialLinks from "./SocialLinks";
-import SiteLegalLinks from "./legal/SiteLegalLinks";
 import LegalConsentCheckbox from "./legal/LegalConsentCheckbox";
 import { useEffect, useState } from "react";
+
+const SocialLinks = dynamic(() => import("./SocialLinks"), { ssr: true });
+const SiteLegalLinks = dynamic(() => import("./legal/SiteLegalLinks"), { ssr: true });
 import {
   ArrowRight,
   Upload,
@@ -44,14 +44,37 @@ export default function HomePageClient() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [legalConsent, setLegalConsent] = useState(false);
   useEffect(() => {
-    const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      setUser(firebaseUser);
-      if (firebaseUser) {
-        router.push("/dashboard");
-      }
-    });
-    return () => unsubscribe();
+    let cancelled = false;
+    let unsubscribe = () => {};
+
+    const startAuth = async () => {
+      await import("../utils/firebase.js");
+      const { getAuth, onAuthStateChanged } = await import("firebase/auth");
+      if (cancelled) return;
+      const auth = getAuth();
+      unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+        setUser(firebaseUser);
+        if (firebaseUser) {
+          router.push("/dashboard");
+        }
+      });
+    };
+
+    const ric = typeof window !== "undefined" && window.requestIdleCallback;
+    let idleId;
+    let timeoutId;
+    if (typeof ric === "function") {
+      idleId = ric(() => void startAuth(), { timeout: 2000 });
+    } else {
+      timeoutId = window.setTimeout(() => void startAuth(), 1);
+    }
+
+    return () => {
+      cancelled = true;
+      unsubscribe();
+      if (idleId != null) window.cancelIdleCallback?.(idleId);
+      if (timeoutId != null) clearTimeout(timeoutId);
+    };
   }, [router]);
 
   if (user) {
@@ -99,7 +122,14 @@ export default function HomePageClient() {
             href="/"
             className="flex min-h-[44px] min-w-[44px] shrink-0 items-center gap-2.5 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
           >
-            <Image src="/logo.png" alt="I Love Resumes logo" width={36} height={36} className="rounded-md" />
+            <Image
+              src="/logo.png"
+              alt="I Love Resumes logo"
+              width={36}
+              height={36}
+              sizes="36px"
+              className="rounded-md"
+            />
             <span className="hidden text-sm font-semibold tracking-tight text-zinc-900 sm:inline">
               I Love Resumes
             </span>
@@ -164,6 +194,8 @@ export default function HomePageClient() {
               width={72}
               height={72}
               priority
+              fetchPriority="high"
+              sizes="72px"
               className="h-[72px] w-[72px] rounded-xl border border-zinc-200 bg-white object-contain shadow-sm"
             />
             <Image
@@ -171,7 +203,8 @@ export default function HomePageClient() {
               alt="I Love Resumes wordmark"
               width={200}
               height={48}
-              priority
+              sizes="(max-width: 640px) 148px, 200px"
+              quality={60}
               className="h-9 w-auto object-contain sm:h-11"
             />
           </div>
@@ -190,9 +223,11 @@ export default function HomePageClient() {
               type="button"
               onClick={async () => {
                 if (!legalConsent) return;
-                const auth = getAuth();
-                const provider = new GoogleAuthProvider();
                 try {
+                  await import("../utils/firebase.js");
+                  const { getAuth, GoogleAuthProvider, signInWithPopup } = await import("firebase/auth");
+                  const auth = getAuth();
+                  const provider = new GoogleAuthProvider();
                   await signInWithPopup(auth, provider);
                   wakeBackend();
                   router.push("/dashboard");

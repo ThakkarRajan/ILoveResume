@@ -1,5 +1,10 @@
 const nextConfig = {
+  experimental: {
+    optimizePackageImports: ["lucide-react"],
+  },
   images: {
+    /** Fills 384–640 gap so logos/wordmarks near ~2× DPR use 480w instead of 640w (smaller LCP bytes). */
+    deviceSizes: [480, 640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     remotePatterns: [
       {
         protocol: 'https',
