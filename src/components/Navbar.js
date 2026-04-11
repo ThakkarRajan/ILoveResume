@@ -5,18 +5,23 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  User, 
-  LogOut, 
-  Home, 
-  MessageSquare, 
+import {
+  User,
+  LogOut,
+  Home,
+  MessageSquare,
   ChevronDown,
   FileText,
   Menu,
   X,
-  LayoutDashboard
+  LayoutDashboard,
 } from "lucide-react";
 import { getAuth, onAuthStateChanged, signOut as firebaseSignOut } from "firebase/auth";
+
+const navItem =
+  "rounded-md px-3 py-2 text-sm font-medium text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900 min-h-[44px] flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25 focus-visible:ring-offset-2 focus-visible:ring-offset-white";
+
+const navItemMobile = "min-h-[48px] flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium text-zinc-800 hover:bg-zinc-100";
 
 export default function Navbar() {
   const [user, setUser] = useState(null);
@@ -46,118 +51,134 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
+      setIsScrolled(window.scrollY > 8);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-
-
   const handleLogout = () => {
     firebaseSignOut(getAuth());
-    // Optionally redirect to home
     window.location.href = "/";
   };
 
+  const shellClass = `w-full sticky top-0 z-50 border-b transition-shadow duration-200 ${
+    isScrolled ? "border-zinc-200 bg-white/95 shadow-sm" : "border-zinc-200/80 bg-white/90 backdrop-blur-md supports-[backdrop-filter]:bg-white/80"
+  }`;
 
-
-  // ========== SIGNED-IN NAVBAR ==========
   if (user) {
     return (
       <>
-        <motion.nav
-          initial={{ y: -100 }}
-          animate={{ y: 0 }}
-          className={`w-full sticky top-0 z-50 transition-all duration-300 backdrop-blur-lg border-b shadow-md ${isScrolled ? "shadow-lg" : "shadow-md"} bg-gradient-to-r from-white/90 via-purple-100/70 to-pink-100/70 border-purple-100/50`}
-        >
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4 flex items-center justify-between gap-2 sm:gap-4 min-w-0">
-            <Link href="/dashboard" className="flex items-center gap-2 sm:gap-3 group shrink-0">
-              <Image src="/logo.png" alt="I Love Resumes" width={80} height={56} className="w-12 h-10 sm:w-16 sm:h-12 md:w-20 md:h-14 rounded-lg sm:rounded-xl object-contain" />
-              <Image src="/Iloveresumelogotext.png" alt="I Love Resumes" width={200} height={56} className="hidden sm:block w-32 md:w-44 h-8 object-contain" />
+        <motion.nav initial={{ y: -8, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.2 }} className={shellClass}>
+          <div className="mx-auto flex max-w-6xl min-w-0 items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8 lg:py-3.5">
+            <Link href="/dashboard" className="flex min-w-0 shrink-0 items-center gap-2 sm:gap-3 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25 focus-visible:ring-offset-2">
+              <Image src="/logo.png" alt="I Love Resumes" width={72} height={56} className="h-9 w-9 rounded-md object-contain sm:h-10 sm:w-10" />
+              <Image
+                src="/Iloveresumelogotext.png"
+                alt="I Love Resumes"
+                width={200}
+                height={56}
+                className="hidden h-8 w-auto max-w-[11rem] object-contain sm:block md:max-w-[13rem]"
+              />
             </Link>
 
-            <div className="hidden md:flex items-center gap-1 lg:gap-2">
-              <Link href="/dashboard" className="px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-purple-100/80 hover:text-purple-700 min-h-[44px] flex items-center">Dashboard</Link>
-              <Link href="/myprofile" className="px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-purple-100/80 hover:text-purple-700 min-h-[44px] flex items-center">My Profile</Link>
-              <Link href="/blog" className="px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-purple-100/80 hover:text-purple-700 min-h-[44px] flex items-center">Blog</Link>
-              <Link href="/contact" className="px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-purple-100/80 hover:text-purple-700 min-h-[44px] flex items-center">Contact</Link>
+            <div className="hidden items-center gap-0.5 md:flex">
+              <Link href="/dashboard" className={navItem}>
+                Dashboard
+              </Link>
+              <Link href="/myprofile" className={navItem}>
+                My Profile
+              </Link>
+              <Link href="/blog" className={navItem}>
+                Blog
+              </Link>
+              <Link href="/contact" className={navItem}>
+                Contact
+              </Link>
             </div>
 
-            <div className="relative flex items-center gap-2 shrink-0" ref={menuRef}>
+            <div className="relative flex shrink-0 items-center gap-2" ref={menuRef}>
               <button
+                type="button"
                 onClick={() => setShowMobileNav(!showMobileNav)}
-                className="md:hidden p-2.5 rounded-xl text-gray-600 hover:bg-purple-100/80 min-h-[44px] min-w-[44px] flex items-center justify-center"
+                className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md text-zinc-600 hover:bg-zinc-100 md:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25"
                 aria-label="Menu"
               >
-                {showMobileNav ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                {showMobileNav ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </button>
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+              <button
+                type="button"
                 onClick={() => setShowMenu((p) => !p)}
-                className="flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl font-medium text-sm shadow-md min-h-[44px]"
+                className="flex min-h-[44px] max-w-[200px] items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm font-medium text-zinc-900 shadow-sm transition-colors hover:border-zinc-300 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25 focus-visible:ring-offset-2 sm:px-3.5"
               >
-                <div className="w-7 h-7 sm:w-8 sm:h-8 bg-white/20 rounded-full flex items-center justify-center shrink-0">
-                  <User className="w-4 h-4" />
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white ring-1 ring-zinc-200">
+                  {user?.photoURL ? (
+                    <Image src={user.photoURL} alt="" width={32} height={32} className="h-full w-full object-cover" />
+                  ) : (
+                    <User className="h-4 w-4 text-zinc-500" />
+                  )}
                 </div>
-                <span className="hidden sm:block truncate max-w-[120px]">{user?.displayName?.split(" ")[0] || "Profile"}</span>
-                <ChevronDown className={`w-4 h-4 shrink-0 ${showMenu ? "rotate-180" : ""} transition-transform`} />
-              </motion.button>
+                <span className="hidden min-w-0 truncate sm:inline">{user?.displayName?.split(" ")[0] || "Account"}</span>
+                <ChevronDown className={`h-4 w-4 shrink-0 text-zinc-500 transition-transform ${showMenu ? "rotate-180" : ""}`} />
+              </button>
 
-              {/* Signed-in: Profile dropdown */}
               <AnimatePresence>
                 {showMenu && (
                   <motion.div
-                    initial={{ opacity: 0, y: -10 }}
+                    initial={{ opacity: 0, y: -6 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="absolute right-0 top-full mt-2 w-64 sm:w-72 bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 overflow-hidden"
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute right-0 top-full z-50 mt-2 w-64 overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-lg sm:w-72"
                   >
-              <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-purple-50 to-pink-50">
-                <div className="flex items-center gap-3">
-                  {user?.photoURL ? (
-                    <Image src={user.photoURL} alt="" width={48} height={48} className="rounded-xl" />
-                  ) : (
-                    <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
-                      <User className="w-6 h-6 text-white" />
+                    <div className="border-b border-zinc-100 bg-zinc-50/80 px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        {user?.photoURL ? (
+                          <Image src={user.photoURL} alt="" width={40} height={40} className="rounded-lg" />
+                        ) : (
+                          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-zinc-200">
+                            <User className="h-5 w-5 text-zinc-600" />
+                          </div>
+                        )}
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate font-semibold text-zinc-900">{user?.displayName}</p>
+                          <p className="truncate text-xs text-zinc-500">{user?.email}</p>
+                        </div>
+                      </div>
                     </div>
-                  )}
-                  <div className="min-w-0 flex-1">
-                    <p className="font-bold text-gray-900 truncate">{user?.displayName}</p>
-                    <p className="text-xs text-gray-500 truncate">{user?.email}</p>
-                  </div>
-                </div>
-              </div>
-              <div className="p-2">
-                <Link href="/dashboard" onClick={() => setShowMenu(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-700 hover:bg-purple-50 font-medium">
-                  <LayoutDashboard className="w-5 h-5" />
-                  Dashboard
-                </Link>
-                <Link href="/myprofile" onClick={() => setShowMenu(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-700 hover:bg-purple-50 font-medium">
-                  <User className="w-5 h-5" />
-                  My Profile
-                </Link>
-                <Link href="/blog" onClick={() => setShowMenu(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-700 hover:bg-purple-50 font-medium">
-                  <FileText className="w-5 h-5" />
-                  Blog
-                </Link>
-                <Link href="/contact" onClick={() => setShowMenu(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-700 hover:bg-purple-50 font-medium">
-                  <MessageSquare className="w-5 h-5" />
-                  Contact
-                </Link>
-                <Link href="/" onClick={() => setShowMenu(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-700 hover:bg-purple-50 font-medium border-t border-gray-100 mt-2 pt-3">
-                  <Home className="w-5 h-5" />
-                  Home
-                </Link>
-                <button
-                  onClick={() => { setShowMenu(false); setShowModal(true); }}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-red-600 hover:bg-red-50 font-medium w-full mt-1"
-                >
-                  <LogOut className="w-5 h-5" />
-                  Logout
-                </button>
-              </div>
+                    <div className="p-1.5">
+                      <Link href="/dashboard" onClick={() => setShowMenu(false)} className={`${navItem} w-full gap-3`}>
+                        <LayoutDashboard className="h-4 w-4 text-zinc-500" />
+                        Dashboard
+                      </Link>
+                      <Link href="/myprofile" onClick={() => setShowMenu(false)} className={`${navItem} w-full gap-3`}>
+                        <User className="h-4 w-4 text-zinc-500" />
+                        My Profile
+                      </Link>
+                      <Link href="/blog" onClick={() => setShowMenu(false)} className={`${navItem} w-full gap-3`}>
+                        <FileText className="h-4 w-4 text-zinc-500" />
+                        Blog
+                      </Link>
+                      <Link href="/contact" onClick={() => setShowMenu(false)} className={`${navItem} w-full gap-3`}>
+                        <MessageSquare className="h-4 w-4 text-zinc-500" />
+                        Contact
+                      </Link>
+                      <Link href="/" onClick={() => setShowMenu(false)} className={`${navItem} mt-1 w-full gap-3 border-t border-zinc-100 pt-2`}>
+                        <Home className="h-4 w-4 text-zinc-500" />
+                        Home
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowMenu(false);
+                          setShowModal(true);
+                        }}
+                        className="mt-0.5 flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600/20"
+                      >
+                        <LogOut className="h-4 w-4" />
+                        Log out
+                      </button>
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -165,32 +186,77 @@ export default function Navbar() {
           </div>
         </motion.nav>
 
-        {/* Signed-in: Mobile menu */}
         <AnimatePresence>
           {showMobileNav && (
             <>
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowMobileNav(false)} className="fixed inset-0 bg-black/30 z-40 md:hidden" />
-              <motion.div initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }} transition={{ duration: 0.25 }} className="fixed top-0 right-0 bottom-0 w-64 bg-white shadow-2xl z-50 md:hidden pt-20 px-4">
-                <Link href="/dashboard" onClick={() => setShowMobileNav(false)} className="flex items-center gap-3 py-3 font-medium text-gray-700">Dashboard</Link>
-                <Link href="/myprofile" onClick={() => setShowMobileNav(false)} className="flex items-center gap-3 py-3 font-medium text-gray-700">My Profile</Link>
-                <Link href="/blog" onClick={() => setShowMobileNav(false)} className="flex items-center gap-3 py-3 font-medium text-gray-700">Blog</Link>
-                <Link href="/contact" onClick={() => setShowMobileNav(false)} className="flex items-center gap-3 py-3 font-medium text-gray-700">Contact</Link>
-                <Link href="/" onClick={() => setShowMobileNav(false)} className="flex items-center gap-3 py-3 font-medium text-gray-700 border-t mt-2 pt-3">Home</Link>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setShowMobileNav(false)}
+                className="fixed inset-0 z-40 bg-zinc-900/40 md:hidden"
+              />
+              <motion.div
+                initial={{ x: "100%" }}
+                animate={{ x: 0 }}
+                exit={{ x: "100%" }}
+                transition={{ duration: 0.2 }}
+                className="fixed bottom-0 right-0 top-0 z-50 w-[min(18rem,100vw-2rem)] overflow-y-auto border-l border-zinc-200 bg-white shadow-xl md:hidden"
+              >
+                <div className="flex flex-col gap-0.5 p-4 pt-20">
+                  <Link href="/dashboard" onClick={() => setShowMobileNav(false)} className={navItemMobile}>
+                    Dashboard
+                  </Link>
+                  <Link href="/myprofile" onClick={() => setShowMobileNav(false)} className={navItemMobile}>
+                    My Profile
+                  </Link>
+                  <Link href="/blog" onClick={() => setShowMobileNav(false)} className={navItemMobile}>
+                    Blog
+                  </Link>
+                  <Link href="/contact" onClick={() => setShowMobileNav(false)} className={navItemMobile}>
+                    Contact
+                  </Link>
+                  <Link href="/" onClick={() => setShowMobileNav(false)} className={`${navItemMobile} mt-2 border-t border-zinc-100 pt-3`}>
+                    Home
+                  </Link>
+                </div>
               </motion.div>
             </>
           )}
         </AnimatePresence>
 
-        {/* Logout Modal */}
         <AnimatePresence>
           {showModal && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4">
-              <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} exit={{ scale: 0.9 }} className="bg-white rounded-2xl p-6 sm:p-8 max-w-sm w-full">
-                <h2 className="text-xl font-bold text-gray-900 mb-2">Confirm Logout</h2>
-                <p className="text-gray-600 mb-6">Are you sure you want to sign out?</p>
-                <div className="flex gap-3">
-                  <button onClick={() => setShowModal(false)} className="flex-1 py-2.5 border rounded-xl font-medium text-gray-700">Cancel</button>
-                  <button onClick={handleLogout} className="flex-1 py-2.5 bg-red-500 text-white rounded-xl font-medium">Logout</button>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[60] flex items-center justify-center bg-zinc-900/50 p-4 backdrop-blur-[2px]"
+            >
+              <motion.div
+                initial={{ scale: 0.98, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.98, opacity: 0 }}
+                transition={{ duration: 0.15 }}
+                className="w-full max-w-sm rounded-xl border border-zinc-200 bg-white p-6 shadow-xl"
+              >
+                <h2 className="text-lg font-semibold text-zinc-900">Sign out?</h2>
+                <p className="mt-2 text-sm text-zinc-600">You will need to sign in again to access your resumes.</p>
+                <div className="mt-6 flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setShowModal(false)}
+                    className="flex-1 rounded-lg border border-zinc-300 bg-white py-2.5 text-sm font-medium text-zinc-800 transition-colors hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="flex-1 rounded-lg bg-red-600 py-2.5 text-sm font-medium text-white transition-colors hover:bg-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600/40"
+                  >
+                    Log out
+                  </button>
                 </div>
               </motion.div>
             </motion.div>
@@ -200,52 +266,93 @@ export default function Navbar() {
     );
   }
 
-  // ========== SIGNED-OUT NAVBAR ==========
   return (
     <>
-      <motion.nav
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        className={`w-full sticky top-0 z-50 transition-all duration-300 backdrop-blur-lg border-b shadow-md ${isScrolled ? "shadow-lg" : "shadow-md"} bg-white/95 border-slate-200/50`}
-      >
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4 flex items-center justify-between gap-2 sm:gap-4 min-w-0">
-          <Link href="/" className="flex items-center gap-1.5 sm:gap-2 shrink-0 min-w-0">
-            <Image src="/logo.png" alt="I Love Resumes" width={48} height={40} className="w-10 h-9 sm:w-12 sm:h-10 rounded-lg shrink-0" />
-            <Image src="/Iloveresumelogotext.png" alt="I Love Resumes" width={160} height={48} className="hidden sm:block w-28 md:w-36 h-8 object-contain min-w-0" />
+      <motion.nav initial={{ y: -8, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.2 }} className={shellClass}>
+        <div className="mx-auto flex max-w-6xl min-w-0 items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8 lg:py-3.5">
+          <Link href="/" className="flex min-w-0 shrink-0 items-center gap-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25 focus-visible:ring-offset-2">
+            <Image src="/logo.png" alt="I Love Resumes" width={40} height={36} className="h-9 w-9 rounded-md sm:h-10 sm:w-10" />
+            <Image
+              src="/Iloveresumelogotext.png"
+              alt="I Love Resumes"
+              width={160}
+              height={48}
+              className="hidden h-8 w-auto max-w-[10rem] object-contain sm:block md:max-w-[12rem]"
+            />
           </Link>
 
-          <div className="hidden md:flex items-center gap-1 lg:gap-2 ml-auto">
-            <Link href="/" className="px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-purple-600 min-h-[44px] flex items-center">Home</Link>
-            <Link href="/blog" className="px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-purple-600 min-h-[44px] flex items-center">Blog</Link>
-            <Link href="/contact" className="px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-purple-600 min-h-[44px] flex items-center">Contact</Link>
-            <Link href="/" className="ml-2 px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 min-h-[44px] flex items-center">Sign in</Link>
+          <div className="ml-auto hidden items-center gap-1 md:flex">
+            <Link href="/" className={navItem}>
+              Home
+            </Link>
+            <Link href="/blog" className={navItem}>
+              Blog
+            </Link>
+            <Link href="/contact" className={navItem}>
+              Contact
+            </Link>
+            <Link
+              href="/"
+              className="ml-2 inline-flex min-h-[44px] items-center rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 focus-visible:ring-offset-2"
+            >
+              Sign in
+            </Link>
           </div>
 
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          <div className="flex shrink-0 items-center gap-2 md:hidden">
             <button
+              type="button"
               onClick={() => setShowMobileNav(!showMobileNav)}
-              className="md:hidden p-2.5 rounded-xl text-gray-600 hover:bg-slate-100 min-h-[44px] min-w-[44px] flex items-center justify-center touch-manipulation"
+              className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md text-zinc-600 hover:bg-zinc-100 touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25"
               aria-label="Menu"
             >
-              {showMobileNav ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {showMobileNav ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
-            <Link href="/" className="md:hidden px-3 sm:px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-purple-600 to-pink-600 text-white min-h-[44px] flex items-center justify-center whitespace-nowrap touch-manipulation">
+            <Link
+              href="/"
+              className="inline-flex min-h-[44px] items-center justify-center whitespace-nowrap rounded-lg bg-zinc-900 px-3 py-2 text-sm font-semibold text-white touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30"
+            >
               Sign in
             </Link>
           </div>
         </div>
       </motion.nav>
 
-      {/* Signed-out: Mobile menu */}
       <AnimatePresence>
         {showMobileNav && (
           <>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowMobileNav(false)} className="fixed inset-0 bg-black/30 z-40 md:hidden" />
-            <motion.div initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }} transition={{ duration: 0.25 }} className="fixed top-0 right-0 bottom-0 w-64 max-w-[85vw] bg-white shadow-2xl z-50 md:hidden pt-20 px-4 pb-6 overflow-y-auto">
-              <Link href="/" onClick={() => setShowMobileNav(false)} className="flex items-center gap-3 py-3 font-medium text-gray-700 min-h-[44px]">Home</Link>
-              <Link href="/blog" onClick={() => setShowMobileNav(false)} className="flex items-center gap-3 py-3 font-medium text-gray-700 min-h-[44px]">Blog</Link>
-              <Link href="/contact" onClick={() => setShowMobileNav(false)} className="flex items-center gap-3 py-3 font-medium text-gray-700 min-h-[44px]">Contact</Link>
-              <Link href="/" onClick={() => setShowMobileNav(false)} className="mt-4 flex items-center justify-center py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold min-h-[44px]">Sign in</Link>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowMobileNav(false)}
+              className="fixed inset-0 z-40 bg-zinc-900/40 md:hidden"
+            />
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ duration: 0.2 }}
+              className="fixed bottom-0 right-0 top-0 z-50 flex w-[min(18rem,85vw)] flex-col overflow-y-auto border-l border-zinc-200 bg-white pb-6 pt-20 shadow-xl md:hidden"
+            >
+              <div className="flex flex-col gap-0.5 px-4">
+                <Link href="/" onClick={() => setShowMobileNav(false)} className={navItemMobile}>
+                  Home
+                </Link>
+                <Link href="/blog" onClick={() => setShowMobileNav(false)} className={navItemMobile}>
+                  Blog
+                </Link>
+                <Link href="/contact" onClick={() => setShowMobileNav(false)} className={navItemMobile}>
+                  Contact
+                </Link>
+                <Link
+                  href="/"
+                  onClick={() => setShowMobileNav(false)}
+                  className="mt-4 inline-flex min-h-[48px] items-center justify-center rounded-lg bg-zinc-900 px-4 py-3 text-sm font-semibold text-white"
+                >
+                  Sign in
+                </Link>
+              </div>
             </motion.div>
           </>
         )}

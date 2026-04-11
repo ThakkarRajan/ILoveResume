@@ -23,12 +23,13 @@ import {
   CheckCircle, 
   AlertCircle, 
   ArrowLeft,
-  Sparkles,
   Eye,
   Clock,
   Zap
 } from "lucide-react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import LegalConsentCheckbox from "../../components/legal/LegalConsentCheckbox";
+import SiteLegalLinks from "../../components/legal/SiteLegalLinks";
 import "../../utils/firebase.js";
 
 // Normalize contact values to full URLs for hyperlinks
@@ -60,6 +61,81 @@ const getEduLocation = (edu) => (edu?.location || edu?.city || "").trim() || "";
 const getEduStart = (edu) => (edu?.start || edu?.startDate || "").trim() || "";
 const getEduEnd = (edu) => (edu?.end || edu?.endDate || "").trim() || "";
 
+const norm = (v) => (typeof v === "string" ? v.trim() : "");
+
+/** Non-empty sections only — used by Word + PDF export */
+const hasSummary = (data) => norm(data?.tailored_summary).length > 0;
+
+const getNonEmptyExperiences = (data) => {
+  const list = Array.isArray(data?.tailored_experience) ? data.tailored_experience : [];
+  return list.filter((exp) => {
+    if (!exp || typeof exp !== "object") return false;
+    const hl = (exp.highlights || []).filter((h) => norm(h));
+    return (
+      norm(exp.company) ||
+      norm(exp.title) ||
+      norm(exp.location) ||
+      norm(exp.start) ||
+      norm(exp.end) ||
+      hl.length > 0
+    );
+  });
+};
+
+const hasExperience = (data) => getNonEmptyExperiences(data).length > 0;
+
+const getSkillsEntries = (data) => {
+  const skills = data?.tailored_skills;
+  if (!skills || typeof skills !== "object" || Array.isArray(skills)) return [];
+  return Object.entries(skills).filter(([cat, arr]) => {
+    if (!norm(cat)) return false;
+    const list = Array.isArray(arr) ? arr : [];
+    return list.some((s) => norm(s));
+  });
+};
+
+const hasSkills = (data) => getSkillsEntries(data).length > 0;
+
+const getNonEmptyProjects = (data) => {
+  const list = Array.isArray(data?.projects) ? data.projects : [];
+  return list.filter((proj) => {
+    if (!proj || typeof proj !== "object") return false;
+    const techArr = Array.isArray(proj.tech)
+      ? proj.tech.filter((t) => norm(t))
+      : norm(proj.tech)
+        ? [String(proj.tech).trim()]
+        : [];
+    const hl = (proj.highlights || []).filter((h) => norm(h));
+    return norm(proj.title) || techArr.length > 0 || hl.length > 0;
+  });
+};
+
+const hasProjects = (data) => getNonEmptyProjects(data).length > 0;
+
+const getNonEmptyEducation = (data) => {
+  const eduArray = Array.isArray(data?.education)
+    ? data.education
+    : Object.values(data?.education || {});
+  return eduArray.filter((edu) => {
+    const program = getEduProgram(edu);
+    const school = getEduSchool(edu);
+    const location = getEduLocation(edu);
+    const start = getEduStart(edu);
+    const end = getEduEnd(edu);
+    const highlights = Array.isArray(edu?.highlights) ? edu.highlights.filter((h) => norm(h)) : [];
+    return !!(program || school || location || start || end || highlights.length);
+  });
+};
+
+const hasEducation = (data) => getNonEmptyEducation(data).length > 0;
+
+const getNonEmptyCertificates = (data) => {
+  const list = Array.isArray(data?.tailored_certificates) ? data.tailored_certificates : [];
+  return list.filter((c) => norm(typeof c === "string" ? c : String(c ?? "")));
+};
+
+const hasCertificates = (data) => getNonEmptyCertificates(data).length > 0;
+
 export default function WordDownloadPage() {
   const [user, setUser] = useState(null);
   const [resumeData, setResumeData] = useState(null);
@@ -67,6 +143,7 @@ export default function WordDownloadPage() {
   const [loading, setLoading] = useState(false);
   const [pdfUrl, setPdfUrl] = useState("");
   const [downloadType, setDownloadType] = useState("");
+  const [exportLegalConsent, setExportLegalConsent] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -117,15 +194,15 @@ export default function WordDownloadPage() {
 
     const sections = [];
 
-    sections.push(
-      new Paragraph({
-        children: [
-          new TextRun({ text: resumeData.name, bold: true, size: 40 }),
-        ],
-        alignment: AlignmentType.CENTER,
-        spacing: { after: 100 },
-      })
-    );
+    if (norm(resumeData.name)) {
+      sections.push(
+        new Paragraph({
+          children: [new TextRun({ text: resumeData.name, bold: true, size: 40 })],
+          alignment: AlignmentType.CENTER,
+          spacing: { after: 100 },
+        })
+      );
+    }
 
     const sep = () => new TextRun({ text: " | ", size: 20 });
     const contactChildren = [];
@@ -179,149 +256,142 @@ export default function WordDownloadPage() {
       })
     );
 
-    sections.push(...sectionHeader("SUMMARY"));
-    sections.push(
-      new Paragraph({
-        children: [
-          new TextRun({ text: resumeData.tailored_summary || "", size: 20 }),
-        ],
-      })
-    );
+    if (hasSummary(resumeData)) {
+      sections.push(...sectionHeader("SUMMARY"));
+      sections.push(
+        new Paragraph({
+          children: [new TextRun({ text: resumeData.tailored_summary || "", size: 20 })],
+        })
+      );
+    }
 
-    sections.push(...sectionHeader("EXPERIENCE"));
-    (resumeData.tailored_experience || []).forEach((exp) => {
-      sections.push(
-        new Paragraph({
-          tabStops: [
-            { type: TabStopType.RIGHT, position: TabStopPosition.MAX },
-          ],
-          children: [
-            new TextRun({ text: exp.company, size: 20 }),
-            new TextRun({
-              text: `\t${exp.start} – ${exp.end}`,
-              bold: true,
-              size: 20,
-            }),
-          ],
-        })
-      );
-      sections.push(
-        new Paragraph({
-          tabStops: [
-            { type: TabStopType.RIGHT, position: TabStopPosition.MAX },
-          ],
-          children: [
-            new TextRun({ text: exp.title, size: 20 }),
-            new TextRun({ text: `\t${exp.location}`, size: 20 }),
-          ],
-        })
-      );
-      (exp.highlights || []).forEach((hl) =>
+    if (hasExperience(resumeData)) {
+      sections.push(...sectionHeader("EXPERIENCE"));
+      getNonEmptyExperiences(resumeData).forEach((exp) => {
         sections.push(
           new Paragraph({
-            bullet: { level: 0 },
-            children: [new TextRun({ text: hl, size: 20 })],
+            tabStops: [{ type: TabStopType.RIGHT, position: TabStopPosition.MAX }],
+            children: [
+              new TextRun({ text: exp.company || "", size: 20 }),
+              new TextRun({
+                text: `\t${exp.start || ""} – ${exp.end || ""}`,
+                bold: true,
+                size: 20,
+              }),
+            ],
           })
-        )
-      );
-    });
+        );
+        sections.push(
+          new Paragraph({
+            tabStops: [{ type: TabStopType.RIGHT, position: TabStopPosition.MAX }],
+            children: [
+              new TextRun({ text: exp.title || "", size: 20 }),
+              new TextRun({ text: `\t${exp.location || ""}`, size: 20 }),
+            ],
+          })
+        );
+        (exp.highlights || [])
+          .filter((hl) => norm(hl))
+          .forEach((hl) =>
+            sections.push(
+              new Paragraph({
+                bullet: { level: 0 },
+                children: [new TextRun({ text: hl, size: 20 })],
+              })
+            )
+          );
+      });
+    }
 
-    sections.push(...sectionHeader("TECHNICAL SKILLS"));
-    Object.entries(resumeData.tailored_skills || {}).forEach(
-      ([cat, skills]) => {
+    if (hasSkills(resumeData)) {
+      sections.push(...sectionHeader("TECHNICAL SKILLS"));
+      getSkillsEntries(resumeData).forEach(([cat, skills]) => {
+        const list = (Array.isArray(skills) ? skills : []).filter((s) => norm(s));
         sections.push(
           new Paragraph({
             children: [
               new TextRun({ text: `${cat}: `, bold: true, size: 20 }),
-              new TextRun({ text: skills.join(", "), size: 20 }),
+              new TextRun({ text: list.join(", "), size: 20 }),
             ],
           })
         );
-      }
-    );
+      });
+    }
 
-    sections.push(...sectionHeader("PROJECTS"));
-    (resumeData.projects || []).forEach((proj) => {
-      sections.push(
-        new Paragraph({
-          tabStops: [
-            { type: TabStopType.RIGHT, position: TabStopPosition.MAX },
-          ],
-          children: [
-            new TextRun({
-              text: proj.title,
-              bold: true,
-              size: 20,
-            }),
-            new TextRun({
-              text:
-                "\t" +
-                (Array.isArray(proj.tech)
-                  ? `Tech: ${proj.tech.join(", ")}`
-                  : proj.tech || ""),
-              size: 20,
-            }),
-          ],
-        })
-      );
+    if (hasProjects(resumeData)) {
+      sections.push(...sectionHeader("PROJECTS"));
+      getNonEmptyProjects(resumeData).forEach((proj) => {
+        const techStr = Array.isArray(proj.tech)
+          ? `Tech: ${proj.tech.filter((t) => norm(t)).join(", ")}`
+          : norm(proj.tech)
+            ? `Tech: ${proj.tech}`
+            : "";
+        sections.push(
+          new Paragraph({
+            tabStops: [{ type: TabStopType.RIGHT, position: TabStopPosition.MAX }],
+            children: [
+              new TextRun({ text: proj.title || "", bold: true, size: 20 }),
+              new TextRun({ text: techStr ? `\t${techStr}` : "", size: 20 }),
+            ],
+          })
+        );
+        (proj.highlights || [])
+          .filter((hl) => norm(hl))
+          .forEach((hl) =>
+            sections.push(
+              new Paragraph({
+                bullet: { level: 0 },
+                children: [new TextRun({ text: hl, size: 20 })],
+              })
+            )
+          );
+      });
+    }
 
-      proj.highlights?.forEach((hl) =>
+    if (hasEducation(resumeData)) {
+      sections.push(...sectionHeader("EDUCATION"));
+      getNonEmptyEducation(resumeData).forEach((edu) => {
+        const program = getEduProgram(edu);
+        const school = getEduSchool(edu);
+        const location = getEduLocation(edu);
+        const start = getEduStart(edu);
+        const end = getEduEnd(edu);
+        sections.push(
+          new Paragraph({
+            tabStops: [{ type: TabStopType.RIGHT, position: TabStopPosition.MAX }],
+            children: [
+              new TextRun({ text: program, italics: true, size: 20 }),
+              new TextRun({
+                text: `\t${start} – ${end}`,
+                bold: true,
+                size: 20,
+              }),
+            ],
+          })
+        );
+        sections.push(
+          new Paragraph({
+            tabStops: [{ type: TabStopType.RIGHT, position: TabStopPosition.MAX }],
+            children: [
+              new TextRun({ text: school, bold: true, size: 20 }),
+              new TextRun({ text: `\t${location}`, italics: true, size: 20 }),
+            ],
+          })
+        );
+      });
+    }
+
+    if (hasCertificates(resumeData)) {
+      sections.push(...sectionHeader("CERTIFICATES"));
+      getNonEmptyCertificates(resumeData).forEach((cert) => {
         sections.push(
           new Paragraph({
             bullet: { level: 0 },
-            children: [new TextRun({ text: hl, size: 20 })],
+            children: [new TextRun({ text: cert, size: 20 })],
           })
-        )
-      );
-    });
-
-    sections.push(...sectionHeader("EDUCATION"));
-    const eduArray = Array.isArray(resumeData.education)
-      ? resumeData.education
-      : Object.values(resumeData.education || {});
-    eduArray.forEach((edu) => {
-      const program = getEduProgram(edu);
-      const school = getEduSchool(edu);
-      const location = getEduLocation(edu);
-      const start = getEduStart(edu);
-      const end = getEduEnd(edu);
-      sections.push(
-        new Paragraph({
-          tabStops: [
-            { type: TabStopType.RIGHT, position: TabStopPosition.MAX },
-          ],
-          children: [
-            new TextRun({ text: program, italics: true, size: 20 }),
-            new TextRun({
-              text: `\t${start} – ${end}`,
-              bold: true,
-              size: 20,
-            }),
-          ],
-        })
-      );
-      sections.push(
-        new Paragraph({
-          tabStops: [
-            { type: TabStopType.RIGHT, position: TabStopPosition.MAX },
-          ],
-          children: [
-            new TextRun({ text: school, bold: true, size: 20 }),
-            new TextRun({ text: `\t${location}`, italics: true, size: 20 }),
-          ],
-        })
-      );
-    });
-
-    sections.push(...sectionHeader("CERTIFICATES"));
-    (resumeData.tailored_certificates || []).forEach((cert) => {
-      sections.push(
-        new Paragraph({
-          bullet: { level: 0 },
-          children: [new TextRun({ text: cert, size: 20 })],
-        })
-      );
-    });
+        );
+      });
+    }
 
     const doc = new Document({
       sections: [
@@ -436,7 +506,9 @@ export default function WordDownloadPage() {
       y -= 8;
     };
 
-    drawText(data.name || "", { size: 16, bold: true, align: "center" });
+    if (norm(data.name)) {
+      drawText(data.name, { size: 16, bold: true, align: "center" });
+    }
     const contact = data.contact || {};
     const contactSegments = [];
     if (contact.location) contactSegments.push({ text: contact.location });
@@ -491,64 +563,68 @@ export default function WordDownloadPage() {
       y -= LINE_SPACING;
     }
 
-    sectionHeader("SUMMARY");
-    drawText(data.tailored_summary || "", { size: 11 });
+    if (hasSummary(data)) {
+      sectionHeader("SUMMARY");
+      drawText(data.tailored_summary || "", { size: 11 });
+    }
 
-    sectionHeader("EXPERIENCE");
-    (data.tailored_experience || []).forEach((exp) => {
-      drawText(`${exp.company} (${exp.start} – ${exp.end})`, {
-        size: 11,
-        bold: true,
+    if (hasExperience(data)) {
+      sectionHeader("EXPERIENCE");
+      getNonEmptyExperiences(data).forEach((exp) => {
+        drawText(`${exp.company || ""} (${exp.start || ""} – ${exp.end || ""})`, {
+          size: 11,
+          bold: true,
+        });
+        drawText(`${exp.title || ""} — ${exp.location || ""}`, { size: 11, italics: true });
+        (exp.highlights || [])
+          .filter((hl) => norm(hl))
+          .forEach((hl) => drawText(`•     ${hl}`, { size: 10, indent: 15 }));
+        y -= 4;
       });
-      drawText(`${exp.title} — ${exp.location}`, { size: 11, italics: true });
-      (exp.highlights || []).forEach((hl) =>
-        drawText(`•     ${hl}`, { size: 10, indent: 15 })
+    }
+
+    if (hasSkills(data)) {
+      sectionHeader("TECHNICAL SKILLS");
+      getSkillsEntries(data).forEach(([cat, skills]) => {
+        const list = (Array.isArray(skills) ? skills : []).filter((s) => norm(s));
+        drawText(`${cat}: ${list.join(", ")}`, { size: 11 });
+      });
+    }
+
+    if (hasProjects(data)) {
+      sectionHeader("PROJECTS");
+      getNonEmptyProjects(data).forEach((proj) => {
+        const techArray = Array.isArray(proj.tech)
+          ? proj.tech.filter((t) => norm(t))
+          : (proj.tech || "").split(",").map((t) => t.trim()).filter(Boolean);
+        const techPart = techArray.length ? ` | Tech: ${techArray.join(", ")}` : "";
+        drawText(`${proj.title || ""}${techPart}`, { size: 11, bold: true });
+        (proj.highlights || [])
+          .filter((hl) => norm(hl))
+          .forEach((hl) => drawText(`•     ${hl}`, { size: 10, indent: 15 }));
+        y -= 4;
+      });
+    }
+
+    if (hasEducation(data)) {
+      sectionHeader("EDUCATION");
+      getNonEmptyEducation(data).forEach((edu) => {
+        const program = getEduProgram(edu);
+        const school = getEduSchool(edu);
+        const location = getEduLocation(edu);
+        const start = getEduStart(edu);
+        const end = getEduEnd(edu);
+        drawText(`${program} (${start} – ${end})`, { size: 11, bold: true });
+        drawText(`${school} — ${location}`, { size: 11, italics: true });
+      });
+    }
+
+    if (hasCertificates(data)) {
+      sectionHeader("CERTIFICATES");
+      getNonEmptyCertificates(data).forEach((cert) =>
+        drawText(`•     ${cert}`, { size: 10, indent: 15 })
       );
-      y -= 4;
-    });
-
-    sectionHeader("TECHNICAL SKILLS");
-    Object.entries(data.tailored_skills || {}).forEach(([cat, skills]) => {
-      drawText(`${cat}: ${skills.join(", ")}`, { size: 11 });
-    });
-
-    sectionHeader("PROJECTS");
-    (data.projects || []).forEach((proj) => {
-      const techArray = Array.isArray(proj.tech)
-        ? proj.tech
-        : (proj.tech || "").split(",").map((t) => t.trim());
-
-      drawText(proj.title + ` | Tech: ${techArray.join(", ")}`, {
-        size: 11,
-        bold: true,
-      });
-
-      proj.highlights?.forEach((hl) =>
-        drawText(`•     ${hl}`, { size: 10, indent: 15 })
-      );
-      y -= 4;
-    });
-    sectionHeader("EDUCATION");
-    const eduArray = Array.isArray(data.education)
-      ? data.education
-      : Object.values(data.education || {});
-    eduArray.forEach((edu) => {
-      const program = getEduProgram(edu);
-      const school = getEduSchool(edu);
-      const location = getEduLocation(edu);
-      const start = getEduStart(edu);
-      const end = getEduEnd(edu);
-      drawText(`${program} (${start} – ${end})`, {
-        size: 11,
-        bold: true,
-      });
-      drawText(`${school} — ${location}`, { size: 11, italics: true });
-    });
-
-    sectionHeader("CERTIFICATES");
-    (data.tailored_certificates || []).forEach((cert) =>
-      drawText(`•     ${cert}`, { size: 10, indent: 15 })
-    );
+    }
 
     const pdfBytes = await pdfDoc.save();
     const blob = new Blob([pdfBytes], { type: "application/pdf" });
@@ -558,6 +634,7 @@ export default function WordDownloadPage() {
 
   const handleDownloadWord = async () => {
     if (!resumeData) return;
+    if (!exportLegalConsent) return;
     setLoading(true);
     setDownloadType("word");
     
@@ -577,6 +654,7 @@ export default function WordDownloadPage() {
 
   const handleDownloadPDF = async () => {
     if (!resumeData) return;
+    if (!exportLegalConsent) return;
     setLoading(true);
     setDownloadType("pdf");
 
@@ -673,7 +751,9 @@ export default function WordDownloadPage() {
         y -= 8;
       };
 
-      drawText(resumeData.name || "", { size: 16, bold: true, align: "center" });
+      if (norm(resumeData.name)) {
+        drawText(resumeData.name, { size: 16, bold: true, align: "center" });
+      }
       const contact = resumeData.contact || {};
       const contactSegments = [];
       if (contact.location) contactSegments.push({ text: contact.location });
@@ -728,65 +808,68 @@ export default function WordDownloadPage() {
         y -= LINE_SPACING;
       }
 
-      sectionHeader("SUMMARY");
-      drawText(resumeData.tailored_summary || "", { size: 11 });
+      if (hasSummary(resumeData)) {
+        sectionHeader("SUMMARY");
+        drawText(resumeData.tailored_summary || "", { size: 11 });
+      }
 
-      sectionHeader("EXPERIENCE");
-      (resumeData.tailored_experience || []).forEach((exp) => {
-        drawText(`${exp.company} (${exp.start} – ${exp.end})`, {
-          size: 11,
-          bold: true,
+      if (hasExperience(resumeData)) {
+        sectionHeader("EXPERIENCE");
+        getNonEmptyExperiences(resumeData).forEach((exp) => {
+          drawText(`${exp.company || ""} (${exp.start || ""} – ${exp.end || ""})`, {
+            size: 11,
+            bold: true,
+          });
+          drawText(`${exp.title || ""} — ${exp.location || ""}`, { size: 11, italics: true });
+          (exp.highlights || [])
+            .filter((hl) => norm(hl))
+            .forEach((hl) => drawText(`•     ${hl}`, { size: 10, indent: 15 }));
+          y -= 4;
         });
-        drawText(`${exp.title} — ${exp.location}`, { size: 11, italics: true });
-        (exp.highlights || []).forEach((hl) =>
-          drawText(`•     ${hl}`, { size: 10, indent: 15 })
+      }
+
+      if (hasSkills(resumeData)) {
+        sectionHeader("TECHNICAL SKILLS");
+        getSkillsEntries(resumeData).forEach(([cat, skills]) => {
+          const list = (Array.isArray(skills) ? skills : []).filter((s) => norm(s));
+          drawText(`${cat}: ${list.join(", ")}`, { size: 11 });
+        });
+      }
+
+      if (hasProjects(resumeData)) {
+        sectionHeader("PROJECTS");
+        getNonEmptyProjects(resumeData).forEach((proj) => {
+          const techArray = Array.isArray(proj.tech)
+            ? proj.tech.filter((t) => norm(t))
+            : (proj.tech || "").split(",").map((t) => t.trim()).filter(Boolean);
+          const techPart = techArray.length ? ` | Tech: ${techArray.join(", ")}` : "";
+          drawText(`${proj.title || ""}${techPart}`, { size: 11, bold: true });
+          (proj.highlights || [])
+            .filter((hl) => norm(hl))
+            .forEach((hl) => drawText(`•     ${hl}`, { size: 10, indent: 15 }));
+          y -= 4;
+        });
+      }
+
+      if (hasEducation(resumeData)) {
+        sectionHeader("EDUCATION");
+        getNonEmptyEducation(resumeData).forEach((edu) => {
+          const program = getEduProgram(edu);
+          const school = getEduSchool(edu);
+          const location = getEduLocation(edu);
+          const start = getEduStart(edu);
+          const end = getEduEnd(edu);
+          drawText(`${program} (${start} – ${end})`, { size: 11, bold: true });
+          drawText(`${school} — ${location}`, { size: 11, italics: true });
+        });
+      }
+
+      if (hasCertificates(resumeData)) {
+        sectionHeader("CERTIFICATES");
+        getNonEmptyCertificates(resumeData).forEach((cert) =>
+          drawText(`•     ${cert}`, { size: 10, indent: 15 })
         );
-        y -= 4;
-      });
-
-      sectionHeader("TECHNICAL SKILLS");
-      Object.entries(resumeData.tailored_skills || {}).forEach(([cat, skills]) => {
-        drawText(`${cat}: ${skills.join(", ")}`, { size: 11 });
-      });
-
-      sectionHeader("PROJECTS");
-      (resumeData.projects || []).forEach((proj) => {
-        const techArray = Array.isArray(proj.tech)
-          ? proj.tech
-          : (proj.tech || "").split(",").map((t) => t.trim());
-
-        drawText(proj.title + ` | Tech: ${techArray.join(", ")}`, {
-          size: 11,
-          bold: true,
-        });
-
-        proj.highlights?.forEach((hl) =>
-          drawText(`•     ${hl}`, { size: 10, indent: 15 })
-        );
-        y -= 4;
-      });
-
-      sectionHeader("EDUCATION");
-      const eduArray = Array.isArray(resumeData.education)
-        ? resumeData.education
-        : Object.values(resumeData.education || {});
-      eduArray.forEach((edu) => {
-        const program = getEduProgram(edu);
-        const school = getEduSchool(edu);
-        const location = getEduLocation(edu);
-        const start = getEduStart(edu);
-        const end = getEduEnd(edu);
-        drawText(`${program} (${start} – ${end})`, {
-          size: 11,
-          bold: true,
-        });
-        drawText(`${school} — ${location}`, { size: 11, italics: true });
-      });
-
-      sectionHeader("CERTIFICATES");
-      (resumeData.tailored_certificates || []).forEach((cert) =>
-        drawText(`•     ${cert}`, { size: 10, indent: 15 })
-      );
+      }
 
       const pdfBytes = await pdfDoc.save();
       const blob = new Blob([pdfBytes], { type: "application/pdf" });
@@ -804,61 +887,41 @@ export default function WordDownloadPage() {
   };
 
   if (!user) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex min-h-dvh items-center justify-center bg-zinc-50 text-sm text-zinc-500">
+        Loading…
+      </div>
+    );
   }
 
   if (!resumeData && !error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center px-4">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="text-center"
-        >
-          <div className="relative w-16 h-16 sm:w-20 sm:h-20 mb-4 sm:mb-6">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 border-4 border-purple-200/20 border-t-purple-500 rounded-full animate-spin" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-purple-400 animate-pulse" />
-            </div>
-          </div>
-          <p className="text-gray-600 font-medium text-base sm:text-lg">Preparing your resume...</p>
+      <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center">
+          <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-2 border-zinc-200 border-t-blue-600 sm:mb-5 sm:h-12 sm:w-12" />
+          <p className="text-sm font-medium text-zinc-700 sm:text-base">Preparing download…</p>
         </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden">
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/10 to-purple-600/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-indigo-400/10 to-pink-600/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-      </div>
-
-      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-4 sm:p-6">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-6 sm:mb-8"
-        >
-          <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-r from-green-500 to-emerald-500 rounded-3xl mb-4 sm:mb-6 shadow-lg">
-            <Download className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
+    <div className="relative min-h-screen bg-zinc-50 text-zinc-900">
+      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center p-4 sm:p-6 lg:p-8">
+        <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }} className="mb-8 text-center sm:mb-10">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl border border-zinc-200 bg-white shadow-sm sm:mb-5 sm:h-16 sm:w-16">
+            <Download className="h-7 w-7 text-emerald-700 sm:h-8 sm:w-8" strokeWidth={1.75} />
           </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-2 sm:mb-3">
-            Resume Ready!
-          </h1>
-          <p className="text-gray-600 text-base sm:text-lg">Download your AI-tailored resume in multiple formats</p>
-          
-          {/* Back Button */}
+          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 sm:text-3xl md:text-4xl">Export resume</h1>
+          <p className="mt-2 text-sm text-zinc-600 sm:text-base">Choose Word for edits or PDF for sharing.</p>
           <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            type="button"
+            whileTap={{ scale: 0.99 }}
             onClick={() => router.push("/result")}
-            className="mt-4 sm:mt-6 inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm text-gray-700 px-3 sm:px-4 py-2 rounded-xl border border-white/20 shadow-sm hover:shadow-md transition-all duration-200 text-sm sm:text-base"
+            className="mt-5 inline-flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-800 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25 sm:mt-6"
           >
-            <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4" />
-            Back to Editor
+            <ArrowLeft className="h-4 w-4" strokeWidth={1.75} />
+            Back to editor
           </motion.button>
         </motion.div>
 
@@ -867,7 +930,7 @@ export default function WordDownloadPage() {
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="mb-8 p-4 bg-red-50 border border-red-200 rounded-2xl max-w-md"
+            className="mb-8 max-w-md rounded-lg border border-red-200 bg-red-50 p-4"
           >
             <div className="flex items-center gap-3">
               <AlertCircle className="w-5 h-5 text-red-600" />
@@ -881,18 +944,24 @@ export default function WordDownloadPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/50 p-6 sm:p-8 w-full max-w-4xl"
+          className="w-full max-w-4xl rounded-xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-8"
         >
+          <LegalConsentCheckbox
+            id="word-download-export-consent"
+            checked={exportLegalConsent}
+            onChange={setExportLegalConsent}
+            disabled={loading}
+          />
+          {!exportLegalConsent && (
+            <p className="mt-3 text-xs text-zinc-500 sm:text-sm">Check the box above to enable Word and PDF downloads.</p>
+          )}
           {/* Download Options */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
+          <div className="mt-6 grid grid-cols-1 gap-4 sm:gap-6 mb-6 sm:mb-8 md:grid-cols-2">
             {/* Word Document */}
-            <motion.div
-              whileHover={{ y: -4 }}
-              className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-200"
-            >
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                  <FileText className="w-6 h-6 text-purple-600" />
+            <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.15 }} className="rounded-xl border border-zinc-200 bg-zinc-50/50 p-6">
+              <div className="mb-4 flex items-center gap-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-white ring-1 ring-zinc-200">
+                  <FileText className="h-6 w-6 text-zinc-700" strokeWidth={1.75} />
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900">Word Document</h3>
@@ -919,12 +988,10 @@ export default function WordDownloadPage() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={handleDownloadWord}
-                disabled={loading}
-                className={`w-full ${
-                  loading && downloadType === "word"
-                    ? "bg-purple-300 cursor-not-allowed"
-                    : "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-                } text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2`}
+                disabled={loading || !exportLegalConsent}
+                className={`flex w-full items-center justify-center gap-2 rounded-lg py-3 px-6 text-sm font-semibold text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 ${
+                  loading && downloadType === "word" ? "cursor-not-allowed bg-zinc-400" : "bg-zinc-900 hover:bg-zinc-800"
+                }`}
               >
                 {loading && downloadType === "word" ? (
                   <>
@@ -941,13 +1008,10 @@ export default function WordDownloadPage() {
             </motion.div>
 
             {/* PDF Document */}
-            <motion.div
-              whileHover={{ y: -4 }}
-              className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200"
-            >
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                  <FileImage className="w-6 h-6 text-blue-600" />
+            <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.15 }} className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
+              <div className="mb-4 flex items-center gap-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-50">
+                  <FileImage className="h-6 w-6 text-blue-700" strokeWidth={1.75} />
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900">PDF Document</h3>
@@ -974,12 +1038,10 @@ export default function WordDownloadPage() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={handleDownloadPDF}
-                disabled={loading}
-                className={`w-full ${
-                  loading && downloadType === "pdf"
-                    ? "bg-blue-300 cursor-not-allowed"
-                    : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
-                } text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2`}
+                disabled={loading || !exportLegalConsent}
+                className={`flex w-full items-center justify-center gap-2 rounded-lg py-3 px-6 text-sm font-semibold text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 ${
+                  loading && downloadType === "pdf" ? "cursor-not-allowed bg-blue-300" : "bg-blue-600 hover:bg-blue-700"
+                }`}
               >
                 {loading && downloadType === "pdf" ? (
                   <>
@@ -1039,15 +1101,19 @@ export default function WordDownloadPage() {
                   <p className="text-xs text-blue-700">No waiting time</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 p-3 bg-purple-50 rounded-xl">
-                <CheckCircle className="w-5 h-5 text-purple-600" />
+              <div className="flex items-center gap-3 rounded-lg border border-zinc-200 bg-zinc-50 p-3">
+                <CheckCircle className="h-5 w-5 text-zinc-600" strokeWidth={1.75} />
                 <div>
-                  <p className="text-sm font-medium text-purple-900">Professional</p>
-                  <p className="text-xs text-purple-700">Industry standard</p>
+                  <p className="text-sm font-medium text-zinc-900">Standard formats</p>
+                  <p className="text-xs text-zinc-600">.docx and PDF</p>
                 </div>
               </div>
             </div>
           </motion.div>
+
+          <div className="mt-8 border-t border-zinc-200 pt-6">
+            <SiteLegalLinks />
+          </div>
         </motion.div>
       </div>
     </div>

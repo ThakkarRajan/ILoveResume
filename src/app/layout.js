@@ -1,11 +1,17 @@
 "use client";
 
+import { Inter } from "next/font/google";
 import NavbarWrapper from "../components/NavbarWrapper";
 import "./globals.css";
 
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+});
+
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" className={inter.className}>
       <head>
         {/* Basic Meta Tags */}
         <title>Free AI Resume Builder | ATS-Optimized | I Love Resumes</title>
@@ -205,9 +211,9 @@ export default function RootLayout({ children }) {
           </>
         )}
       </head>
-      <body>
+      <body className="min-h-dvh antialiased bg-zinc-50 text-zinc-900">
         <NavbarWrapper />
-        <main>{children}</main>
+        <main className="min-h-0">{children}</main>
       </body>
     </html>
   );

@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import "../../utils/firebase.js";
+import SiteLegalLinks from "../../components/legal/SiteLegalLinks";
 
 export default function MyProfilePage() {
   const [user, setUser] = useState(null);
@@ -178,56 +179,41 @@ export default function MyProfilePage() {
   };
 
   if (!user) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex min-h-dvh items-center justify-center bg-zinc-50 text-sm text-zinc-500">
+        Loading…
+      </div>
+    );
   }
 
   if (processing) {
     return (
-      <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex flex-col items-center justify-center text-white">
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          className="text-center"
-        >
-          <div className="relative w-24 h-24 mb-6">
-            <div className="w-24 h-24 border-4 border-purple-200/20 border-t-purple-500 rounded-full animate-spin" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <Sparkles className="w-8 h-8 text-purple-400 animate-pulse" />
-            </div>
+      <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-zinc-900/70 px-4 backdrop-blur-[2px]">
+        <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-sm rounded-xl border border-zinc-200 bg-white p-8 text-center shadow-xl">
+          <div className="mx-auto mb-5 h-10 w-10 animate-spin rounded-full border-2 border-zinc-200 border-t-blue-600" />
+          <Sparkles className="mx-auto mb-4 h-6 w-6 text-blue-600" strokeWidth={1.5} />
+          <h3 className="text-base font-semibold text-zinc-900">Processing resume</h3>
+          <p className="mt-1 text-sm text-zinc-500">This may take a few moments.</p>
+          <div className="mt-5 h-2 w-full overflow-hidden rounded-full bg-zinc-100">
+            <motion.div className="h-full rounded-full bg-blue-600" initial={{ width: 0 }} animate={{ width: `${progress}%` }} transition={{ duration: 0.3 }} />
           </div>
-          <h3 className="text-xl font-semibold mb-2">AI is processing your resume...</h3>
-          <p className="text-gray-300 mb-4">This may take a few moments</p>
-          <div className="w-64 bg-gray-700 rounded-full h-2 mb-2">
-            <motion.div
-              className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full"
-              initial={{ width: 0 }}
-              animate={{ width: `${progress}%` }}
-              transition={{ duration: 0.3 }}
-            />
-          </div>
-          <p className="text-sm text-gray-400">{progress}% complete</p>
+          <p className="mt-2 text-xs tabular-nums text-zinc-500">{progress}%</p>
         </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-zinc-50 text-zinc-900">
       <Toaster position="top-center" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {/* Header Section */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-8 sm:mb-12"
-        >
-          <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-r from-purple-500 to-pink-500 rounded-3xl mb-4 sm:mb-6 shadow-lg">
-            <User className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
+        <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }} className="mb-10 text-center sm:mb-12">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl border border-zinc-200 bg-white shadow-sm sm:mb-5 sm:h-14 sm:w-14">
+            <User className="h-6 w-6 text-blue-700 sm:h-7 sm:w-7" strokeWidth={1.75} />
           </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2 sm:mb-3">
-            My Profile
-          </h1>
-          <p className="text-gray-600 text-base sm:text-lg md:text-xl">Manage your resume submissions</p>
+          <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl">My profile</h1>
+          <p className="mt-2 text-sm text-zinc-600 sm:text-base">Account details and submission history.</p>
         </motion.div>
 
         {/* Profile Info Card */}
@@ -235,7 +221,7 @@ export default function MyProfilePage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/50 p-6 md:p-8 mb-8"
+          className="mb-8 rounded-xl border border-zinc-200 bg-white p-6 shadow-sm md:p-8"
         >
           <div className="flex flex-col md:flex-row items-center gap-6">
             <div className="relative">
@@ -248,8 +234,8 @@ export default function MyProfilePage() {
                   className="rounded-2xl border-4 border-white shadow-lg"
                 />
               ) : (
-                <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg">
-                  <User className="w-10 h-10 text-white" />
+                <div className="flex h-20 w-20 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-100">
+                  <User className="h-10 w-10 text-zinc-600" strokeWidth={1.5} />
                 </div>
               )}
             </div>
@@ -259,9 +245,9 @@ export default function MyProfilePage() {
               </h2>
               <p className="text-gray-600 mb-3">{user?.email}</p>
               <div className="flex flex-wrap justify-center md:justify-start gap-4">
-                <div className="flex items-center gap-2 bg-purple-50 px-3 py-1 rounded-full">
-                  <FileText className="w-4 h-4 text-purple-600" />
-                  <span className="text-sm font-medium text-purple-700">{submissions.length} Submissions</span>
+                <div className="flex items-center gap-2 rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1">
+                  <FileText className="h-4 w-4 text-zinc-600" strokeWidth={1.75} />
+                  <span className="text-sm font-medium text-zinc-800">{submissions.length} submissions</span>
                 </div>
                 <div className="flex items-center gap-2 bg-green-50 px-3 py-1 rounded-full">
                   <CheckCircle className="w-4 h-4 text-green-600" />
@@ -295,7 +281,7 @@ export default function MyProfilePage() {
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/50 p-12 text-center"
+              className="rounded-xl border border-zinc-200 bg-white p-12 text-center shadow-sm"
             >
               <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <FileText className="w-8 h-8 text-gray-400" />
@@ -306,7 +292,7 @@ export default function MyProfilePage() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => router.push("/dashboard")}
-                className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-medium hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg"
+                className="rounded-lg bg-zinc-900 px-6 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30"
               >
                 Create Resume
               </motion.button>
@@ -326,14 +312,14 @@ export default function MyProfilePage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/50 overflow-hidden"
+                    className="overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm"
                   >
                     {/* Header */}
                     <div className="p-6 border-b border-gray-100">
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
-                            <FileText className="w-5 h-5 text-purple-600" />
+                          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-zinc-100">
+                            <FileText className="h-5 w-5 text-zinc-600" strokeWidth={1.75} />
                           </div>
                           <div>
                             <h3 className="font-semibold text-gray-900">Submission #{index + 1}</h3>
@@ -382,7 +368,7 @@ export default function MyProfilePage() {
                               whileHover={{ scale: 1.02 }}
                               whileTap={{ scale: 0.98 }}
                               onClick={() => toggleExpand(submission.id)}
-                              className="flex items-center gap-1 text-purple-600 hover:text-purple-700 mt-2 text-sm font-medium transition-colors"
+                              className="mt-2 flex items-center gap-1 text-sm font-medium text-blue-700 transition-colors hover:text-blue-800"
                             >
                               {showMore ? (
                                 <>
@@ -440,7 +426,7 @@ export default function MyProfilePage() {
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
                           onClick={() => handleView(submission)}
-                          className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg flex items-center justify-center gap-2"
+                          className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-zinc-900 px-6 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30"
                         >
                           <Eye className="w-4 h-4" />
                           <span>View Result</span>
@@ -453,6 +439,10 @@ export default function MyProfilePage() {
             </div>
           )}
         </motion.div>
+
+        <div className="mt-12 border-t border-zinc-200 pt-10 pb-8">
+          <SiteLegalLinks />
+        </div>
       </div>
     </div>
   );

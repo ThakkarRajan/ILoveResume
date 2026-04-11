@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { HelpCircle, ArrowRight, Home } from "lucide-react";
+import SiteLegalLinks from "../../components/legal/SiteLegalLinks";
 
 const faqs = [
   {
@@ -53,32 +54,24 @@ const faqSchema = {
 
 export default function FAQPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-      />
-      <div className="max-w-3xl mx-auto px-4 py-12 sm:py-16">
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl mb-4">
-            <HelpCircle className="w-8 h-8 text-white" />
+    <div className="min-h-screen bg-zinc-50 text-zinc-900">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+      <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+        <div className="mb-12 text-center sm:mb-14">
+          <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-xl border border-zinc-200 bg-white shadow-sm">
+            <HelpCircle className="h-6 w-6 text-blue-700" strokeWidth={1.75} />
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-3">
-            Frequently Asked Questions
-          </h1>
-          <p className="text-gray-600 max-w-xl mx-auto">
-            Everything you need to know about our free AI resume builder.
+          <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl">Frequently asked questions</h1>
+          <p className="mx-auto mt-3 max-w-xl text-sm text-zinc-600 sm:text-base">
+            Practical answers about accounts, exports, ATS, and privacy.
           </p>
         </div>
 
-        <div className="space-y-6">
+        <div className="divide-y divide-zinc-200 rounded-xl border border-zinc-200 bg-white shadow-sm">
           {faqs.map((faq, i) => (
-            <div
-              key={i}
-              className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-white/50 shadow-lg"
-            >
-              <h2 className="text-lg font-semibold text-gray-900 mb-2">{faq.q}</h2>
-              <p className="text-gray-600 text-sm sm:text-base leading-relaxed">{faq.a}</p>
+            <div key={i} className="px-5 py-5 sm:px-8 sm:py-6">
+              <h2 className="text-sm font-semibold text-zinc-900 sm:text-base">{faq.q}</h2>
+              <p className="mt-2 text-sm leading-relaxed text-zinc-600 sm:text-[0.9375rem]">{faq.a}</p>
             </div>
           ))}
         </div>
@@ -86,12 +79,16 @@ export default function FAQPage() {
         <div className="mt-12 text-center">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all"
+            className="inline-flex min-h-[48px] items-center gap-2 rounded-lg bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-50"
           >
-            <Home className="w-4 h-4" />
-            Back to Home
-            <ArrowRight className="w-4 h-4" />
+            <Home className="h-4 w-4" strokeWidth={1.75} />
+            Back to home
+            <ArrowRight className="h-4 w-4 opacity-80" strokeWidth={1.75} />
           </Link>
+        </div>
+
+        <div className="mt-10 border-t border-zinc-200 pt-10">
+          <SiteLegalLinks />
         </div>
       </div>
     </div>

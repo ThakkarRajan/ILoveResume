@@ -3,61 +3,55 @@
 import Link from "next/link";
 import { FileText, ArrowRight, Calendar } from "lucide-react";
 import { blogPosts } from "../../data/blog-posts";
+import SiteLegalLinks from "../../components/legal/SiteLegalLinks";
 
 export default function BlogPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl mb-4">
-            <FileText className="w-8 h-8 text-white" />
+    <div className="min-h-screen bg-zinc-50 text-zinc-900">
+      <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+        <div className="mb-12 text-center sm:mb-14">
+          <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-xl border border-zinc-200 bg-white shadow-sm">
+            <FileText className="h-6 w-6 text-blue-700" strokeWidth={1.75} />
           </div>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-800 mb-3">
-            Resume & Career Blog
-          </h1>
-          <p className="text-gray-600 text-base sm:text-lg max-w-2xl mx-auto">
-            Expert tips on resumes, ATS optimization, job descriptions, and career growth.
+          <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl lg:text-[2.25rem]">Resume & career blog</h1>
+          <p className="mx-auto mt-3 max-w-2xl text-sm text-zinc-600 sm:text-base">
+            Notes on ATS, job descriptions, and how to present experience clearly.
           </p>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-5">
           {blogPosts.map((post) => (
             <Link
               key={post.slug}
               href={`/blog/${post.slug}`}
-              className="block bg-white/80 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-white/50 shadow-lg hover:shadow-xl hover:border-purple-200/50 transition-all duration-200 group"
+              className="block rounded-xl border border-zinc-200 bg-white p-6 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50/50 sm:p-8"
             >
-              <div className="flex flex-wrap items-center gap-3 mb-3">
-                <span className="text-xs font-semibold text-purple-600 bg-purple-100 px-2.5 py-1 rounded-full">
-                  {post.category}
-                </span>
-                <span className="text-sm text-gray-500 flex items-center gap-1">
-                  <Calendar className="w-3.5 h-3.5" />
+              <div className="mb-3 flex flex-wrap items-center gap-2 text-xs sm:text-sm">
+                <span className="rounded-md border border-blue-200 bg-blue-50 px-2 py-0.5 font-medium text-blue-800">{post.category}</span>
+                <span className="flex items-center gap-1 text-zinc-500">
+                  <Calendar className="h-3.5 w-3.5" strokeWidth={1.75} />
                   {post.date}
                 </span>
-                <span className="text-sm text-gray-500">{post.readTime}</span>
+                <span className="text-zinc-500">{post.readTime}</span>
               </div>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors">
-                {post.title}
-              </h2>
-              <p className="text-gray-600 text-sm sm:text-base leading-relaxed mb-4">
-                {post.excerpt}
-              </p>
-              <span className="inline-flex items-center gap-2 text-purple-600 font-medium text-sm group-hover:gap-3 transition-all">
+              <h2 className="text-lg font-semibold tracking-tight text-zinc-900 sm:text-xl">{post.title}</h2>
+              <p className="mt-2 text-sm leading-relaxed text-zinc-600 sm:text-[0.9375rem]">{post.excerpt}</p>
+              <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-blue-700">
                 Read article
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="h-4 w-4" strokeWidth={1.75} />
               </span>
             </Link>
           ))}
         </div>
 
         <div className="mt-12 text-center">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-purple-600 font-semibold hover:text-purple-700 transition-colors"
-          >
-            ← Back to Home
+          <Link href="/" className="text-sm font-medium text-zinc-600 underline-offset-4 transition-colors hover:text-zinc-900 hover:underline">
+            ← Back to home
           </Link>
+        </div>
+
+        <div className="mt-10 border-t border-zinc-200 pt-10">
+          <SiteLegalLinks />
         </div>
       </div>
     </div>

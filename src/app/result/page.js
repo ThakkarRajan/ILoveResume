@@ -52,6 +52,8 @@ import {
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import "../../utils/firebase.js";
 import { unescapeHtml } from "../../utils/safeHtml";
+import LegalConsentCheckbox from "../../components/legal/LegalConsentCheckbox";
+import SiteLegalLinks from "../../components/legal/SiteLegalLinks";
 
 // Utility to escape HTML special characters (display only, not inputs)
 const escapeHtml = (unsafe) =>
@@ -69,20 +71,18 @@ const HighlightsEditor = ({ highlights = [], onChange, placeholder = "Enter high
   // Ensure highlights is always an array
   const safeHighlights = Array.isArray(highlights) ? highlights : [];
 
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter") {
-      if (!inputValue.trim()) {
-        showHighlightError();
-        return;
-      }
-      e.preventDefault();
-      const newHighlights = [...safeHighlights, inputValue.trim()];
-      onChange(newHighlights);
-      setInputValue("");
-      // Show a subtle success indicator
-      const isCertificate = placeholder.toLowerCase().includes('certificate');
-      showHighlightAdded(isCertificate);
+  const handleAddKeyDown = (e) => {
+    if (e.key !== "Enter" || e.shiftKey) return;
+    e.preventDefault();
+    if (!inputValue.trim()) {
+      showHighlightError();
+      return;
     }
+    const newHighlights = [...safeHighlights, inputValue.trim()];
+    onChange(newHighlights);
+    setInputValue("");
+    const isCertificate = placeholder.toLowerCase().includes("certificate");
+    showHighlightAdded(isCertificate);
   };
 
   const handleRemoveHighlight = (index) => {
@@ -96,51 +96,55 @@ const HighlightsEditor = ({ highlights = [], onChange, placeholder = "Enter high
     onChange(newHighlights);
   };
 
+  const rowsForText = (text, { min = 4, max = 24 } = {}) =>
+    Math.min(max, Math.max(min, (String(text || "").split("\n").length || 1) + 2));
+
   return (
-    <div className="space-y-3">
-      {/* Input for adding new highlights */}
-      <div className="relative">
-        <input
-          type="text"
+    <div className="w-full min-w-0 space-y-3">
+      <div className="w-full min-w-0">
+        <textarea
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
-          onKeyPress={handleKeyPress}
-          placeholder={`${placeholder} (Press Enter to add)`}
-          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-500"
+          onKeyDown={handleAddKeyDown}
+          rows={rowsForText(inputValue, { min: 3, max: 16 })}
+          placeholder={placeholder}
+          className="min-h-[4.5rem] w-full resize-y rounded-lg border border-zinc-200 bg-white px-3 py-2.5 text-sm leading-relaxed text-zinc-900 placeholder:text-zinc-400 transition-colors focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15 sm:text-[0.9375rem]"
         />
-        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-gray-400 bg-white px-2">
-          Enter
-        </div>
+        <p className="mt-1.5 text-xs text-zinc-500">
+          <span className="font-medium text-zinc-600">Enter</span> adds a bullet.{" "}
+          <span className="font-medium text-zinc-600">Shift+Enter</span> for a new line in the same bullet.
+        </p>
       </div>
 
-      {/* Display existing highlights */}
-      <div className="space-y-2">
+      <div className="w-full min-w-0 space-y-3">
         {safeHighlights.map((highlight, index) => (
           <motion.div
             key={index}
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="flex items-center gap-3 group"
+            className="flex w-full min-w-0 items-start gap-3 group"
           >
-            <div className="flex-shrink-0 w-2 h-2 bg-purple-500 rounded-full mt-1"></div>
-            <div className="flex-1 relative">
-              <input
-                type="text"
+            <div className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-blue-600" aria-hidden />
+            <div className="min-w-0 flex-1">
+              <textarea
                 value={unescapeHtml(highlight)}
                 onChange={(e) => handleEditHighlight(index, e.target.value)}
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-gray-900 text-sm"
+                rows={rowsForText(highlight)}
+                className="min-h-[6rem] w-full resize-y rounded-lg border border-zinc-200 bg-white px-3 py-2.5 text-sm leading-relaxed text-zinc-900 transition-colors focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15 sm:text-[0.9375rem]"
                 placeholder="Edit highlight..."
+                spellCheck
               />
             </div>
             <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
+              type="button"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => handleRemoveHighlight(index)}
-              className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full transition-all duration-200"
+              className="mt-1 shrink-0 rounded-md p-2 text-red-600 transition-colors hover:bg-red-50 hover:text-red-700"
               title="Remove highlight"
             >
-              <X className="w-4 h-4" />
+              <X className="h-4 w-4" />
             </motion.button>
           </motion.div>
         ))}
@@ -149,7 +153,7 @@ const HighlightsEditor = ({ highlights = [], onChange, placeholder = "Enter high
       {/* Empty state */}
       {safeHighlights.length === 0 && (
         <div className="text-center py-4 text-gray-500 text-sm">
-          No highlights added yet. Start typing above and press Enter to add your first highlight.
+          No highlights yet. Type above, then press Enter to add one (Shift+Enter for a new line before adding).
         </div>
       )}
     </div>
@@ -169,6 +173,7 @@ export default function ResultPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [autoSaveStatus, setAutoSaveStatus] = useState("saved"); // "saving", "saved", "error"
   const [showDownloadSkeleton, setShowDownloadSkeleton] = useState(false);
+  const [exportLegalConsent, setExportLegalConsent] = useState(false);
 
   useEffect(() => {
     const auth = getAuth();
@@ -249,7 +254,7 @@ export default function ResultPage() {
   // ✅ Rendering logic AFTER hooks
   if (showDownloadSkeleton) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center px-4">
+      <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -525,6 +530,10 @@ export default function ResultPage() {
   const handleDownload = async () => {
     const valid = validateResume();
     if (!valid) return;
+    if (!exportLegalConsent) {
+      showError("Please agree to the Terms & Conditions and Privacy Policy before continuing to export.");
+      return;
+    }
 
     setIsDownloading(true);
     setShowDownloadSkeleton(true);
@@ -570,12 +579,7 @@ export default function ResultPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden">
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/10 to-purple-600/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-indigo-400/10 to-pink-600/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-      </div>
+    <div className="relative min-h-screen overflow-x-hidden bg-zinc-50">
 
       <Toaster 
         position="top-center"
@@ -589,20 +593,18 @@ export default function ResultPage() {
         }}
       />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 py-8">
-        {/* Header */}
+      <div className="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-8"
+          transition={{ duration: 0.2 }}
+          className="mb-10 text-center"
         >
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-purple-500 to-pink-500 rounded-3xl mb-6 shadow-lg">
-            <Edit3 className="w-10 h-10 text-white" />
+          <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-xl border border-zinc-200 bg-white shadow-sm">
+            <Edit3 className="h-7 w-7 text-blue-700" strokeWidth={1.75} />
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-3">
-            Resume Editor
-        </h1>
-          <p className="text-gray-600 text-lg">Customize your AI-generated resume</p>
+          <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 md:text-4xl">Resume editor</h1>
+          <p className="mt-2 text-sm text-zinc-600 md:text-base">Review and edit your tailored resume before export.</p>
           
           {/* Auto-save Status */}
           <div className="flex items-center justify-center gap-2 mt-4">
@@ -631,7 +633,7 @@ export default function ResultPage() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => router.push("/dashboard")}
-            className="mt-6 inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm text-gray-700 px-4 py-2 rounded-xl border border-white/20 shadow-sm hover:shadow-md transition-all duration-200"
+            className="mt-6 inline-flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-4 py-2.5 text-sm font-medium text-zinc-800 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Dashboard
@@ -660,41 +662,42 @@ export default function ResultPage() {
               transition={{ delay: 0.2 }}
               className="lg:col-span-1"
             >
-              <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/50 p-6 sticky top-8">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Sections</h3>
-                <div className="space-y-2">
+              <div className="sticky top-24 rounded-xl border border-zinc-200 bg-white p-5 shadow-sm lg:top-8">
+                <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">Sections</h3>
+                <div className="space-y-1">
                   {sections.map((section) => {
                     const Icon = section.icon;
                     return (
                       <motion.button
                         key={section.id}
-                        whileHover={{ x: 4 }}
-                        whileTap={{ scale: 0.98 }}
+                        type="button"
+                        whileTap={{ scale: 0.99 }}
                         onClick={() => setActiveSection(section.id)}
-                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all duration-200 ${
+                        className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition-colors ${
                           activeSection === section.id
-                            ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
-                            : 'text-gray-700 hover:bg-gray-50'
+                            ? "bg-zinc-900 font-medium text-white shadow-sm"
+                            : "text-zinc-700 hover:bg-zinc-100"
                         }`}
                       >
-                        <Icon className="w-5 h-5" />
-                        <span className="font-medium">{section.label}</span>
+                        <Icon className="h-4 w-4 shrink-0 opacity-90" strokeWidth={1.75} />
+                        <span>{section.label}</span>
                       </motion.button>
                     );
                   })}
                 </div>
 
-                {/* Action Buttons */}
-                <div className="mt-8 space-y-3">
+                <div className="mt-8 space-y-2 border-t border-zinc-100 pt-6">
                   <motion.button
-                    whileHover={{ scale: (isSaving || isDownloading) ? 1 : 1.02 }}
-                    whileTap={{ scale: (isSaving || isDownloading) ? 1 : 0.98 }}
+                    type="button"
+                    whileTap={{ scale: isSaving || isDownloading ? 1 : 0.99 }}
                     onClick={handleSave}
                     disabled={isSaving || isDownloading}
-                    className={`w-full font-semibold py-3 px-4 rounded-xl shadow-lg transition-all duration-200 flex items-center justify-center gap-2 ${
+                    className={`flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-semibold shadow-sm transition-colors ${
                       isSaving
-                        ? 'bg-gradient-to-r from-green-400 to-emerald-500 text-white cursor-not-allowed opacity-75'
-                        : (isDownloading ? 'bg-gradient-to-r from-green-400 to-emerald-500 text-white cursor-not-allowed opacity-50' : 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:shadow-xl')
+                        ? "cursor-not-allowed bg-emerald-600/80 text-white"
+                        : isDownloading
+                          ? "cursor-not-allowed bg-emerald-600/50 text-white"
+                          : "bg-emerald-600 text-white hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600/30"
                     }`}
                   >
                     {isSaving ? (
@@ -709,16 +712,23 @@ export default function ResultPage() {
                       </>
                     )}
                   </motion.button>
+
+                  <div className="pt-2">
+                    <LegalConsentCheckbox
+                      id="result-export-consent"
+                      checked={exportLegalConsent}
+                      onChange={setExportLegalConsent}
+                      disabled={isDownloading || isSaving}
+                    />
+                  </div>
                   
                   <motion.button
-                    whileHover={{ scale: (isDownloading || isSaving) ? 1 : 1.02 }}
-                    whileTap={{ scale: (isDownloading || isSaving) ? 1 : 0.98 }}
+                    type="button"
+                    whileTap={{ scale: isDownloading || isSaving ? 1 : 0.99 }}
                     onClick={handleDownload}
-                    disabled={isDownloading || isSaving}
-                    className={`w-full font-semibold py-3 px-4 rounded-xl shadow-lg transition-all duration-200 flex items-center justify-center gap-2 ${
-                      isDownloading
-                        ? 'bg-gradient-to-r from-blue-400 to-indigo-500 text-white cursor-not-allowed opacity-75'
-                        : (isSaving ? 'bg-gradient-to-r from-blue-400 to-indigo-500 text-white cursor-not-allowed opacity-50' : 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:shadow-xl')
+                    disabled={isDownloading || isSaving || !exportLegalConsent}
+                    className={`flex w-full items-center justify-center gap-2 rounded-lg border border-zinc-200 bg-white px-4 py-3 text-sm font-semibold text-zinc-900 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25 disabled:cursor-not-allowed disabled:opacity-50 ${
+                      isDownloading ? "border-blue-200 bg-blue-50/50" : ""
                     }`}
                   >
                     {isDownloading ? (
@@ -742,9 +752,9 @@ export default function ResultPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="lg:col-span-3"
+              className="min-w-0 lg:col-span-3"
             >
-              <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/50 p-8 responsive-card">
+              <div className="responsive-card min-w-0 rounded-xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-8">
                 <AnimatePresence mode="wait">
                   {/* Personal Info Section */}
                   {activeSection === "personal" && (
@@ -756,13 +766,23 @@ export default function ResultPage() {
                       className="space-y-6"
                     >
                       <div className="flex items-center gap-3 mb-6">
-                        <div className="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center">
-                          <User className="w-6 h-6 text-purple-600" />
+                        <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-blue-50">
+                          <User className="h-6 w-6 text-blue-700" strokeWidth={1.75} />
                         </div>
                         <div>
                           <h2 className="text-2xl font-semibold text-gray-900">Personal Information</h2>
                           <p className="text-gray-500">Update your contact details</p>
                         </div>
+                      </div>
+
+                      <div
+                        className="flex gap-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900"
+                        role="status"
+                      >
+                        <CheckCircle className="h-5 w-5 shrink-0 text-emerald-600" strokeWidth={2} aria-hidden />
+                        <p className="leading-relaxed text-emerald-900">
+                          Review your contact details and profile links before continuing. Make sure your name, email, phone number, GitHub, and LinkedIn are accurate. Use your full profile URLs or correct usernames, since your Word and PDF exports will use this information exactly as entered.
+                        </p>
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -773,13 +793,19 @@ export default function ResultPage() {
               <input
                 value={unescapeHtml(resumeData.name || "")}
                 onChange={(e) => handleChange("name", null, e.target.value)}
-                                                         className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-500"
+                                                         className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15 transition-all duration-200 text-gray-900 placeholder-gray-500"
                              placeholder="Enter your full name"
                           />
                         </div>
 
                         {Object.entries(resumeData.contact || {}).map(([key, val]) => {
                           const Icon = getContactIcon(key);
+                          const placeholder =
+                            key === "github"
+                              ? "GitHub username or profile URL"
+                              : key === "linkedin"
+                                ? "LinkedIn username or profile URL"
+                                : `Enter your ${key}`;
                           return (
                   <div key={key}>
                               <label className="block text-sm font-medium text-gray-700 mb-2 capitalize">
@@ -790,8 +816,8 @@ export default function ResultPage() {
                     <input
                       value={unescapeHtml(val)}
                                   onChange={(e) => handleChange("contact", key, e.target.value)}
-                                                                     className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-500"
-                                   placeholder={`Enter your ${key}`}
+                                                                     className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15 transition-all duration-200 text-gray-900 placeholder-gray-500"
+                                   placeholder={placeholder}
                     />
                   </div>
                             </div>
@@ -827,7 +853,7 @@ export default function ResultPage() {
               <textarea
                 value={unescapeHtml(resumeData.tailored_summary || "")}
                           onChange={(e) => handleChange("tailored_summary", null, e.target.value)}
-                                                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 resize-none text-gray-900 placeholder-gray-500"
+                                                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15 transition-all duration-200 resize-none text-gray-900 placeholder-gray-500"
                            rows={6}
                            placeholder="Write a compelling professional summary..."
               />
@@ -863,7 +889,7 @@ export default function ResultPage() {
                     <input
                       value={unescapeHtml(skills.join(", "))}
                               onChange={(e) => handleChange("tailored_skills", category, e.target.value)}
-                                                             className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-500"
+                                                             className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15 transition-all duration-200 text-gray-900 placeholder-gray-500"
                                placeholder={`Enter ${category} skills separated by commas`}
                     />
                   </div>
@@ -911,7 +937,7 @@ export default function ResultPage() {
                         }));
                         showExperienceAdded();
                       }}
-                          className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                          className="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30"
                     >
                           <Plus className="w-4 h-4" />
                         Add Experience
@@ -946,7 +972,7 @@ export default function ResultPage() {
 
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                       {Object.entries(exp).map(([key, val]) => (
-                        <div key={key}>
+                        <div key={key} className={key === "highlights" ? "md:col-span-2" : ""}>
                                     <label className="block text-sm font-medium text-gray-700 mb-2 capitalize">
                             {key}
                           </label>
@@ -969,7 +995,7 @@ export default function ResultPage() {
                               onChange={(e) =>
                                           handleChange("tailored_experience", key, e.target.value, idx)
                               }
-                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-500"
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15 transition-all duration-200 text-gray-900 placeholder-gray-500"
                                         placeholder={`Enter ${key}`}
                             />
                           )}
@@ -1026,7 +1052,7 @@ export default function ResultPage() {
                     }));
                     showEducationAdded();
                   }}
-                          className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                          className="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30"
                 >
                           <Plus className="w-4 h-4" />
                           Add Education
@@ -1084,7 +1110,7 @@ export default function ResultPage() {
                                         onChange={(e) =>
                                           handleInputChange("education", idx, key, e.target.value)
                                         }
-                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-500"
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15 transition-all duration-200 text-gray-900 placeholder-gray-500"
                                         placeholder={`Enter ${key}`}
                         />
                                     )}
@@ -1138,7 +1164,7 @@ export default function ResultPage() {
                         }));
                         showProjectAdded();
                       }}
-                          className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                          className="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30"
                     >
                           <Plus className="w-4 h-4" />
                           Add Project
@@ -1196,7 +1222,7 @@ export default function ResultPage() {
                               onChange={(e) =>
                                           handleChange("projects", key, e.target.value, idx)
                               }
-                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-500"
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15 transition-all duration-200 text-gray-900 placeholder-gray-500"
                                         placeholder={`Enter ${key}`}
                             />
                           )}
@@ -1252,6 +1278,10 @@ export default function ResultPage() {
             </motion.div>
           </div>
         )}
+
+        <div className="mt-12 border-t border-zinc-200 pt-10 pb-6">
+          <SiteLegalLinks />
+        </div>
       </div>
 
       {/* Save Success Popup */}
@@ -1261,26 +1291,27 @@ export default function ResultPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/40 p-4 backdrop-blur-[2px]"
           >
             <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
+              initial={{ scale: 0.98, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              className="bg-white rounded-3xl p-8 shadow-2xl text-center max-w-md mx-4"
+              exit={{ scale: 0.98, opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              className="mx-4 w-full max-w-md rounded-xl border border-zinc-200 bg-white p-8 text-center shadow-xl"
             >
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <CheckCircle className="w-8 h-8 text-green-600" />
-          </div>
-              <h2 className="text-2xl font-bold mb-2 text-gray-900">Resume Saved!</h2>
-              <p className="text-gray-600 mb-6">Your changes have been saved successfully.</p>
+              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50">
+                <CheckCircle className="h-7 w-7 text-emerald-600" strokeWidth={1.75} />
+              </div>
+              <h2 className="text-lg font-semibold text-zinc-900">Changes saved</h2>
+              <p className="mt-2 text-sm text-zinc-600">Your resume is updated in this session.</p>
               <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                type="button"
+                whileTap={{ scale: 0.99 }}
                 onClick={() => setShowSavePopup(false)}
-                className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+                className="mt-6 inline-flex w-full items-center justify-center rounded-lg bg-zinc-900 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30"
               >
-                Continue Editing
+                Continue editing
               </motion.button>
             </motion.div>
           </motion.div>

@@ -25,7 +25,7 @@ export default function SocialLinks() {
           href={item.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-gray-600 hover:text-purple-600 transition-colors text-sm font-medium min-h-[44px] min-w-[44px] flex items-center justify-center"
+          className="flex min-h-[44px] min-w-[44px] items-center justify-center text-sm font-medium text-zinc-500 transition-colors hover:text-zinc-900 focus-visible:rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25"
           aria-label={`Follow us on ${item.label}`}
         >
           {item.label}

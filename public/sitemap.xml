@@ -25,7 +25,7 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://iloveresumes.ca/blog/how-to-optimize-resume-for-ats-2025</loc>
+    <loc>https://iloveresumes.ca/blog/how-to-optimize-resume-for-ats-2026</loc>
     <lastmod>2025-03-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -215,5 +215,29 @@
     <lastmod>2025-03-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://iloveresumes.ca/terms</loc>
+    <lastmod>2026-04-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://iloveresumes.ca/privacy</loc>
+    <lastmod>2026-04-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://iloveresumes.ca/cookies</loc>
+    <lastmod>2026-04-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.35</priority>
+  </url>
+  <url>
+    <loc>https://iloveresumes.ca/disclaimer</loc>
+    <lastmod>2026-04-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.35</priority>
   </url>
 </urlset>

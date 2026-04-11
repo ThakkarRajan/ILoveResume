@@ -1,5 +1,284 @@
 export const postContent = {
-  "how-to-optimize-resume-for-ats-2025": {
+  "harvard-resume-template-canada-guide": {
+    content: `
+      <p>If you have been searching for a <strong>Harvard resume template</strong>, you are usually looking for a tight, one-page layout with clear section headings and strong bullets—not a literal university endorsement. In Canada, the same principles work well, but you still need local conventions and ATS-friendly structure.</p>
+
+      <h2>What “Harvard style” usually means</h2>
+      <p>Most downloadable Harvard-style layouts emphasize simplicity: one column, reverse-chronological experience, minimal ornamentation, and crisp typography. That is good news for Canadian hiring, where photos and personal details do not belong on a typical resume.</p>
+
+      <h2>Canadian tweaks you should still make</h2>
+      <p>Even with a classic template, align with Canadian expectations: no headshot, no marital status, and Canadian spelling when you are applying locally (for example, “centre” instead of “center” where appropriate). Our <a href="/blog/canadian-resume-format-guide">Canadian resume format guide</a> walks through the full picture.</p>
+
+      <h2>ATS parsing: the part templates ignore</h2>
+      <p>Some attractive templates hide headings in text boxes, use multi-column sections, or rely on icons for contact info. Applicant tracking systems may miss that content. If you want a deeper technical checklist, read <a href="/blog/how-to-optimize-resume-for-ats-2026">how to optimize your resume for ATS in 2026</a>.</p>
+
+      <h2>One page vs two pages in Canada</h2>
+      <p>Harvard-style resumes are often one page. That is still a strong default for early-career and many mid-career applicants. If you have a decade of directly relevant impact, a second page can be justified—just keep every line tied to the target role.</p>
+
+      <h2>When Google Docs or Word is enough</h2>
+      <p>Many people maintain a “master resume” in a <strong>Google Doc</strong> or Word file, then export to PDF for applications. That workflow is fine if styles are simple and text is selectable. If you are debating structure, compare your draft against <a href="/blog/best-resume-format-2025">best resume format for 2025</a>—it is still a solid baseline heading into 2026.</p>
+
+      <h2>Build, test, then apply</h2>
+      <p>Before you mass-apply, paste the job description beside your resume and confirm you are mirroring important language naturally. You can use our <a href="/">free AI resume builder</a> to tighten bullets and keyword alignment, then export when you are happy with the result.</p>
+    `,
+  },
+  "free-resume-builder-download-canada": {
+    content: `
+      <p>A <strong>free resume builder and download</strong> sounds simple: answer questions, pick a layout, export a PDF. In practice, the quality of your export—and whether recruiters’ software can read it—depends on details many tools gloss over.</p>
+
+      <h2>PDF vs Word in Canada</h2>
+      <p>Most Canadian employers accept PDF. Some union, government, or legacy systems still prefer Word. A good builder offers both, with text that stays selectable (not a flat image scan). If you are unsure, save PDF as your default and keep an editable Word copy for exceptions.</p>
+
+      <h2>What “free” should include (and what to watch for)</h2>
+      <p>Reasonable expectations for a free tier include real exports, readable fonts, and honest privacy terms. Be cautious if watermarks appear only after you have invested an hour of data entry, or if sharing settings are unclear—your employment history is sensitive.</p>
+
+      <h2>ATS-friendly structure still matters</h2>
+      <p>Fancy columns and skill bars can break parsing. Before you commit, skim <a href="/blog/how-to-optimize-resume-for-ats-2026">ATS optimization basics</a> and compare your output to a plain template. If an ATS cannot find your job titles, you may be filtered out before a human reads a single bullet.</p>
+
+      <h2>Downloads are not the finish line</h2>
+      <p>Even a perfect file fails if the content is generic. Spend ten minutes tailoring to each posting. The fastest workflow is: master resume → targeted copy → export. Our guide on <a href="/blog/how-to-tailor-resume-to-job">how to tailor your resume to each job</a> keeps that process lightweight.</p>
+
+      <h2>Pair your resume with a quick sanity pass</h2>
+      <p>Typos in contact info, wrong company names, and inconsistent dates are surprisingly common after late-night edits. If something feels off, browse <a href="/blog/common-resume-mistakes">common resume mistakes</a> before you upload anywhere.</p>
+
+      <h2>Try I Love Resumes when you want AI-assisted polish</h2>
+      <p>If you already have a draft, you can run it through our <a href="/">free AI resume builder</a> to strengthen wording and alignment with a job description, then download your updated file when you are ready.</p>
+    `,
+  },
+  "resume-templates-canada-pick-right-one": {
+    content: `
+      <p>Choosing among hundreds of <strong>resume templates</strong> is overwhelming—especially when you are also juggling job boards like <strong>Indeed Canada</strong> and tight application deadlines. Start by separating “looks good in Canva” from “reads well in recruiting software.”</p>
+
+      <h2>Pick structure before decoration</h2>
+      <p>Reverse-chronological work history, plain headings (“Experience”, “Education”, “Skills”), and standard fonts are still the safest baseline for corporate roles. If you need a refresher on section order, see <a href="/blog/best-resume-format-2025">best resume format for 2025</a>.</p>
+
+      <h2>ATS pitfalls hidden in trendy layouts</h2>
+      <p>Sidebars, icons, tiny text, and dense tables can scramble parsing. If you love a bold design, use it for networking PDFs or portfolios—not always for the first upload into an ATS. Technical detail lives in <a href="/blog/how-to-optimize-resume-for-ats-2026">ATS optimization tips</a>.</p>
+
+      <h2>Canadian norms still win over “flashy”</h2>
+      <p>Canadian hiring teams generally favour clarity over spectacle. Skip photos and personal data, keep language professional, and match spelling to the audience. For a norms checklist, bookmark <a href="/blog/canadian-resume-format-guide">Canadian resume format</a>.</p>
+
+      <h2>Templates vs examples</h2>
+      <p>A template is a skeleton; an example is a finished story. Borrow phrasing patterns, not sentences. If you want help translating inspiration into your own achievements, read <a href="/blog/resume-examples-canada-by-role">resume examples that help</a> next.</p>
+
+      <h2>When Google Docs templates are the right call</h2>
+      <p>If collaborators edit your resume or you version quickly, a simple <strong>Google Docs resume</strong> workflow can be ideal—just export carefully. We outline formatting habits in our <a href="/blog/google-docs-resume-template-canada">Google Docs resume template guide</a>.</p>
+
+      <h2>Upgrade from template to tailored application</h2>
+      <p>Once your base file is stable, use our <a href="/">AI-assisted resume builder</a> to align bullets with each posting without rebuilding from scratch every time.</p>
+    `,
+  },
+  "ai-resume-builder-canada-pros-cons": {
+    content: `
+      <p><strong>Resume AI</strong> tools can feel magical: instant bullets, keyword suggestions, and a faster first draft. In Canada’s competitive markets—think Toronto tech, Vancouver biotech, or national remote roles—the differentiator is still judgment: facts, specificity, and a human voice.</p>
+
+      <h2>What AI does well</h2>
+      <p>Good systems help you break writer’s block, reorder sections, propose stronger verbs, and highlight gaps between your resume and a job description. They are especially useful if English or French is your second language and you want cleaner phrasing—just keep the content truthful.</p>
+
+      <h2>Where AI resumes go wrong</h2>
+      <p>Generic claims (“results-driven leader”), invented metrics, and bloated skill lists are easy to spot. Recruiters compare similar AI-shaped resumes all week. Your goal is to combine machine speed with personal proof: numbers you can explain, tools you have used in production, and outcomes you can defend in an interview.</p>
+
+      <h2>ATS notes still apply to AI output</h2>
+      <p>AI does not automatically “pass ATS.” If the layout uses columns or odd headings, you can still fail parsing. Cross-check against <a href="/blog/how-to-optimize-resume-for-ats-2026">ATS optimization guidance</a> before you submit.</p>
+
+      <h2>Keywords without stuffing</h2>
+      <p>Mirror important terms from the posting where they naturally fit—especially in your summary, recent roles, and skills. For a balanced approach, pair AI edits with <a href="/blog/resume-keywords-that-get-interviews">resume keywords that get interviews</a>.</p>
+
+      <h2>Indeed Canada and other boards</h2>
+      <p>When you apply through <strong>Indeed Canada</strong> or similar platforms, you may still upload a tailored PDF. Do not assume one generic file is enough for every “Easy Apply” button—keep a targeted version for roles you care about most.</p>
+
+      <h2>Use I Love Resumes as an editor, not a replacement for you</h2>
+      <p>Our <a href="/">free AI resume builder</a> is built to suggest improvements while you stay in control of what ships.</p>
+    `,
+  },
+  "resume-builder-canada-how-to-compare-options": {
+    content: `
+      <p>Searching for a <strong>resume builder</strong> usually means you want speed: fewer blank-page moments, faster exports, and less fiddling in Word. Before you pick a tool, define what “done” looks like for your search in Canada.</p>
+
+      <h2>Start with your target employers</h2>
+      <p>Government, academia, startups, and retail all have different tolerance for creative layout. If you are applying broadly, default to conservative structure, then add personality in your summary and bullets—not in neon graphics.</p>
+
+      <h2>Compare exports, not just onboarding</h2>
+      <p>Open your downloaded PDF and check: selectable text, correct fonts, no clipped lines, and sensible page breaks. If the file looks broken on your screen, assume a recruiter’s inbox will look worse.</p>
+
+      <h2>Indeed resume builder vs standalone tools</h2>
+      <p>The <strong>Indeed resume builder</strong> is convenient when you already live on <strong>Indeed Canada</strong>, but you may still want a standalone master resume for email referrals, company career pages, and recruiters. For trade-offs, see <a href="/blog/indeed-resume-builder-canada-alternatives">Indeed resume builder in Canada</a>.</p>
+
+      <h2>LaTeX and Overleaf for special cases</h2>
+      <p>If you are in research or heavy STEM, you might maintain an <a href="/blog/overleaf-latex-resume-canada">Overleaf resume</a> for academic CVs while keeping a simplified corporate PDF for industry applications.</p>
+
+      <h2>Free vs paid features that actually matter</h2>
+      <p>Paywalls are fair—just know what you need. Priority features are usually unlimited exports, version history, and strong privacy controls. Fancy animations rarely help you get hired.</p>
+
+      <h2>Try a Canadian-friendly AI workflow</h2>
+      <p>When you are ready to iterate quickly, use our <a href="/">resume builder</a> with AI suggestions, then export when your bullets match the posting.</p>
+    `,
+  },
+  "resume-examples-canada-by-role": {
+    content: `
+      <p><strong>Resume examples</strong> are useful because they show rhythm: how bullets start with verbs, how metrics appear early, and how summaries stay short. In Canada, examples still need local conventions—especially if you are new to the market.</p>
+
+      <h2>What to copy from an example</h2>
+      <p>Borrow structure, not wording. Look for section order, bullet length, and how skills tie back to outcomes. If you are switching industries, examples also show how to frame transferable work—similar themes appear in <a href="/blog/resume-for-career-change">resume tips for career changers</a>.</p>
+
+      <h2>What not to copy</h2>
+      <p>Avoid pasted job descriptions, fake certifications, or metrics you cannot explain. Canadian employers reference-check. If a bullet sounds too good to be true, interviewers will probe.</p>
+
+      <h2>Examples vs samples vs templates</h2>
+      <p>Examples are finished resumes; samples are often partial snippets; templates are layouts. Confused? Read <a href="/blog/resume-samples-canada-how-to-use-them">resume samples vs templates</a> for a simple breakdown.</p>
+
+      <h2>Show impact, not only responsibilities</h2>
+      <p>Strong examples emphasize outcomes: reduced cost, improved reliability, happier customers, faster delivery. If you need help quantifying, <a href="/blog/how-to-quantify-resume-achievements">quantify your achievements</a> is a practical next step.</p>
+
+      <h2>Pair examples with keyword discipline</h2>
+      <p>Once your story is clear, align language with the posting—without stuffing. Use <a href="/blog/resume-keywords-that-get-interviews">resume keywords</a> as a guide.</p>
+
+      <h2>Turn inspiration into a working file</h2>
+      <p>When you are ready to build, open our <a href="/">free resume builder</a> and translate your favourite patterns into your own experience.</p>
+    `,
+  },
+  "resume-samples-canada-how-to-use-them": {
+    content: `
+      <p>People often Google <strong>resume samples</strong> when they want reassurance: “Is mine normal?” Samples help—but only if you use them as benchmarks, not as copy-paste scripts.</p>
+
+      <h2>Use samples to calibrate density</h2>
+      <p>Compare how many bullets each role has, how tight the summary is, and whether older jobs shrink as they move down the page. If your document feels bloated, trim before you add design flourishes.</p>
+
+      <h2>Localize for Canada</h2>
+      <p>US samples sometimes include photos or “expected salary” prompts—neither is a standard Canadian resume convention. Keep your baseline aligned with <a href="/blog/canadian-resume-format-guide">Canadian resume format</a>.</p>
+
+      <h2>Samples will not fix a mismatch</h2>
+      <p>If the posting asks for project leadership and your sample resume obsesses over individual contributor tasks, you still lose. Samples cannot replace tailoring; follow <a href="/blog/how-to-tailor-resume-to-job">how to tailor your resume</a> for a repeatable workflow.</p>
+
+      <h2>When samples clash with ATS advice</h2>
+      <p>A sample may look beautiful but hide parsing risks. If you are unsure, default to simpler layout and verify headings. <a href="/blog/how-to-optimize-resume-for-ats-2026">ATS optimization</a> remains the technical backstop.</p>
+
+      <h2>Skills still need proof</h2>
+      <p>Samples sometimes show long skill lists. In interviews, you will be asked where you used each tool. Tie skills to roles, which is the same philosophy we use in <a href="/blog/skills-section-resume">resume skills section tips</a>.</p>
+
+      <h2>Build your own sample-quality file</h2>
+      <p>Use our <a href="/">AI resume builder</a> to tighten wording, then export a clean PDF for applications.</p>
+    `,
+  },
+  "best-skills-to-put-on-resume-canada": {
+    content: `
+      <p>The best <strong>skills for a resume</strong> are not the longest list—they are the most relevant, credible, and easy to verify. Canadian recruiters often skim a skills block in seconds, then jump to your recent experience to see proof.</p>
+
+      <h2>Split hard skills and soft skills on purpose</h2>
+      <p>Hard skills might include SQL, bookkeeping, WHMIS training, or equipment certifications. Soft skills might include stakeholder communication, coaching, or conflict resolution—ideally demonstrated in bullets, not only in a keyword cloud.</p>
+
+      <h2>Mirror the posting without stuffing</h2>
+      <p>If the job mentions specific tools, include them when you genuinely have depth. Synonyms help humans, but ATS may look for exact phrases—find balance by reading <a href="/blog/resume-keywords-that-get-interviews">resume keywords that work</a>.</p>
+
+      <h2>Show level when it helps</h2>
+      <p>“Familiar with Python” and “shipped Python services to production” are different claims. If you use proficiency labels, keep them honest and consistent across your resume and LinkedIn.</p>
+
+      <h2>Connect skills to outcomes</h2>
+      <p>Instead of “Excel” alone, tie it to what you built: models, dashboards, or reporting cadences. Our broader guide on <a href="/blog/skills-section-resume">what to include in your skills section</a> expands this idea.</p>
+
+      <h2>Do not forget bilingual requirements</h2>
+      <p>For some federal or customer-facing roles, language matters. List English/French accurately. If you are unsure how to phrase proficiency, keep it simple and truthful.</p>
+
+      <h2>Let AI suggest—then you verify</h2>
+      <p>Use our <a href="/">resume AI assistant</a> to propose skill phrasing tied to a job description, then delete anything you cannot defend in an interview.</p>
+    `,
+  },
+  "google-docs-resume-template-canada": {
+    content: `
+      <p>A <strong>Google Docs resume</strong> workflow is common in Canada because sharing is easy and comments are convenient—especially for newcomers working with mentors or employment counsellors. The risk is formatting that looks fine on screen but breaks on export.</p>
+
+      <h2>Use styles, not manual spacing hacks</h2>
+      <p>Apply Heading 2 for section titles and Normal text for bullets. Random extra line breaks and tab stops tend to explode when you convert to PDF or open in another viewer.</p>
+
+      <h2>Be cautious with tables and columns</h2>
+      <p>Two-column layouts can confuse ATS parsers. If you must use columns, keep the entire “Experience” section in a single column and save the second column for shorter blocks like skills or education.</p>
+
+      <h2>Export settings that save embarrassment</h2>
+      <p>Download as PDF and reopen it to verify fonts, page breaks, and hyperlinks (email, LinkedIn, portfolio). Broken links are a silent rejection trigger for busy hiring managers.</p>
+
+      <h2>Canadian spelling in shared drafts</h2>
+      <p>Docs defaults can lean American English. If you are applying domestically, consider Canadian spelling for key words and consistent date formats. Cross-check norms in <a href="/blog/canadian-resume-format-guide">Canadian resume format</a>.</p>
+
+      <h2>When to graduate from Docs to a builder</h2>
+      <p>If tailoring is taking hours, a builder can speed iteration. Compare approaches in <a href="/blog/free-resume-builder-download-canada">free resume builder and download</a> guidance.</p>
+
+      <h2>Polish your Doc with AI, then export</h2>
+      <p>Paste your posting into our <a href="/">free AI resume builder</a> to tighten bullets while keeping your Google Docs version as the source of truth—whatever workflow fits you best.</p>
+    `,
+  },
+  "overleaf-latex-resume-canada": {
+    content: `
+      <p><strong>Overleaf resume</strong> templates produce crisp PDFs that look excellent in academic circles. If you are applying to Canadian industry roles, the question is not “Is LaTeX pretty?”—it is whether recruiting software can reliably parse your sections.</p>
+
+      <h2>When Overleaf is a strong choice</h2>
+      <p>Research, graduate school, quantitative finance, and some engineering paths still reward a polished LaTeX CV. For faculty-track or lab positions, longer CVs may be normal—different from a two-page industry resume.</p>
+
+      <h2>Corporate ATS: simplify before you submit</h2>
+      <p>Complex macros, minipages, and creative sectioning can confuse parsers. If you must use LaTeX for industry, choose a conservative template, plain headings, and avoid packing contact info into graphics.</p>
+
+      <h2>Test your PDF like a recruiter</h2>
+      <p>Copy all text into a plain editor. If line order is scrambled or headings disappear, fix the template before you apply at scale. You can cross-reference technical risks with <a href="/blog/how-to-optimize-resume-for-ats-2026">ATS optimization tips</a>.</p>
+
+      <h2>Keep a Word-friendly backup</h2>
+      <p>Some recruiters request Word. Maintaining two exports sounds annoying, but it prevents you from missing opportunities over file format.</p>
+
+      <h2>Pair LaTeX precision with Canadian content norms</h2>
+      <p>Great typography cannot replace local conventions. Review photos, personal data, and spelling expectations in <a href="/blog/canadian-resume-format-guide">Canadian resume format</a>.</p>
+
+      <h2>If LaTeX is overkill, use a simpler builder</h2>
+      <p>When you want fast iteration for corporate postings, our <a href="/">resume builder</a> focuses on ATS-friendly structure first.</p>
+    `,
+  },
+  "indeed-resume-builder-canada-alternatives": {
+    content: `
+      <p><strong>Indeed Canada</strong> is a primary job search channel for millions of people, and the <strong>Indeed resume builder</strong> lowers friction when you want to start quickly. The trade-off is control: easy flows can encourage one generic resume for many “Easy Apply” clicks.</p>
+
+      <h2>When the Indeed resume is enough</h2>
+      <p>If you are applying to similar roles—same title, same industry—and the posting does not demand a highly tailored narrative, a concise Indeed profile plus a clean PDF may work fine for first-round volume.</p>
+
+      <h2>When you should break out of the default</h2>
+      <p>For competitive roles, internal referrals, or ATS-heavy employers, you want a targeted resume with mirrored keywords and tight bullets. Follow <a href="/blog/how-to-tailor-resume-to-job">tailoring steps</a> before you upload.</p>
+
+      <h2>Boards are not the only gate</h2>
+      <p>Many Canadian companies route you through Greenhouse, Workday, or Lever. Those systems still reward straightforward PDFs. Keep formatting conservative, as outlined in <a href="/blog/how-to-optimize-resume-for-ats-2026">ATS optimization</a>.</p>
+
+      <h2>Keep your “master resume” portable</h2>
+      <p>Maintain a version you own outside any single platform. That makes it easier to apply on company sites, email hiring managers, and adjust quickly when a recruiter asks for a tweak tonight.</p>
+
+      <h2>Do not forget spelling and local norms</h2>
+      <p>Canadian conventions still apply on global platforms. If you are unsure, compare against <a href="/blog/canadian-resume-format-guide">Canadian resume format</a>.</p>
+
+      <h2>Use AI for tailoring, Indeed for discovery</h2>
+      <p>Many job seekers combine both: discover roles on Indeed, refine the resume with our <a href="/">free AI resume builder</a>, then attach the PDF when the posting allows.</p>
+    `,
+  },
+  "my-resume-checklist-canada-2026": {
+    content: `
+      <p>When you say “<strong>my resume</strong> is done,” what you usually mean is “I cannot look at it anymore.” A short checklist catches the errors that survive spellcheck—especially when you are applying under stress in Canada’s tight rental-and-inflation reality.</p>
+
+      <h2>Contact and links (two-minute pass)</h2>
+      <p>Verify email, phone, LinkedIn URL, and portfolio links. Click every hyperlink in the exported PDF. If you use a shortened URL, make sure it resolves.</p>
+
+      <h2>Role titles and dates (consistency pass)</h2>
+      <p>Align months and years, fix overlapping dates, and ensure titles match what HR will verify. If you changed official titles for clarity, ask whether the wording is still truthful.</p>
+
+      <h2>Canadian spelling and word choice</h2>
+      <p>Pick Canadian or US English intentionally. Mixed spelling looks accidental. For a broader norms refresher, read <a href="/blog/canadian-resume-format-guide">Canadian resume format</a>.</p>
+
+      <h2>Keyword alignment without stuffing</h2>
+      <p>Skim the posting again. Are the must-have tools and responsibilities reflected in your last two roles? If not, adjust bullets before you apply. Use <a href="/blog/resume-keywords-that-get-interviews">keyword guidance</a> as a sanity check.</p>
+
+      <h2>ATS formatting smoke test</h2>
+      <p>Export PDF, copy text into Notepad or TextEdit, and confirm the order is readable. If it is scrambled, simplify layout before you submit. More detail lives in <a href="/blog/how-to-optimize-resume-for-ats-2026">ATS optimization</a>.</p>
+
+      <h2>Proofread for credibility killers</h2>
+      <p>Wrong company names, template placeholders (“Company X”), and inconsistent fonts undermine trust fast. If you want a broader list, see <a href="/blog/common-resume-mistakes">common resume mistakes</a>.</p>
+
+      <h2>Final step: get a second pair of eyes</h2>
+      <p>Ask a friend to read only the first half page—where recruiters spend most of their time. If you want product-assisted feedback, run your resume through our <a href="/">AI resume builder</a> with the job description handy.</p>
+    `,
+  },
+  "how-to-optimize-resume-for-ats-2026": {
     content: `
       <p>Applicant Tracking Systems (ATS) screen resumes before a human recruiter ever sees them. If your resume doesn't pass ATS, it doesn't matter how qualified you are—you won't get the interview.</p>
       

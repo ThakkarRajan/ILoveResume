@@ -55,6 +55,8 @@ import {
 import { getAuth, signInWithCredential, GoogleAuthProvider, onAuthStateChanged } from "firebase/auth";
 import { wakeBackend, API_BASE, processText } from "../../utils/api.js";
 import { unescapeHtml } from "../../utils/safeHtml";
+import LegalConsentCheckbox from "../../components/legal/LegalConsentCheckbox";
+import SiteLegalLinks from "../../components/legal/SiteLegalLinks";
 
 const JOB_DESCRIPTION_MAX_CHARS = 15_000;
 const RESUME_TEXT_MAX_CHARS = 50_000;
@@ -82,6 +84,7 @@ export default function Dashboard() {
   const [loadingPhase, setLoadingPhase] = useState('idle'); // 'idle' | 'upload' | 'extract' | 'ai'
   const [uploadAttempts, setUploadAttempts] = useState(0);
   const [user, setUser] = useState(null);
+  const [legalConsent, setLegalConsent] = useState(false);
 
   useEffect(() => {
     const auth = getAuth();
@@ -570,6 +573,9 @@ export default function Dashboard() {
     if (uploadMode === "text" && !textResume.trim()) {
       return showValidationError("Please enter your resume text.");
     }
+    if (!legalConsent) {
+      return showValidationError("Please agree to the Terms & Conditions and Privacy Policy.");
+    }
     if (!navigator.onLine) {
       showNetworkError();
       return;
@@ -768,299 +774,91 @@ export default function Dashboard() {
       .replace(/'/g, "&#039;");
 
   if (!user) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex min-h-dvh items-center justify-center bg-zinc-50 text-sm text-zinc-500">
+        Loading…
+      </div>
+    );
   }
 
   if (loading) {
+    const phaseLabel =
+      loadingPhase === "upload"
+        ? "Uploading file"
+        : loadingPhase === "extract"
+          ? "Extracting text"
+          : loadingPhase === "ai"
+            ? "Analyzing with AI"
+            : "Working";
+
     return (
-      <>
-        {/* Enhanced AI Processing Loading Screen - Responsive */}
-        <div className="fixed inset-0 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 z-[9999] flex flex-col items-center justify-center overflow-hidden min-h-screen w-full">
-          {/* Animated Background Elements */}
-          <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute -top-40 -right-40 w-60 h-60 sm:w-80 sm:h-80 bg-gradient-to-br from-blue-400/20 to-purple-600/20 rounded-full blur-3xl animate-pulse"></div>
-            <div className="absolute -bottom-40 -left-40 w-60 h-60 sm:w-80 sm:h-80 bg-gradient-to-tr from-indigo-400/20 to-pink-600/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 sm:w-96 sm:h-96 bg-gradient-to-r from-purple-400/10 to-pink-400/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+      <div className="fixed inset-0 z-[9999] flex min-h-screen w-full items-center justify-center bg-zinc-50/95 px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2 }}
+          className="w-full max-w-md rounded-xl border border-zinc-200 bg-white p-8 text-center shadow-sm"
+        >
+          <Image src="/logo.png" alt="" width={48} height={48} className="mx-auto h-12 w-12 rounded-lg border border-zinc-200 object-contain" priority />
+          <h2 className="mt-6 text-lg font-semibold text-zinc-900">{phaseLabel}</h2>
+          <p className="mt-1 text-sm text-zinc-500">This can take a little while for long resumes or postings.</p>
+          <div className="mt-6 h-2 w-full overflow-hidden rounded-full bg-zinc-100">
+            <motion.div
+              className="h-full rounded-full bg-blue-600"
+              initial={{ width: 0 }}
+              animate={{ width: `${progress}%` }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+            />
           </div>
-          {/* Loading Content */}
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="text-center relative z-10 max-w-xs sm:max-w-2xl mx-auto px-2 sm:px-6"
-          >
-            {/* Enhanced Logo and Brand */}
-            <motion.div 
-              initial={{ opacity: 0, y: -30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.6 }}
-              className="flex flex-col items-center gap-4 sm:gap-6 mb-8 sm:mb-10"
-            >
-              <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl blur-xl opacity-40 group-hover:opacity-60 transition-opacity duration-500"></div>
-                <Image
-                  src="/logo.png"
-                  alt="I Love Resumes Logo"
-                  width={70}
-                  height={70}
-                  priority
-                  className="relative z-10 rounded-3xl shadow-2xl w-16 h-16 sm:w-[100px] sm:h-[100px]"
-                  style={{ width: "auto", height: "auto" }}
-                />
-              </div>
-              <div className="flex flex-col items-center gap-2 sm:gap-3">
-                <Image
-                  src="/Iloveresumelogotext.png"
-                  alt="I Love Resumes Logo"
-                  width={180}
-                  height={50}
-                  priority
-                  className="h-10 sm:h-20 object-contain"
-                  style={{ width: "auto", height: "auto" }}
-                />
-                <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm px-3 sm:px-4 py-1 sm:py-2 rounded-full shadow-lg">
-                  <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500 animate-pulse" />
-                  <span className="text-xs sm:text-sm font-medium text-gray-700">AI-Powered Resume Builder</span>
-                </div>
-              </div>
-            </motion.div>
-            {/* Enhanced Loading Spinner */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.6 }}
-              className="relative w-28 h-28 sm:w-40 sm:h-40 mb-6 sm:mb-8 mx-auto"
-            >
-              <div className="absolute inset-0 w-full h-full border-4 border-purple-200/30 rounded-full"></div>
-              <div className="absolute inset-0 w-full h-full border-4 border-transparent border-t-purple-600 rounded-full animate-spin"></div>
-              <div className="absolute inset-0 w-20 h-20 sm:w-32 sm:h-32 m-auto border-4 border-pink-200/30 rounded-full"></div>
-              <div className="absolute inset-0 w-20 h-20 sm:w-32 sm:h-32 m-auto border-4 border-transparent border-t-pink-500 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-10 h-10 sm:w-20 sm:h-20 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-lg">
-                  <Sparkles className="w-6 h-6 sm:w-10 sm:h-10 text-white animate-pulse" />
-                </div>
-              </div>
-            </motion.div>
-            {/* Enhanced Loading Text */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 0.6 }}
-              className="space-y-3 sm:space-y-6"
-            >
-              <div>
-                <h3 className="text-xl sm:text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-1 sm:mb-2">
-                  {loadingPhase === 'upload' && 'Uploading PDF...'}
-                  {loadingPhase === 'extract' && 'Extracting Resume Text...'}
-                  {loadingPhase === 'ai' && 'AI is crafting your resume...'}
-                  {loadingPhase === 'idle' && 'Processing...'}
-                </h3>
-                <p className="text-gray-600 text-base sm:text-xl">This may take a few moments</p>
-              </div>
-              {/* Enhanced Progress Bar */}
-              <div className="w-full max-w-xs sm:max-w-md mx-auto">
-                <div className="bg-gray-200/50 backdrop-blur-sm rounded-full h-3 sm:h-4 mb-2 sm:mb-3 shadow-inner">
-                  <motion.div
-                    className="bg-gradient-to-r from-purple-500 to-pink-500 h-3 sm:h-4 rounded-full shadow-lg"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${progress}%` }}
-                    transition={{ duration: 0.5, ease: "easeOut" }}
-                  />
-                </div>
-                <p className="text-xs sm:text-sm text-gray-600 font-medium">{progress}% complete</p>
-              </div>
-            </motion.div>
-            {/* Enhanced Loading Steps */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8, duration: 0.6 }}
-              className="mt-6 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm"
-            >
-              <div className={`flex items-center gap-2 sm:gap-3 bg-white/80 backdrop-blur-sm px-3 sm:px-4 py-1 sm:py-2 rounded-full shadow-lg ${loadingPhase === 'upload' ? 'ring-2 ring-purple-400' : ''}`}>
-                <div className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full animate-pulse ${loadingPhase === 'upload' ? 'bg-purple-500' : 'bg-gray-300'}`}></div>
-                <span className="font-medium text-gray-700">Uploading PDF/Text</span>
-              </div>
-              <div className={`flex items-center gap-2 sm:gap-3 bg-white/80 backdrop-blur-sm px-3 sm:px-4 py-1 sm:py-2 rounded-full shadow-lg ${loadingPhase === 'extract' ? 'ring-2 ring-purple-400' : ''}`}>
-                <div className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full animate-pulse ${loadingPhase === 'extract' ? 'bg-purple-500' : 'bg-gray-300'}`}></div>
-                <span className="font-medium text-gray-700">Extracting Text</span>
-              </div>
-              <div className={`flex items-center gap-2 sm:gap-3 bg-white/80 backdrop-blur-sm px-3 sm:px-4 py-1 sm:py-2 rounded-full shadow-lg ${loadingPhase === 'ai' ? 'ring-2 ring-purple-400' : ''}`}>
-                <div className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full animate-pulse ${loadingPhase === 'ai' ? 'bg-purple-500' : 'bg-gray-300'}`}></div>
-                <span className="font-medium text-gray-700">AI Processing</span>
-              </div>
-            </motion.div>
-            {/* Additional Info */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1.2, duration: 0.6 }}
-              className="mt-6 sm:mt-8 p-3 sm:p-4 bg-blue-50/80 backdrop-blur-sm rounded-2xl border border-blue-200/50"
-            >
-              <div className="flex items-center gap-2 text-blue-700">
-                <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
-                <span className="text-xs sm:text-sm font-medium">Processing time varies based on content length</span>
-              </div>
-            </motion.div>
-          </motion.div>
-        </div>
-      </>
+          <p className="mt-2 text-xs font-medium tabular-nums text-zinc-500">{progress}%</p>
+          <div className="mt-6 flex flex-wrap justify-center gap-2 text-left text-xs text-zinc-600">
+            {[
+              { id: "upload", label: "Upload" },
+              { id: "extract", label: "Extract" },
+              { id: "ai", label: "Analyze" },
+            ].map((step) => (
+              <span
+                key={step.id}
+                className={`rounded-full border px-2.5 py-1 ${
+                  loadingPhase === step.id ? "border-blue-200 bg-blue-50 text-blue-900" : "border-zinc-200 bg-zinc-50 text-zinc-500"
+                }`}
+              >
+                {step.label}
+              </span>
+            ))}
+          </div>
+        </motion.div>
+      </div>
     );
   }
 
   if (showResultSkeleton) {
     return (
-      <>
-        {/* Result Skeleton Loading Screen - Responsive */}
-        <div className="inset-0 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 z-[9999] flex flex-col items-center justify-center overflow-hidden min-h-screen w-full pt-4 sm:pt-8">
-          {/* Animated Background Elements */}
-          <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute -top-40 -right-40 w-60 h-60 sm:w-80 sm:h-80 bg-gradient-to-br from-blue-400/20 to-purple-600/20 rounded-full blur-3xl animate-pulse"></div> 
-            <div className="absolute -bottom-40 -left-40 w-60 h-60 sm:w-80 sm:h-80 bg-gradient-to-tr from-indigo-400/20 to-pink-600/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 sm:w-96 sm:h-96 bg-gradient-to-r from-green-400/10 to-blue-400/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+      <div className="fixed inset-0 z-[9999] flex min-h-screen w-full flex-col items-center justify-center bg-zinc-50 px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2 }}
+          className="w-full max-w-lg rounded-xl border border-zinc-200 bg-white p-8 text-center shadow-sm"
+        >
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
+            <CheckCircle className="h-6 w-6" strokeWidth={1.75} />
           </div>
-          {/* Skeleton Content */}
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="text-center relative z-10 w-full max-w-xs sm:max-w-4xl mx-auto px-2 sm:px-6 pt-4 sm:pt-8"
-          >
-            {/* Success Header */}
-            <motion.div
-              initial={{ opacity: 0, y: -30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.6 }}
-              className="flex flex-col items-center gap-4 sm:gap-6 mb-6 sm:mb-12"
-            >
-              <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-r from-green-600 to-blue-600 rounded-3xl blur-xl opacity-40 group-hover:opacity-60 transition-opacity duration-500"></div>
-                <div className="relative z-10 w-14 h-14 sm:w-24 sm:h-24 bg-gradient-to-r from-green-500 to-blue-500 rounded-3xl shadow-2xl flex items-center justify-center">
-                  <CheckCircle className="w-8 h-8 sm:w-12 sm:h-12 text-white" />
-                </div>
-              </div>
-              <div className="flex flex-col items-center gap-2 sm:gap-3">
-                <h2 className="text-lg sm:text-3xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-                  Resume Generated Successfully!
-                </h2>
-                <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm px-3 sm:px-4 py-1 sm:py-2 rounded-full shadow-lg">
-                  <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 animate-pulse" />
-                  <span className="text-xs sm:text-sm font-medium text-gray-700">AI-Powered Results Ready</span>
-                </div>
-              </div>
-            </motion.div>
-            {/* Result Page Skeleton - Matching Actual Result Page */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.6 }}
-              className="w-full max-w-xs sm:max-w-7xl mx-auto"
-            >
-              {/* Responsive Skeleton Layout */}
-              <div className="flex flex-col gap-6 sm:gap-8 w-full">
-                {/* Header Skeleton */}
-                <div className="flex flex-col items-center text-center mb-4 sm:mb-8 gap-2 sm:gap-4">
-                  <div className="inline-flex items-center justify-center w-12 h-12 sm:w-20 sm:h-20 bg-gradient-to-r from-purple-200 to-pink-200 rounded-3xl mb-2 sm:mb-4 animate-pulse"></div>
-                  <div className="h-8 sm:h-12 bg-gradient-to-r from-purple-200 to-pink-200 rounded-lg animate-pulse mx-auto w-32 sm:w-64 mb-1 sm:mb-3"></div>
-                  <div className="h-4 sm:h-6 bg-gray-200 rounded animate-pulse mx-auto w-24 sm:w-48 mb-2 sm:mb-6"></div>
-                  <div className="h-8 sm:h-10 bg-white/80 backdrop-blur-sm rounded-xl animate-pulse mx-auto w-20 sm:w-40"></div>
-                </div>
-                {/* Main Content Skeleton */}
-                <div className="flex flex-col gap-4 sm:gap-8 w-full">
-                  {/* Name Field */}
-                  <div className="flex flex-col gap-1 sm:gap-2">
-                    <div className="h-3 sm:h-4 bg-gray-200 rounded animate-pulse w-16 sm:w-24 mb-1"></div>
-                    <div className="h-8 sm:h-12 bg-gray-200 rounded-xl animate-pulse w-full"></div>
-                  </div>
-                  {/* Contact Fields */}
-                  <div className="flex flex-col sm:grid sm:grid-cols-2 gap-3 sm:gap-6">
-                    {[1, 2, 3, 4].map((item) => (
-                      <div key={item} className="flex flex-col gap-1">
-                        <div className="h-3 sm:h-4 bg-gray-200 rounded animate-pulse w-14 sm:w-20 mb-1"></div>
-                        <div className="relative">
-                          <div className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 w-3 h-3 sm:w-5 sm:h-5 bg-gray-200 rounded animate-pulse"></div>
-                          <div className="h-8 sm:h-12 bg-gray-200 rounded-xl animate-pulse pl-6 sm:pl-10 w-full"></div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  {/* Summary Section */}
-                  <div className="flex flex-col gap-1 sm:gap-2">
-                    <div className="h-3 sm:h-4 bg-gray-200 rounded animate-pulse w-16 sm:w-24 mb-1"></div>
-                    <div className="space-y-1 sm:space-y-2">
-                      <div className="h-3 sm:h-4 bg-gray-200 rounded animate-pulse w-full"></div>
-                      <div className="h-3 sm:h-4 bg-gray-200 rounded animate-pulse w-5/6"></div>
-                      <div className="h-3 sm:h-4 bg-gray-200 rounded animate-pulse w-4/6"></div>
-                      <div className="h-3 sm:h-4 bg-gray-200 rounded animate-pulse w-3/6"></div>
-                    </div>
-                  </div>
-                  {/* Skills Section */}
-                  <div className="flex flex-col gap-1 sm:gap-2">
-                    <div className="h-3 sm:h-4 bg-gray-200 rounded animate-pulse w-20 sm:w-32 mb-1"></div>
-                    <div className="bg-gray-50 rounded-xl p-2 sm:p-4 flex flex-col gap-2">
-                      <div className="h-3 sm:h-4 bg-gray-200 rounded animate-pulse w-16 sm:w-24 mb-1"></div>
-                      <div className="flex flex-wrap gap-1 sm:gap-2">
-                        {[1, 2, 3, 4, 5, 6].map((item) => (
-                          <div key={item} className="h-4 sm:h-6 bg-gray-200 rounded-full animate-pulse w-12 sm:w-16"></div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                  {/* Experience Section */}
-                  <div className="flex flex-col gap-2 sm:gap-4">
-                    <div className="flex flex-col sm:flex-row items-center justify-between mb-2 sm:mb-4 gap-2">
-                      <div className="flex items-center gap-2 sm:gap-3">
-                        <div className="w-8 h-8 sm:w-12 sm:h-12 bg-green-100 rounded-2xl animate-pulse"></div>
-                        <div>
-                          <div className="h-5 sm:h-7 bg-gray-200 rounded animate-pulse w-24 sm:w-40 mb-1"></div>
-                          <div className="h-3 sm:h-4 bg-gray-200 rounded animate-pulse w-16 sm:w-32"></div>
-                        </div>
-                      </div>
-                      <div className="h-8 sm:h-10 bg-gradient-to-r from-purple-200 to-pink-200 rounded-xl animate-pulse w-16 sm:w-32"></div>
-                    </div>
-                    {/* Experience Card */}
-                    <div className="bg-gray-50 rounded-2xl p-3 sm:p-6 border border-gray-200 flex flex-col gap-2">
-                      <div className="flex flex-col sm:grid sm:grid-cols-2 gap-2 sm:gap-4 mb-2 sm:mb-4">
-                        {[1, 2, 3, 4].map((item) => (
-                          <div key={item} className="flex flex-col gap-1">
-                            <div className="h-3 sm:h-4 bg-gray-200 rounded animate-pulse w-14 sm:w-20 mb-1"></div>
-                            <div className="h-8 sm:h-12 bg-gray-200 rounded-xl animate-pulse w-full"></div>
-                          </div>
-                        ))}
-                      </div>
-                      <div className="space-y-1 sm:space-y-2">
-                        <div className="h-3 sm:h-4 bg-gray-200 rounded animate-pulse w-20 sm:w-32 mb-1"></div>
-                        {[1, 2, 3].map((item) => (
-                          <div key={item} className="flex items-center gap-1 sm:gap-3">
-                            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gray-200 rounded-full animate-pulse"></div>
-                            <div className="h-3 sm:h-4 bg-gray-200 rounded animate-pulse flex-1"></div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-            {/* Loading Text */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8, duration: 0.6 }}
-              className="mt-6 sm:mt-8 space-y-2 sm:space-y-4"
-            >
-              <div className="flex items-center justify-center gap-2 text-green-600">
-                <div className="w-2 h-2 sm:w-3 sm:h-3 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="font-medium text-xs sm:text-sm">Preparing your results...</span>
-              </div>
-              <p className="text-gray-600 text-xs sm:text-sm">Redirecting to results page in a moment</p>
-            </motion.div>
-          </motion.div>
-        </div>
-      </>
+          <h2 className="mt-5 text-lg font-semibold text-zinc-900">Resume ready</h2>
+          <p className="mt-2 text-sm text-zinc-500">Opening the editor—almost there.</p>
+          <div className="mt-8 space-y-3 text-left">
+            <div className="h-3 w-24 animate-pulse rounded bg-zinc-200" />
+            <div className="h-10 w-full animate-pulse rounded-lg bg-zinc-100" />
+            <div className="h-3 w-32 animate-pulse rounded bg-zinc-200" />
+            <div className="h-24 w-full animate-pulse rounded-lg bg-zinc-100" />
+          </div>
+        </motion.div>
+      </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative">
+    <div className="relative min-h-screen bg-zinc-50">
       <Toaster 
         position="top-right"
         toastOptions={{
@@ -1073,19 +871,17 @@ export default function Dashboard() {
         }}
       />
       
-      {/* Enhanced Floating Action Button */}
       <motion.button
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ delay: 0.5 }}
-        whileHover={{ scale: 1.1, rotate: 90 }}
-        whileTap={{ scale: 0.9 }}
+        type="button"
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.15, duration: 0.2 }}
+        whileTap={{ scale: 0.97 }}
         onClick={clearForm}
-        className="fixed bottom-6 right-6 w-16 h-16 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full shadow-xl hover:shadow-2xl flex items-center justify-center z-40 transition-all duration-300 group"
-        title="Clear all form data"
+        className="group fixed bottom-5 right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full border border-zinc-200 bg-white text-zinc-900 shadow-md transition-colors hover:border-zinc-300 hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25 sm:bottom-8 sm:right-8"
+        title="Clear form"
       >
-        <Plus className="w-7 h-7 group-hover:rotate-90 transition-transform duration-300" />
-        <div className="absolute inset-0 bg-white/20 rounded-full scale-0 group-hover:scale-100 transition-transform duration-300"></div>
+        <Plus className="h-6 w-6 transition-transform group-hover:rotate-45" strokeWidth={1.75} />
       </motion.button>
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
@@ -1094,7 +890,7 @@ export default function Dashboard() {
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-4 sm:mb-6 p-3 sm:p-4 bg-red-50 border border-red-200 rounded-2xl"
+            className="mb-4 rounded-lg border border-red-200 bg-red-50/90 p-3 sm:mb-6 sm:p-4"
           >
             <div className="flex items-center gap-2 sm:gap-3">
               <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-red-600" />
@@ -1107,33 +903,24 @@ export default function Dashboard() {
         )}
         
         {/* Header Section */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-8 sm:mb-12"
-        >
-          <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-r from-purple-500 to-pink-500 rounded-3xl mb-4 sm:mb-6 shadow-lg">
-            <Home className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
+        <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }} className="mb-10 text-center sm:mb-12">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl border border-zinc-200 bg-white shadow-sm sm:mb-5 sm:h-14 sm:w-14">
+            <Home className="h-6 w-6 text-blue-700 sm:h-7 sm:w-7" strokeWidth={1.75} />
           </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2 sm:mb-3">
-            Welcome back, {user?.displayName || 'User'}!
-        </h1>
-          <p className="text-gray-600 text-base sm:text-xl">Let's create your perfect resume</p>
-          
-          {/* Quick Stats */}
-          <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-8 mt-6 sm:mt-8">
-            
+          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 sm:text-3xl md:text-4xl">
+            Welcome back{user?.displayName ? `, ${user.displayName.split(" ")[0]}` : ""}
+          </h1>
+          <p className="mt-2 text-sm text-zinc-600 sm:text-base">Add a job description and resume, then generate a tailored draft.</p>
+          <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:mt-8 sm:flex-row sm:gap-4">
             {recentResults.length > 0 && (
-              <motion.button
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
+              <button
+                type="button"
                 onClick={() => setShowRecentResults(true)}
-                className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-3 sm:px-4 py-2 rounded-full shadow-sm hover:shadow-md transition-all duration-200"
+                className="inline-flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-800 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25"
               >
-                <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
-                <span className="text-xs sm:text-sm font-medium">Recent Result</span>
-              </motion.button>
+                <Clock className="h-4 w-4 text-zinc-500" strokeWidth={1.75} />
+                Last result
+              </button>
             )}
           </div>
         </motion.div>
@@ -1146,7 +933,7 @@ export default function Dashboard() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/50 p-6 sm:p-8 responsive-card"
+              className="responsive-card rounded-xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-8"
             >
               <div className="flex items-center justify-between mb-4 sm:mb-6">
                 <div className="flex items-center">
@@ -1170,7 +957,7 @@ export default function Dashboard() {
               </div>
 
         <textarea
-                className="w-full h-40 sm:h-48 p-4 sm:p-6 border border-gray-200 rounded-2xl text-gray-900 resize-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-base sm:text-lg"
+                className="h-40 w-full resize-none rounded-lg border border-zinc-200 p-4 text-base text-zinc-900 transition-colors focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15 sm:h-48 sm:p-5 sm:text-lg"
                 placeholder="Copy and paste the job description, requirements, and responsibilities here..."
           value={unescapeHtml(jobText)}
           onChange={(e) => setJobText(e.target.value.slice(0, JOB_DESCRIPTION_MAX_CHARS))}
@@ -1194,7 +981,7 @@ export default function Dashboard() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/50 p-8 responsive-card"
+              className="responsive-card rounded-xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-8"
             >
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center">
@@ -1217,8 +1004,8 @@ export default function Dashboard() {
                     onClick={() => switchUploadMode("pdf")}
                     className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
                       uploadMode === "pdf"
-                        ? "bg-white text-purple-600 shadow-sm"
-                        : "text-gray-600 hover:text-gray-900"
+                        ? "bg-white text-blue-700 shadow-sm ring-1 ring-zinc-200/80"
+                        : "text-zinc-600 hover:text-zinc-900"
                     }`}
                   >
                     <FileUp className="w-4 h-4" />
@@ -1230,8 +1017,8 @@ export default function Dashboard() {
                     onClick={() => switchUploadMode("text")}
                     className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
                       uploadMode === "text"
-                        ? "bg-white text-purple-600 shadow-sm"
-                        : "text-gray-600 hover:text-gray-900"
+                        ? "bg-white text-blue-700 shadow-sm ring-1 ring-zinc-200/80"
+                        : "text-zinc-600 hover:text-zinc-900"
                     }`}
                   >
                     <Type className="w-4 h-4" />
@@ -1253,8 +1040,8 @@ export default function Dashboard() {
                     <div
                       className={`relative border-2 border-dashed rounded-2xl p-8 text-center transition-all duration-200 ${
                         dragActive 
-                          ? 'border-purple-500 bg-purple-50' 
-                          : 'border-gray-300 hover:border-purple-400 hover:bg-gray-50'
+                          ? "border-blue-500 bg-blue-50/60"
+                          : "border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50"
                       }`}
                       onDragEnter={handleDrag}
                       onDragLeave={handleDrag}
@@ -1270,8 +1057,8 @@ export default function Dashboard() {
                       />
                       
                       <div className="space-y-4">
-                        <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto">
-                          <FileText className="w-10 h-10 text-purple-600" />
+                        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-zinc-100">
+                          <FileText className="h-8 w-8 text-zinc-600" strokeWidth={1.75} />
                         </div>
                         <div>
                           <p className="text-xl font-medium text-gray-900 mb-2">
@@ -1306,16 +1093,16 @@ export default function Dashboard() {
                     transition={{ duration: 0.3 }}
                     className="space-y-4"
                   >
-                    <div className="flex items-center gap-3 p-4 bg-purple-50 rounded-xl">
-                      <Edit3 className="w-5 h-5 text-purple-600" />
+                    <div className="flex items-center gap-3 rounded-lg border border-zinc-200 bg-zinc-50 p-4">
+                      <Edit3 className="h-5 w-5 shrink-0 text-zinc-600" strokeWidth={1.75} />
                       <div>
-                        <p className="font-medium text-purple-900">Text Resume Input</p>
-                        <p className="text-sm text-purple-700">Type or paste your resume content directly (max {RESUME_TEXT_MAX_CHARS.toLocaleString()} characters)</p>
+                        <p className="text-sm font-medium text-zinc-900">Resume as text</p>
+                        <p className="text-xs text-zinc-600 sm:text-sm">Paste your content (max {RESUME_TEXT_MAX_CHARS.toLocaleString()} characters).</p>
                       </div>
         </div>
 
                     <textarea
-                      className="w-full h-64 p-6 border border-gray-200 rounded-2xl text-gray-900 resize-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-lg"
+                      className="h-64 w-full resize-none rounded-lg border border-zinc-200 p-5 text-base text-zinc-900 transition-colors focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15 sm:text-lg"
                       placeholder="Enter your resume content here... Include your experience, skills, education, and any other relevant information..."
                       value={unescapeHtml(textResume)}
                       onChange={(e) => setTextResume(e.target.value.slice(0, RESUME_TEXT_MAX_CHARS))}
@@ -1345,7 +1132,7 @@ export default function Dashboard() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 }}
-              className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/50 p-6 responsive-card"
+              className="responsive-card rounded-xl border border-zinc-200 bg-white p-6 shadow-sm"
             >
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center">
@@ -1377,8 +1164,8 @@ export default function Dashboard() {
                       whileHover={{ scale: 1.02 }}
                       className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 ${
                         selectedResume?.path === resume.path
-                          ? 'border-purple-500 bg-purple-50 shadow-md'
-                          : 'border-gray-200 hover:border-purple-300 hover:bg-gray-50'
+                          ? "border-blue-500 bg-blue-50/50 shadow-sm"
+                          : "border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50"
                       }`}
                       onClick={() => {
                         setSelectedResume(resume);
@@ -1389,8 +1176,8 @@ export default function Dashboard() {
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3 min-w-0 flex-1">
-                          <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
-                            <FileText className="w-5 h-5 text-purple-600" />
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-zinc-100">
+                            <FileText className="h-5 w-5 text-zinc-600" strokeWidth={1.75} />
                           </div>
                           <div className="min-w-0 flex-1">
                             <p className="text-sm font-medium text-gray-900 truncate max-w-[160px] md:max-w-[240px] lg:max-w-[320px]" title={resume.name}>
@@ -1434,12 +1221,19 @@ export default function Dashboard() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
             >
+              <LegalConsentCheckbox id="dashboard-legal-consent" checked={legalConsent} onChange={setLegalConsent} disabled={loading} />
+              <div className="mt-4">
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={handleSubmit}
-                disabled={!jobText.trim() || (uploadMode === "pdf" && !pdfFile && !selectedResume) || (uploadMode === "text" && !textResume.trim())}
-                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-5 px-6 rounded-2xl hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl text-lg"
+                disabled={
+                  !jobText.trim() ||
+                  (uploadMode === "pdf" && !pdfFile && !selectedResume) ||
+                  (uploadMode === "text" && !textResume.trim()) ||
+                  !legalConsent
+                }
+                className="w-full rounded-lg bg-zinc-900 py-4 text-base font-semibold text-white shadow-sm transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 focus-visible:ring-offset-2 sm:py-4 sm:text-lg"
               >
                 <div className="flex items-center justify-center space-x-3">
                   <Sparkles className="w-6 h-6" />
@@ -1447,6 +1241,7 @@ export default function Dashboard() {
                   <ArrowRight className="w-5 h-5" />
                 </div>
               </motion.button>
+              </div>
               
               {(!jobText.trim() || (uploadMode === "pdf" && !pdfFile && !selectedResume) || (uploadMode === "text" && !textResume.trim())) && (
           <motion.div
@@ -1470,6 +1265,10 @@ export default function Dashboard() {
             </motion.div>
           </div>
         </div>
+
+        <div className="mt-12 border-t border-zinc-200 pt-10 pb-6">
+          <SiteLegalLinks />
+        </div>
       </div>
 
       {/* Delete Confirmation Modal */}
@@ -1479,42 +1278,38 @@ export default function Dashboard() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/40 p-4 backdrop-blur-[2px]"
           >
             <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
+              initial={{ scale: 0.98, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6"
+              exit={{ scale: 0.98, opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              className="w-full max-w-md rounded-xl border border-zinc-200 bg-white p-6 shadow-xl"
             >
               <div className="text-center">
-                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Trash2 className="w-8 h-8 text-red-600" />
+                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-50">
+                  <Trash2 className="h-7 w-7 text-red-600" strokeWidth={1.75} />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  Delete Resume
-                </h3>
-                <p className="text-gray-600 mb-6">
-                  Are you sure you want to delete "{escapeHtml(fileToDelete?.name)}"? This action cannot be undone.
+                <h3 className="text-lg font-semibold text-zinc-900">Delete resume</h3>
+                <p className="mt-2 text-sm text-zinc-600">
+                  Delete &quot;{escapeHtml(fileToDelete?.name)}&quot;? This cannot be undone.
                 </p>
-                
-                <div className="flex gap-3">
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+                <div className="mt-6 flex gap-3">
+                  <button
+                    type="button"
                     onClick={cancelDelete}
-                    className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors"
+                    className="flex-1 rounded-lg border border-zinc-300 bg-white py-2.5 text-sm font-medium text-zinc-800 transition-colors hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25"
                   >
                     Cancel
-                  </motion.button>
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+                  </button>
+                  <button
+                    type="button"
                     onClick={executeDelete}
-                    className="flex-1 px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors"
+                    className="flex-1 rounded-lg bg-red-600 py-2.5 text-sm font-medium text-white transition-colors hover:bg-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600/30"
                   >
                     Delete
-                  </motion.button>
+                  </button>
                 </div>
               </div>
             </motion.div>
@@ -1529,110 +1324,95 @@ export default function Dashboard() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-gradient-to-br from-blue-200/60 via-purple-200/60 to-pink-200/60 backdrop-blur-[6px] z-50 flex items-center justify-center p-2 sm:p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/40 p-3 backdrop-blur-[2px] sm:p-4"
           >
             <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
+              initial={{ scale: 0.98, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white/80 backdrop-blur-2xl shadow-2xl border border-white/60 rounded-3xl w-full max-w-xs sm:max-w-2xl p-0 overflow-hidden relative"
-              style={{ boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.18)' }}
+              exit={{ scale: 0.98, opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              className="relative w-full max-w-md overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-xl sm:max-w-lg"
             >
-              {/* Header */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-6 pt-6 pb-3 border-b border-gray-200 bg-gradient-to-r from-purple-100/60 to-pink-100/60">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-400/40 to-purple-400/40 rounded-2xl flex items-center justify-center shadow-lg animate-pulse-slow">
-                    <Clock className="w-6 h-6 text-blue-600" />
+              <div className="flex items-start justify-between gap-3 border-b border-zinc-200 bg-zinc-50/80 px-5 py-4 sm:px-6">
+                <div className="flex min-w-0 items-center gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-zinc-200 bg-white">
+                    <Clock className="h-5 w-5 text-blue-700" strokeWidth={1.75} />
                   </div>
-                  <div>
-                    <h3 className="text-xl font-extrabold text-gray-900 tracking-tight">Recent Result</h3>
-                    <p className="text-gray-500 text-xs sm:text-sm">Your last generated resume</p>
+                  <div className="min-w-0">
+                    <h3 className="text-base font-semibold text-zinc-900 sm:text-lg">Recent result</h3>
+                    <p className="text-xs text-zinc-500 sm:text-sm">Your last generated draft on this device.</p>
                   </div>
                 </div>
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
+                <button
+                  type="button"
                   onClick={() => setShowRecentResults(false)}
-                  className="p-2 text-gray-400 hover:text-purple-600 hover:bg-purple-100 rounded-full transition-colors self-end sm:self-auto"
+                  className="shrink-0 rounded-md p-2 text-zinc-500 transition-colors hover:bg-zinc-200/60 hover:text-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25"
+                  aria-label="Close"
                 >
-                  <X className="w-6 h-6" />
-                </motion.button>
+                  <X className="h-5 w-5" />
+                </button>
               </div>
-              {/* Content */}
-              <div className="p-5 sm:p-8">
+              <div className="px-5 py-6 sm:px-6">
                 {recentResults.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-10">
-                    <div className="w-20 h-20 bg-gradient-to-br from-purple-200 to-pink-200 rounded-full flex items-center justify-center mb-4 animate-pulse-slow shadow-lg">
-                      <Clock className="w-10 h-10 text-purple-400" />
+                  <div className="py-6 text-center">
+                    <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-zinc-100">
+                      <Clock className="h-7 w-7 text-zinc-400" strokeWidth={1.5} />
                     </div>
-                    <h4 className="text-2xl font-bold text-gray-900 mb-2">No Recent Result</h4>
-                    <p className="text-gray-500 text-base">Generate your first resume to see it here</p>
+                    <h4 className="text-base font-semibold text-zinc-900">Nothing saved yet</h4>
+                    <p className="mt-2 text-sm text-zinc-600">Generate a resume to see it listed here.</p>
                   </div>
                 ) : (
-                  <div className="space-y-6">
+                  <div className="space-y-4">
                     {recentResults.map((result) => (
-                      <motion.div
-                        key={result.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="bg-gradient-to-br from-white/90 to-purple-50/80 rounded-2xl border border-purple-100 shadow-lg p-5 sm:p-7 flex flex-col gap-4 hover:shadow-2xl transition-shadow duration-300 relative"
-                      >
-                        {/* Delete button in top right */}
-                        <motion.button
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
+                      <div key={result.id} className="relative rounded-lg border border-zinc-200 bg-zinc-50/50 p-4 sm:p-5">
+                        <button
+                          type="button"
                           onClick={deleteRecentResult}
-                          className="absolute top-3 right-3 p-2 text-red-500 hover:text-white hover:bg-gradient-to-r hover:from-red-400 hover:to-pink-500 rounded-full transition-colors font-bold shadow-sm z-10"
+                          className="absolute right-3 top-3 rounded-md p-2 text-zinc-500 transition-colors hover:bg-red-50 hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600/20"
                           title="Delete result"
                         >
-                          <Trash2 className="w-5 h-5" />
-                        </motion.button>
-                        <div className="flex items-center gap-4 mb-2">
-                          <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-400 rounded-xl flex items-center justify-center shadow-md animate-pulse-slow">
-                            <FileText className="w-6 h-6 text-white" />
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                        <div className="flex items-start gap-3 pr-10">
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white ring-1 ring-zinc-200">
+                            <FileText className="h-5 w-5 text-zinc-600" strokeWidth={1.75} />
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <h4 className="font-bold text-lg text-gray-900 truncate max-w-[180px] sm:max-w-xs">{escapeHtml(result.fileName)}</h4>
-                            <p className="text-xs text-gray-500">
-                              {new Date(result.timestamp).toLocaleDateString()} at {new Date(result.timestamp).toLocaleTimeString()}
+                          <div className="min-w-0 flex-1">
+                            <h4 className="truncate font-medium text-zinc-900">{escapeHtml(result.fileName)}</h4>
+                            <p className="text-xs text-zinc-500">
+                              {new Date(result.timestamp).toLocaleDateString()} · {new Date(result.timestamp).toLocaleTimeString()}
                             </p>
                           </div>
                         </div>
-                        <div className="bg-white/80 rounded-xl p-4 border border-purple-50 mb-2 shadow-sm">
-                          <p className="text-sm text-gray-700">
-                            <span className="font-semibold text-purple-700">Job Description:</span> {escapeHtml(result.jobText).length > 120 ? `${escapeHtml(result.jobText).slice(0, 120)}...` : escapeHtml(result.jobText)}
+                        <div className="mt-4 rounded-lg border border-zinc-200 bg-white p-3">
+                          <p className="text-xs font-medium text-zinc-500">Job description</p>
+                          <p className="mt-1 text-sm text-zinc-700">
+                            {escapeHtml(result.jobText).length > 120 ? `${escapeHtml(result.jobText).slice(0, 120)}…` : escapeHtml(result.jobText)}
                           </p>
                         </div>
-                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
-                          <motion.button
-                            whileHover={{ scale: 1.04 }}
-                            whileTap={{ scale: 0.97 }}
-                            onClick={loadRecentResult}
-                            className="flex-1 px-4 py-2 sm:px-6 sm:py-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-xl font-bold shadow-md hover:from-blue-600 hover:to-indigo-600 hover:shadow-xl transition-all duration-200 text-base"
-                          >
-                            Continue Editing
-                          </motion.button>
-                        </div>
-                      </motion.div>
+                        <button
+                          type="button"
+                          onClick={loadRecentResult}
+                          className="mt-4 w-full rounded-lg bg-zinc-900 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30"
+                        >
+                          Continue editing
+                        </button>
+                      </div>
                     ))}
                   </div>
                 )}
               </div>
-              {/* Footer */}
-              <div className="px-6 py-4 border-t border-gray-200 bg-gradient-to-r from-purple-50/80 to-pink-50/80">
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-0">
-                  <p className="text-xs sm:text-sm text-gray-500">
-                    Last updated: {recentResults.length > 0 ? new Date(recentResults[0].timestamp).toLocaleString() : 'Never'}
-                  </p>
-                  <motion.button
-                    whileHover={{ scale: 1.04 }}
-                    whileTap={{ scale: 0.97 }}
-                    onClick={() => setShowRecentResults(false)}
-                    className="px-5 py-2 sm:px-8 sm:py-2 bg-gradient-to-r from-gray-200 to-gray-300 text-gray-700 rounded-xl hover:bg-gray-300 transition-colors font-bold text-sm sm:text-base shadow-sm"
-                  >
-                    Close
-                  </motion.button>
-                </div>
+              <div className="flex flex-col gap-3 border-t border-zinc-200 bg-zinc-50/80 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+                <p className="text-xs text-zinc-500">
+                  {recentResults.length > 0 ? `Updated ${new Date(recentResults[0].timestamp).toLocaleString()}` : "—"}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setShowRecentResults(false)}
+                  className="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-800 transition-colors hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25"
+                >
+                  Close
+                </button>
               </div>
             </motion.div>
           </motion.div>

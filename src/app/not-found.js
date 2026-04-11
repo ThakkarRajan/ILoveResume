@@ -1,40 +1,32 @@
 "use client";
+
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { FileQuestion } from "lucide-react";
+import SiteLegalLinks from "../components/legal/SiteLegalLinks";
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-yellow-50 via-pink-50 to-blue-100 px-4">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="text-center"
-      >
-        <div className="mb-6">
-          <span className="text-7xl md:text-9xl select-none" role="img" aria-label="Lost Astronaut">
-            🧑‍🚀
-          </span>
+    <div className="flex min-h-dvh flex-col items-center justify-center bg-zinc-50 px-6 py-16 text-center">
+      <div className="mx-auto flex max-w-md flex-col items-center">
+        <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl border border-zinc-200 bg-white shadow-sm">
+          <FileQuestion className="h-7 w-7 text-zinc-500" strokeWidth={1.5} aria-hidden />
         </div>
-        <h1 className="text-4xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 mb-4">
-          404: Page Not Found
-        </h1>
-        <p className="text-lg md:text-2xl text-gray-700 mb-8">
-          Oops! Looks like you took a wrong turn at Albuquerque.<br/>
-          This page is as lost as your last pair of matching socks.
+        <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">404</p>
+        <h1 className="mt-2 text-2xl font-semibold tracking-tight text-zinc-900 sm:text-3xl">Page not found</h1>
+        <p className="mt-3 text-sm leading-relaxed text-zinc-600 sm:text-base">
+          The link may be outdated or the page may have been moved. Use the navigation above or return home.
         </p>
-        <Link href="/">
-          <motion.button
-            whileHover={{ scale: 1.08, rotate: 2 }}
-            whileTap={{ scale: 0.95 }}
-            className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:shadow-2xl transition-all duration-200 text-lg"
-          >
-            🏠 Take me home!
-          </motion.button>
+        <Link
+          href="/"
+          className="mt-8 inline-flex min-h-[48px] items-center justify-center rounded-lg bg-zinc-900 px-6 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-50"
+        >
+          Back to home
         </Link>
-        <div className="mt-8 text-gray-400 text-sm">
-          (If you see a tumbleweed, let us know. We keep losing those too.)
+
+        <div className="mt-10 w-full max-w-lg border-t border-zinc-200 pt-8">
+          <SiteLegalLinks />
         </div>
-      </motion.div>
+      </div>
     </div>
   );
-} 
+}

@@ -25,6 +25,10 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import "../../utils/firebase.js";
 
 import { unescapeHtml } from "../../utils/safeHtml";
+import SiteLegalLinks from "../../components/legal/SiteLegalLinks";
+import LegalConsentCheckbox from "../../components/legal/LegalConsentCheckbox";
+import LegalSupportEmailLink from "../../components/legal/LegalSupportEmailLink";
+import { LEGAL_BUSINESS_ADDRESS } from "../../components/legal/legal-constants";
 
 export default function Contact() {
   const [user, setUser] = useState(null);
@@ -38,6 +42,7 @@ export default function Contact() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null); // 'success', 'error', null
+  const [legalConsent, setLegalConsent] = useState(false);
 
   useEffect(() => {
     const auth = getAuth();
@@ -70,6 +75,11 @@ export default function Contact() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       toast.error("Please enter a valid email address");
+      return;
+    }
+
+    if (!legalConsent) {
+      toast.error("Please agree to the Terms & Conditions and Privacy Policy.");
       return;
     }
 
@@ -192,7 +202,7 @@ export default function Contact() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-zinc-50 text-zinc-900">
       <Toaster 
         position="top-right"
         toastOptions={{
@@ -205,21 +215,14 @@ export default function Contact() {
         }}
       />
       
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-        {/* Header Section */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12 sm:mb-16"
-        >
-          <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-r from-purple-500 to-pink-500 rounded-3xl mb-4 sm:mb-6 shadow-lg">
-            <MessageSquare className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
+      <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
+        <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }} className="mb-12 text-center sm:mb-16">
+          <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-xl border border-zinc-200 bg-white shadow-sm sm:h-14 sm:w-14">
+            <MessageSquare className="h-6 w-6 text-blue-600 sm:h-7 sm:w-7" strokeWidth={1.75} />
           </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-3 sm:mb-4">
-            Get in Touch
-          </h1>
-          <p className="text-gray-600 text-base sm:text-lg md:text-xl max-w-2xl mx-auto">
-            Have questions about our AI-powered resume service? We'd love to hear from you and help you create the perfect resume.
+          <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl">Contact</h1>
+          <p className="mx-auto mt-3 max-w-2xl text-base text-zinc-600 sm:text-lg">
+            Questions about the product, partnerships, or support—we read every message.
           </p>
         </motion.div>
 
@@ -232,14 +235,14 @@ export default function Contact() {
             className="lg:col-span-2 space-y-6"
           >
             {/* Contact Methods */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/50 p-6 sm:p-8">
-              <div className="flex items-center gap-3 mb-6 sm:mb-8">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-purple-100 rounded-2xl flex items-center justify-center">
-                  <MessageSquare className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" />
+            <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-8">
+              <div className="mb-6 flex items-center gap-3 sm:mb-8">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 sm:h-12 sm:w-12">
+                  <MessageSquare className="h-5 w-5 text-blue-700 sm:h-6 sm:w-6" strokeWidth={1.75} />
                 </div>
                 <div>
-                  <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Contact Information</h2>
-                  <p className="text-gray-600 text-sm sm:text-base">Reach out to us through your preferred method</p>
+                  <h2 className="text-lg font-semibold text-zinc-900 sm:text-xl">Team & links</h2>
+                  <p className="text-sm text-zinc-600 sm:text-base">Choose the channel that works best for you.</p>
                 </div>
               </div>
 
@@ -253,18 +256,18 @@ export default function Contact() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 + index * 0.1 }}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="group p-4 sm:p-6 rounded-2xl border border-gray-200 hover:border-purple-300 transition-all duration-200 hover:shadow-lg"
+                    whileHover={{ y: -1 }}
+                    transition={{ duration: 0.15 }}
+                    className="group relative rounded-xl border border-zinc-200 bg-zinc-50/50 p-4 transition-colors hover:border-zinc-300 hover:bg-white hover:shadow-sm sm:p-5"
                   >
-                    <div className="flex flex-col items-center justify-center gap-3 text-center relative w-full">
-                      <ExternalLink className="absolute top-0 right-0 w-4 h-4 text-gray-400 group-hover:text-purple-600 transition-colors" />
+                    <div className="relative flex w-full flex-col items-center justify-center gap-3 text-center">
+                      <ExternalLink className="absolute right-0 top-0 h-4 w-4 text-zinc-400 transition-colors group-hover:text-zinc-700" />
                       <div className={`w-12 h-12 sm:w-14 sm:h-14 ${method.bgColor} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
                         <method.icon className={`w-6 h-6 sm:w-7 sm:h-7 ${method.iconColor}`} />
                       </div>
                       <div className="w-full overflow-hidden">
-                        <h3 className="font-semibold text-gray-900 mb-1 text-sm sm:text-base truncate">{method.title}</h3>
-                        <p className="text-gray-600 text-xs sm:text-sm truncate">{method.value}</p>
+                        <h3 className="mb-1 truncate text-sm font-semibold text-zinc-900 sm:text-base">{method.title}</h3>
+                        <p className="truncate text-xs text-zinc-600 sm:text-sm">{method.value}</p>
                       </div>
                     </div>
                   </motion.a>
@@ -272,32 +275,59 @@ export default function Contact() {
               </div>
             </div>
 
+            <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-8">
+              <h2 className="text-lg font-semibold text-zinc-900 sm:text-xl">Legal &amp; compliance</h2>
+              <p className="mt-2 text-sm leading-relaxed text-zinc-600">
+                For privacy requests, compliance correspondence, and formal notices—not general product feedback (use the
+                form for that).
+              </p>
+              <ul className="mt-4 space-y-2 text-sm text-zinc-700">
+                <li>
+                  <span className="text-zinc-500">Site / operator:</span>{" "}
+                  <span className="font-medium text-zinc-900">I Love Resumes</span>
+                  <span className="mt-1 block text-xs text-zinc-500">
+                    Public name of this resume service; operated by individuals, not as a registered corporation.
+                  </span>
+                </li>
+                <li>
+                  <span className="text-zinc-500">Privacy &amp; support:</span> <LegalSupportEmailLink />
+                </li>
+                <li>
+                  <span className="text-zinc-500">Legal / formal notices:</span> <LegalSupportEmailLink />
+                </li>
+                <li>
+                  <span className="text-zinc-500">Mailing address:</span>{" "}
+                  <span className="font-medium text-zinc-900">{LEGAL_BUSINESS_ADDRESS}</span>
+                </li>
+              </ul>
+            </div>
+
             {/* Features Section */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/50 p-8">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center">
-                  <Sparkles className="w-6 h-6 text-green-600" />
+            <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-8">
+              <div className="mb-8 flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-zinc-100">
+                  <Sparkles className="h-5 w-5 text-zinc-700" strokeWidth={1.75} />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900">Why Choose Us</h2>
-                  <p className="text-gray-600">Discover what makes our service special</p>
+                  <h2 className="text-xl font-semibold text-zinc-900">What we focus on</h2>
+                  <p className="text-sm text-zinc-600">Straightforward tooling for serious applications.</p>
                 </div>
               </div>
 
-              <div className="grid md:grid-cols-3 gap-6">
+              <div className="grid gap-4 md:grid-cols-3 md:gap-5">
                 {features.map((feature, index) => (
                   <motion.div
                     key={feature.title}
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 + index * 0.1 }}
-                    className="text-center p-6 rounded-2xl bg-gradient-to-br from-gray-50 to-white border border-gray-200 hover:border-purple-300 transition-all duration-200 hover:shadow-lg"
+                    transition={{ delay: 0.05 * index, duration: 0.2 }}
+                    className="rounded-xl border border-zinc-200 bg-zinc-50/40 p-5 text-center transition-colors hover:border-zinc-300 hover:bg-white"
                   >
-                    <div className="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                      <feature.icon className="w-6 h-6 text-purple-600" />
+                    <div className="mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-white ring-1 ring-zinc-200">
+                      <feature.icon className="h-5 w-5 text-blue-700" strokeWidth={1.75} />
                     </div>
-                    <h3 className="font-semibold text-gray-900 mb-2">{feature.title}</h3>
-                    <p className="text-gray-600 text-sm">{feature.description}</p>
+                    <h3 className="mb-2 text-sm font-semibold text-zinc-900">{feature.title}</h3>
+                    <p className="text-xs leading-relaxed text-zinc-600 sm:text-sm">{feature.description}</p>
                   </motion.div>
                 ))}
               </div>
@@ -311,20 +341,20 @@ export default function Contact() {
             transition={{ delay: 0.2 }}
             className="lg:col-span-1"
           >
-            <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/50 p-8 h-fit sticky top-8">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center">
-                  <Send className="w-6 h-6 text-blue-600" />
+            <div className="sticky top-24 h-fit rounded-xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-8">
+              <div className="mb-8 flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-blue-50">
+                  <Send className="h-5 w-5 text-blue-700" strokeWidth={1.75} />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900">Quick Message</h2>
-                  <p className="text-gray-600">Send us a message directly</p>
+                  <h2 className="text-xl font-semibold text-zinc-900">Send a message</h2>
+                  <p className="text-sm text-zinc-600">We usually reply within a business day.</p>
                 </div>
               </div>
 
               <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="mb-2 block text-sm font-medium text-zinc-800">
                     Name *
                   </label>
                   <input
@@ -332,14 +362,14 @@ export default function Contact() {
                     name="name"
                     value={unescapeHtml(formData.name)}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-gray-400 text-gray-500"
+                    className="w-full rounded-lg border border-zinc-200 bg-white px-3.5 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 transition-colors focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15"
                     placeholder="Your name"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="mb-2 block text-sm font-medium text-zinc-800">
                     Email *
                   </label>
                   <input
@@ -347,14 +377,14 @@ export default function Contact() {
                     name="email"
                     value={unescapeHtml(formData.email)}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-gray-400 text-gray-500"
+                    className="w-full rounded-lg border border-zinc-200 bg-white px-3.5 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 transition-colors focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15"
                     placeholder="your@email.com"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="mb-2 block text-sm font-medium text-zinc-800">
                     Subject *
                   </label>
                   <input
@@ -362,14 +392,14 @@ export default function Contact() {
                     name="subject"
                     value={unescapeHtml(formData.subject)}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-gray-400 text-gray-500"
+                    className="w-full rounded-lg border border-zinc-200 bg-white px-3.5 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 transition-colors focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15"
                     placeholder="How can we help?"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="mb-2 block text-sm font-medium text-zinc-800">
                     Message *
                   </label>
                   <textarea
@@ -377,25 +407,26 @@ export default function Contact() {
                     value={unescapeHtml(formData.message)}
                     onChange={handleInputChange}
                     rows={4}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 resize-none placeholder-gray-400 text-gray-500"
+                    className="w-full resize-none rounded-lg border border-zinc-200 bg-white px-3.5 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 transition-colors focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15"
                     placeholder="Tell us more about your inquiry..."
                     required
                   />
                 </div>
 
+                <LegalConsentCheckbox id="contact-legal-consent" checked={legalConsent} onChange={setLegalConsent} disabled={isSubmitting} />
+
                 <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileTap={{ scale: 0.99 }}
                   type="submit"
-                  disabled={isSubmitting}
-                  className={`w-full font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center gap-2 ${
-                    isSubmitting 
-                      ? 'bg-gray-400 text-white cursor-not-allowed' 
-                      : submitStatus === 'success'
-                        ? 'bg-green-600 hover:bg-green-700 text-white'
-                        : submitStatus === 'error'
-                          ? 'bg-red-600 hover:bg-red-700 text-white'
-                          : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white'
+                  disabled={isSubmitting || !legalConsent}
+                  className={`flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-semibold shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 focus-visible:ring-offset-2 ${
+                    isSubmitting
+                      ? "cursor-not-allowed bg-zinc-200 text-zinc-500"
+                      : submitStatus === "success"
+                        ? "bg-emerald-600 text-white hover:bg-emerald-700"
+                        : submitStatus === "error"
+                          ? "bg-red-600 text-white hover:bg-red-700"
+                          : "bg-zinc-900 text-white hover:bg-zinc-800"
                   }`}
                 >
                   {isSubmitting ? (
@@ -423,10 +454,10 @@ export default function Contact() {
                 </motion.button>
               </form>
 
-              <div className="mt-6 p-4 bg-purple-50 rounded-xl">
-                <div className="flex items-center gap-2 text-purple-700">
-                  <Heart className="w-4 h-4" />
-                  <span className="text-sm font-medium">We typically respond within 24 hours</span>
+              <div className="mt-6 rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3">
+                <div className="flex items-center gap-2 text-sm text-zinc-700">
+                  <Heart className="h-4 w-4 shrink-0 text-zinc-500" />
+                  <span>We aim to respond within one business day.</span>
                 </div>
               </div>
 
@@ -435,31 +466,33 @@ export default function Contact() {
           </motion.div>
         </div>
 
+        <div className="mt-12 border-t border-zinc-200 pt-10 sm:mt-16 sm:pt-12">
+          <SiteLegalLinks />
+        </div>
+
         {/* Footer Section */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="text-center mt-16"
+          transition={{ duration: 0.25 }}
+          className="mt-16 text-center sm:mt-20"
         >
-          <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/50 p-8">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">
-              Ready to Create Your Perfect Resume?
-            </h3>
-            <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-              Join thousands of users who have already transformed their careers with our AI-powered resume builder.
+          <div className="mx-auto max-w-2xl rounded-xl border border-zinc-200 bg-white px-6 py-10 shadow-sm sm:px-10">
+            <h3 className="text-lg font-semibold text-zinc-900 sm:text-xl">Ready to tailor a resume?</h3>
+            <p className="mx-auto mt-2 max-w-lg text-sm text-zinc-600 sm:text-base">
+              Sign in with Google to open the dashboard, add a job description, and export when you are satisfied.
             </p>
             <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              type="button"
+              whileTap={{ scale: 0.99 }}
               onClick={() => push("/dashboard")}
-              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 px-8 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl flex items-center gap-2 mx-auto"
+              className="mx-auto mt-6 inline-flex min-h-[48px] items-center gap-2 rounded-lg bg-zinc-900 px-6 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 focus-visible:ring-offset-2"
             >
-              <Sparkles className="w-4 h-4" />
-              Start Building Now
-              <ArrowRight className="w-4 h-4" />
+              <Sparkles className="h-4 w-4 opacity-90" />
+              Open dashboard
+              <ArrowRight className="h-4 w-4 opacity-80" />
             </motion.button>
-        </div>
+          </div>
         </motion.div>
       </div>
     </div>
