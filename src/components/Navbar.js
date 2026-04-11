@@ -15,6 +15,7 @@ import {
   Menu,
   X,
   LayoutDashboard,
+  BookOpen,
 } from "lucide-react";
 import { getAuth, onAuthStateChanged, signOut as firebaseSignOut } from "firebase/auth";
 
@@ -89,6 +90,9 @@ export default function Navbar() {
               <Link href="/myprofile" className={navItem}>
                 My Profile
               </Link>
+              <Link href="/resume-builder" className={navItem}>
+                Guides
+              </Link>
               <Link href="/blog" className={navItem}>
                 Blog
               </Link>
@@ -155,6 +159,10 @@ export default function Navbar() {
                         <User className="h-4 w-4 text-zinc-500" />
                         My Profile
                       </Link>
+                      <Link href="/resume-builder" onClick={() => setShowMenu(false)} className={`${navItem} w-full gap-3`}>
+                        <BookOpen className="h-4 w-4 text-zinc-500" />
+                        Guides
+                      </Link>
                       <Link href="/blog" onClick={() => setShowMenu(false)} className={`${navItem} w-full gap-3`}>
                         <FileText className="h-4 w-4 text-zinc-500" />
                         Blog
@@ -209,6 +217,9 @@ export default function Navbar() {
                   </Link>
                   <Link href="/myprofile" onClick={() => setShowMobileNav(false)} className={navItemMobile}>
                     My Profile
+                  </Link>
+                  <Link href="/resume-builder" onClick={() => setShowMobileNav(false)} className={navItemMobile}>
+                    Guides
                   </Link>
                   <Link href="/blog" onClick={() => setShowMobileNav(false)} className={navItemMobile}>
                     Blog
@@ -285,6 +296,9 @@ export default function Navbar() {
             <Link href="/" className={navItem}>
               Home
             </Link>
+            <Link href="/resume-builder" className={navItem}>
+              Guides
+            </Link>
             <Link href="/blog" className={navItem}>
               Blog
             </Link>
@@ -338,6 +352,9 @@ export default function Navbar() {
               <div className="flex flex-col gap-0.5 px-4">
                 <Link href="/" onClick={() => setShowMobileNav(false)} className={navItemMobile}>
                   Home
+                </Link>
+                <Link href="/resume-builder" onClick={() => setShowMobileNav(false)} className={navItemMobile}>
+                  Guides
                 </Link>
                 <Link href="/blog" onClick={() => setShowMobileNav(false)} className={navItemMobile}>
                   Blog

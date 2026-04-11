@@ -16,7 +16,7 @@ export const postContent = {
       <p>Harvard-style resumes are often one page. That is still a strong default for early-career and many mid-career applicants. If you have a decade of directly relevant impact, a second page can be justified—just keep every line tied to the target role.</p>
 
       <h2>When Google Docs or Word is enough</h2>
-      <p>Many people maintain a “master resume” in a <strong>Google Doc</strong> or Word file, then export to PDF for applications. That workflow is fine if styles are simple and text is selectable. If you are debating structure, compare your draft against <a href="/blog/best-resume-format-2025">best resume format for 2025</a>—it is still a solid baseline heading into 2026.</p>
+      <p>Many people maintain a “master resume” in a <strong>Google Doc</strong> or Word file, then export to PDF for applications. That workflow is fine if styles are simple and text is selectable. If you are debating structure, compare your draft against <a href="/blog/best-resume-format-2026">best resume format for 2026</a>—a solid baseline for structured, ATS-friendly applications.</p>
 
       <h2>Build, test, then apply</h2>
       <p>Before you mass-apply, paste the job description beside your resume and confirm you are mirroring important language naturally. You can use our <a href="/">free AI resume builder</a> to tighten bullets and keyword alignment, then export when you are happy with the result.</p>
@@ -50,7 +50,7 @@ export const postContent = {
       <p>Choosing among hundreds of <strong>resume templates</strong> is overwhelming—especially when you are also juggling job boards like <strong>Indeed Canada</strong> and tight application deadlines. Start by separating “looks good in Canva” from “reads well in recruiting software.”</p>
 
       <h2>Pick structure before decoration</h2>
-      <p>Reverse-chronological work history, plain headings (“Experience”, “Education”, “Skills”), and standard fonts are still the safest baseline for corporate roles. If you need a refresher on section order, see <a href="/blog/best-resume-format-2025">best resume format for 2025</a>.</p>
+      <p>Reverse-chronological work history, plain headings (“Experience”, “Education”, “Skills”), and standard fonts are still the safest baseline for corporate roles. If you need a refresher on section order, see <a href="/blog/best-resume-format-2026">best resume format for 2026</a>.</p>
 
       <h2>ATS pitfalls hidden in trendy layouts</h2>
       <p>Sidebars, icons, tiny text, and dense tables can scramble parsing. If you love a bold design, use it for networking PDFs or portfolios—not always for the first upload into an ATS. Technical detail lives in <a href="/blog/how-to-optimize-resume-for-ats-2026">ATS optimization tips</a>.</p>
@@ -297,9 +297,9 @@ export const postContent = {
       <p>I Love Resumes helps you optimize your resume for ATS by analyzing job descriptions and suggesting the right keywords. Upload your resume, paste the job description, and get tailored recommendations in seconds.</p>
     `,
   },
-  "best-resume-format-2025": {
+  "best-resume-format-2026": {
     content: `
-      <p>The best resume format in 2025 balances ATS compatibility with human readability. Here's what works.</p>
+      <p>The best resume format in 2026 balances ATS compatibility with human readability. Here's what works.</p>
       
       <h2>Reverse Chronological Format</h2>
       <p>List your most recent experience first. Recruiters and ATS both expect this. It's the default format for most industries and makes it easy to trace your career progression.</p>
@@ -332,7 +332,7 @@ export const postContent = {
         <li><strong>No photo:</strong> Don't include a headshot—it's not standard and can introduce bias.</li>
         <li><strong>No age or marital status:</strong> Canadian employers don't expect or want this. Focus on qualifications.</li>
         <li><strong>Spelling:</strong> Use Canadian spelling (e.g., "centre," "colour," "organise") when applying in Canada.</li>
-        <li><strong>Dates:</strong> Use Month Year format (e.g., March 2025).</li>
+        <li><strong>Dates:</strong> Use Month Year format (e.g., March 2026).</li>
       </ul>
       
       <h2>Toronto and GTA Jobs</h2>
@@ -447,7 +447,7 @@ export const postContent = {
       <p>Objectives ("Seeking a challenging role...") feel dated. Summaries ("Results-driven professional with 5 years...") show what you offer. Here's when to use each.</p>
       
       <h2>Use a Summary (Almost Always)</h2>
-      <p>A 2–3 sentence summary highlights your value: experience, key skills, and what you bring. It's what recruiters expect in 2025.</p>
+      <p>A 2–3 sentence summary highlights your value: experience, key skills, and what you bring. It's what recruiters expect in 2026.</p>
       
       <h2>When an Objective Might Still Work</h2>
       <p>Career changers or very new grads sometimes use a brief objective to clarify intent: "Seeking an entry-level software role to apply my computer science degree and internship experience." But even then, a hybrid summary often works better.</p>
@@ -484,7 +484,7 @@ export const postContent = {
   },
   "should-you-include-references": {
     content: `
-      <p>The old rule was "References available upon request." In 2025, that line is unnecessary. Here's what to do instead.</p>
+      <p>The old rule was "References available upon request." In 2026, that line is unnecessary. Here's what to do instead.</p>
       
       <h2>Don't Put References on Your Resume</h2>
       <p>Save space for experience and skills. References are typically requested after initial interviews. Adding them upfront uses valuable real estate and can look old-fashioned.</p>

@@ -2,39 +2,31 @@ import Link from "next/link";
 import { blogPosts } from "../../../data/blog-posts";
 import { postContent } from "../../../data/blog-content";
 import SiteLegalLinks from "../../../components/legal/SiteLegalLinks";
+import JsonLd from "../../../components/seo/JsonLd";
 import { ArrowLeft, Calendar } from "lucide-react";
+import { pageMeta, SITE_NAME, SITE_URL } from "../../../config/site";
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   const post = blogPosts.find((p) => p.slug === slug);
   if (!post) return { title: "Post Not Found" };
-  const url = `https://iloveresumes.ca/blog/${post.slug}`;
+
   const pageTitle = post.metaTitle ?? `${post.title} | I Love Resumes Blog`;
   const pageDescription = post.metaDescription ?? post.excerpt;
-  return {
+  const base = pageMeta({
     title: pageTitle,
     description: pageDescription,
-    alternates: { canonical: url },
+    path: `/blog/${post.slug}`,
+    ogType: "article",
+  });
+
+  return {
+    ...base,
     keywords: post.tags?.join(", "),
     openGraph: {
-      title: post.metaTitle ?? post.title,
-      description: pageDescription,
-      url,
-      type: "article",
+      ...base.openGraph,
       publishedTime: post.date,
-      images: [
-        {
-          url: "https://iloveresumes.ca/logo.png",
-          width: 1200,
-          height: 630,
-          alt: post.coverImageAlt ?? "I Love Resumes",
-        },
-      ],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: post.metaTitle ?? post.title,
-      description: pageDescription,
+      modifiedTime: post.date,
     },
   };
 }
@@ -57,23 +49,43 @@ export default async function BlogPostPage({ params }) {
     );
   }
 
-  const articleSchema = {
+  const postUrl = `${SITE_URL}/blog/${post.slug}`;
+  const imageUrl = `${SITE_URL}/logo.png`;
+
+  const structuredData = {
     "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    headline: post.title,
-    description: post.metaDescription ?? post.excerpt,
-    datePublished: post.date,
-    dateModified: post.date,
-    author: { "@type": "Organization", name: "I Love Resumes", url: "https://iloveresumes.ca" },
-    publisher: { "@type": "Organization", name: "I Love Resumes", logo: { "@type": "ImageObject", url: "https://iloveresumes.ca/logo.png" } },
-    url: `https://iloveresumes.ca/blog/${post.slug}`,
-    mainEntityOfPage: { "@type": "WebPage", "@id": `https://iloveresumes.ca/blog/${post.slug}` },
-    ...(post.tags?.length ? { keywords: post.tags.join(", ") } : {}),
+    "@graph": [
+      {
+        "@type": "BlogPosting",
+        headline: post.title,
+        description: post.metaDescription ?? post.excerpt,
+        datePublished: post.date,
+        dateModified: post.date,
+        author: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
+        publisher: {
+          "@type": "Organization",
+          name: SITE_NAME,
+          logo: { "@type": "ImageObject", url: imageUrl },
+        },
+        image: imageUrl,
+        mainEntityOfPage: { "@type": "WebPage", "@id": postUrl },
+        url: postUrl,
+        ...(post.tags?.length ? { keywords: post.tags.join(", ") } : {}),
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+          { "@type": "ListItem", position: 2, name: "Blog", item: `${SITE_URL}/blog` },
+          { "@type": "ListItem", position: 3, name: post.title, item: postUrl },
+        ],
+      },
+    ],
   };
 
   return (
     <div className="min-h-screen bg-zinc-50 text-zinc-900">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
+      <JsonLd data={structuredData} />
       <article className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8" itemScope itemType="https://schema.org/BlogPosting">
         <Link
           href="/blog"
@@ -103,6 +115,35 @@ export default async function BlogPostPage({ params }) {
             dangerouslySetInnerHTML={{ __html: content.content.trim() }}
           />
         </div>
+
+        <nav className="mt-10 rounded-xl border border-zinc-200 bg-white p-6 text-left shadow-sm sm:p-8" aria-label="Related guides">
+          <h2 className="text-sm font-semibold text-zinc-900">Related on I Love Resumes</h2>
+          <p className="mt-2 text-sm leading-relaxed text-zinc-600">
+            These guides pair well with this article. Use the free builder to apply the ideas to your own resume and export Word or PDF.
+          </p>
+          <ul className="mt-4 space-y-2 text-sm text-blue-700">
+            <li>
+              <Link href="/how-to-tailor-a-resume-to-a-job-description" className="font-medium underline-offset-2 hover:underline">
+                How to tailor a resume to a job description
+              </Link>
+            </li>
+            <li>
+              <Link href="/ats-friendly-resume" className="font-medium underline-offset-2 hover:underline">
+                ATS-friendly resume basics
+              </Link>
+            </li>
+            <li>
+              <Link href="/resume-builder-canada" className="font-medium underline-offset-2 hover:underline">
+                Resume builder for Canada
+              </Link>
+            </li>
+            <li>
+              <Link href="/resume-templates" className="font-medium underline-offset-2 hover:underline">
+                Resume templates and structure
+              </Link>
+            </li>
+          </ul>
+        </nav>
 
         <div className="mt-10 text-center">
           <Link

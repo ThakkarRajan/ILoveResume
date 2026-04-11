@@ -1,6 +1,6 @@
 # SEO Improvement Plan: iloveresumes.ca
 
-**Audit Date:** March 11, 2025  
+**Audit Date:** March 11, 2026  
 **Site:** https://iloveresumes.ca  
 **Prepared for:** I Love Resumes - AI-Powered Resume Builder
 
@@ -92,13 +92,13 @@ Sitemap: https://iloveresumes.ca/sitemap.xml
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://iloveresumes.ca/</loc>
-    <lastmod>2025-03-11</lastmod>
+    <lastmod>2026-03-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://iloveresumes.ca/contact</loc>
-    <lastmod>2025-03-11</lastmod>
+    <lastmod>2026-03-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -366,7 +366,7 @@ Add an H2 above the features: `Tools for Landing More Job Interviews` or `Create
 | resume keyword scanner | Informational/Transactional | Low | Tool page, blog |
 | job description keyword extractor | Informational | Low | Tool page, blog |
 | professional resume writing | Transactional | High | Service page |
-| resume format 2025 | Informational | Medium | Blog |
+| resume format 2026 | Informational | Medium | Blog |
 
 ---
 
@@ -379,7 +379,7 @@ Add an H2 above the features: `Tools for Landing More Job Interviews` or `Create
 | ATS resume checker free | Transactional | Low | Tool page |
 | resume keyword optimizer free | Transactional | Low | Tool page |
 | best resume format for software engineer | Informational | Low | Blog |
-| how to optimize resume for ATS 2025 | Informational | Medium | Blog |
+| how to optimize resume for ATS 2026 | Informational | Medium | Blog |
 | resume keywords for [industry] | Informational | Low | Blog |
 
 ---
@@ -402,7 +402,7 @@ Add an H2 above the features: `Tools for Landing More Job Interviews` or `Create
 |---------|--------|-------------|-----------|
 | how does ATS work | Informational | Medium | Blog |
 | what are resume keywords | Informational | Low | Blog |
-| best resume format 2025 | Informational | Medium | Blog |
+| best resume format 2026 | Informational | Medium | Blog |
 | how to tailor resume to job | Informational | Medium | Blog |
 | resume vs CV Canada | Informational | Low | Blog |
 | technical resume format | Informational | Low | Blog |
@@ -425,7 +425,7 @@ Add an H2 above the features: `Tools for Landing More Job Interviews` or `Create
 
 **Cluster 3: Resume Formats & Export**
 - Primary: resume to word, resume format, PDF resume
-- Secondary: best resume format 2025
+- Secondary: best resume format 2026
 - Intent: Transactional and informational.
 - Target: Tool page, blog
 
@@ -454,7 +454,7 @@ Add an H2 above the features: `Tools for Landing More Job Interviews` or `Create
 ├── /resume-builder-toronto (location)
 ├── /blog
 │   ├── /blog/how-ats-works
-│   ├── /blog/best-resume-format-2025
+│   ├── /blog/best-resume-format-2026
 │   └── ...
 ├── /faq
 ├── /compare (e.g. /ai-resume-builders-compared)
@@ -548,9 +548,9 @@ Add an H2 above the features: `Tools for Landing More Job Interviews` or `Create
 ### Comparison Page (/ai-resume-builders-compared)
 - **Target:** best AI resume builder, AI resume builder comparison
 - **URL:** /ai-resume-builders-compared
-- **Title:** Best AI Resume Builders 2025 Compared | I Love Resumes
+- **Title:** Best AI Resume Builders 2026 Compared | I Love Resumes
 - **Meta:** Compare the top AI resume builders. Features, pricing, ATS support. See how I Love Resumes stands out.
-- **H1:** AI Resume Builders Compared (2025)
+- **H1:** AI Resume Builders Compared (2026)
 - **Sections:** Comparison table (be honest), your differentiators, CTA
 
 ---
@@ -569,7 +569,7 @@ You have one landing page and app flows. No blog, no FAQ, no pillar content. You
 
 1. **The Complete Guide to AI Resume Builders** – Target: "AI resume builder", "best AI resume builder"
 2. **The ATS Resume Guide: How to Pass Applicant Tracking Systems** – Target: "ATS resume", "how ATS works"
-3. **Resume Formats 2025: The Ultimate Guide** – Target: "resume format 2025", "best resume format"
+3. **Resume Formats 2026: The Ultimate Guide** – Target: "resume format 2026", "best resume format"
 
 ---
 
@@ -632,8 +632,8 @@ Add an FAQ section on homepage + dedicated /faq page. Example questions:
 
 | # | Title | Target Keyword | Intent | Competition |
 |---|-------|----------------|--------|-------------|
-| 1 | How to Optimize Your Resume for ATS in 2025 | ATS resume optimization | Informational | Medium |
-| 2 | Best Resume Format for 2025 | resume format 2025 | Informational | Medium |
+| 1 | How to Optimize Your Resume for ATS in 2026 | ATS resume optimization | Informational | Medium |
+| 2 | Best Resume Format for 2026 | resume format 2026 | Informational | Medium |
 | 3 | How AI Resume Builders Work | AI resume builder | Informational | Low |
 | 4 | Resume Keywords: What Recruiters Actually Search For | resume keywords | Informational | Medium |
 | 5 | How to Match Your Resume to a Job Description | tailor resume job description | Informational | Medium |
@@ -647,7 +647,7 @@ Add an FAQ section on homepage + dedicated /faq page. Example questions:
 | 13 | Career Change Resume: How to Pivot | career change resume | Informational | Medium |
 | 14 | Resume Length: One Page or Two? | resume length | Informational | Low |
 | 15 | Resume Fonts That Pass ATS | ATS resume font | Informational | Low |
-| 16 | Toronto Job Market: Resume Tips for 2025 | resume Toronto | Informational | Low |
+| 16 | Toronto Job Market: Resume Tips for 2026 | resume Toronto | Informational | Low |
 | 17 | Vancouver Resume Guide | Vancouver resume | Informational | Low |
 | 18 | Montreal Resume Format Guide | Montreal resume | Informational | Low |
 | 19 | How to Extract Keywords from Job Descriptions | job description keywords | Informational | Low |
@@ -904,8 +904,8 @@ Use either WebApplication or SoftwareApplication, not both for the same product.
   "description": "Learn how applicant tracking systems screen resumes and how to optimize yours.",
   "author": { "@type": "Organization", "name": "I Love Resumes" },
   "publisher": { "@type": "Organization", "name": "I Love Resumes", "logo": { "@type": "ImageObject", "url": "https://iloveresumes.ca/logo.png" } },
-  "datePublished": "2025-03-11",
-  "dateModified": "2025-03-11"
+  "datePublished": "2026-03-11",
+  "dateModified": "2026-03-11"
 }
 ```
 
@@ -1044,7 +1044,7 @@ Subtitle: Upload your resume, paste a job description, and get tailored keyword 
 
 1. **Product directories:** Product Hunt, BetaList, SaaSHub, AlternativeTo (resume tools category)
 2. **Career/job sites:** Get listed in "tools for job seekers" sections, resume resource pages
-3. **Roundup posts:** Pitch to "best resume builders 2025" and "best AI resume tools" articles
+3. **Roundup posts:** Pitch to "best resume builders 2026" and "best AI resume tools" articles
 4. **University career centers:** Offer free access or content for their students
 5. **HR/career blogs:** Guest posts on resume and hiring topics
 6. **Canadian focus:** Canada-specific job and career sites, immigrant employment resources
@@ -1158,7 +1158,7 @@ Subtitle: Upload your resume, paste a job description, and get tailored keyword 
 3. resume builder Canada
 4. AI resume builder Toronto
 5. resume to word converter free
-6. how to optimize resume for ATS 2025
+6. how to optimize resume for ATS 2026
 7. Canadian resume format
 8. resume keyword extractor from job description
 
@@ -1282,7 +1282,7 @@ You likely won’t show in the local pack (map results) without a real location.
 
 - Everything in 7-day plan ✓
 - Create /resume-builder-toronto page
-- Publish first 3 blog posts (e.g. How ATS Works, Best Resume Format 2025, Canadian Resume Format)
+- Publish first 3 blog posts (e.g. How ATS Works, Best Resume Format 2026, Canadian Resume Format)
 - Create /blog index page
 - Add BreadcrumbList to blog posts
 - Set up basic internal linking (blog → homepage, tools, location pages)

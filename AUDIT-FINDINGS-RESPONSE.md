@@ -1,7 +1,7 @@
 # Audit Findings Response: iloveresumes.ca
 
 **Source:** External SEO audit tool  
-**Date:** March 2025
+**Date:** March 2026
 
 This document maps the audit tool's findings to exact fixes and prioritizes them by impact.
 
@@ -195,13 +195,13 @@ Sitemap: https://iloveresumes.ca/sitemap.xml
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://iloveresumes.ca/</loc>
-    <lastmod>2025-03-11</lastmod>
+    <lastmod>2026-03-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://iloveresumes.ca/contact</loc>
-    <lastmod>2025-03-11</lastmod>
+    <lastmod>2026-03-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -213,7 +213,7 @@ Sitemap: https://iloveresumes.ca/sitemap.xml
 Global replace in layout.js:
 - `iloveresumes.com` → `iloveresumes.ca`
 - `screenshot: "/logo.png"` → `screenshot: "https://iloveresumes.ca/logo.png"`
-- `dateModified: "2024-01-01"` → `dateModified: "2025-03-11"`
+- `dateModified: "2024-01-01"` → `dateModified: "2026-03-11"`
 
 ### Content Additions (Homepage)
 

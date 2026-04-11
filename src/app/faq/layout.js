@@ -1,14 +1,12 @@
-export const metadata = {
-  title: "FAQ | AI Resume Builder | I Love Resumes",
-  description: "Answers about our AI resume builder. Privacy, ATS, exports, and more.",
-  alternates: { canonical: "https://iloveresumes.ca/faq" },
-  openGraph: {
-    title: "FAQ | AI Resume Builder | I Love Resumes",
-    description: "Answers about our AI resume builder. Privacy, ATS, exports, and more.",
-    url: "https://iloveresumes.ca/faq",
-  },
-};
+import { pageMeta } from "../../config/site";
 
-export default function FAQLayout({ children }) {
+export const metadata = pageMeta({
+  title: "Resume & ATS FAQ",
+  description:
+    "Answers about I Love Resumes: free exports, how AI tailoring works, ATS-friendly structure, Word and PDF, privacy with Google sign-in, and Canadian applications.",
+  path: "/faq",
+});
+
+export default function FaqLayout({ children }) {
   return children;
 }

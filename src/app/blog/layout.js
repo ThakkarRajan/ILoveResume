@@ -1,13 +1,11 @@
-export const metadata = {
-  title: "Resume & Career Tips | I Love Resumes Blog",
-  description: "Expert tips on resumes, ATS, job descriptions, and career growth. From the team behind I Love Resumes.",
-  alternates: { canonical: "https://iloveresumes.ca/blog" },
-  openGraph: {
-    title: "Resume & Career Tips | I Love Resumes Blog",
-    description: "Expert tips on resumes, ATS, job descriptions, and career growth.",
-    url: "https://iloveresumes.ca/blog",
-  },
-};
+import { pageMeta } from "../../config/site";
+
+export const metadata = pageMeta({
+  title: "Resume & career tips",
+  description:
+    "Practical guidance on resumes, ATS parsing, job descriptions, and presenting experience clearly. From the team behind I Love Resumes.",
+  path: "/blog",
+});
 
 export default function BlogLayout({ children }) {
   return children;

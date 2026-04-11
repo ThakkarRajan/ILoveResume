@@ -1,6 +1,6 @@
 # SEO Super-Audit Report: I Love Resumes (iloveresumes.ca)
 
-**Audit Date:** March 11, 2025  
+**Audit Date:** March 11, 2026  
 **Website:** https://iloveresumes.ca  
 **Niche:** AI-Powered Resume Builder
 
@@ -84,13 +84,13 @@ export const metadata = {
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://iloveresumes.ca/</loc>
-    <lastmod>2025-03-11</lastmod>
+    <lastmod>2026-03-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://iloveresumes.ca/contact</loc>
-    <lastmod>2025-03-11</lastmod>
+    <lastmod>2026-03-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -321,7 +321,7 @@ For child routes, use `generateMetadata` in server layouts so each page gets its
 ## 4.2 Content Gaps
 
 1. **Blog/guides**
-   - "How to Optimize Your Resume for ATS in 2025"
+   - "How to Optimize Your Resume for ATS in 2026"
    - "Best Resume Format for [Industry]"
    - "How to Match Your Resume to a Job Description"
    - "Resume Keywords: What Recruiters Look For"

@@ -3,7 +3,7 @@
 
 **Site:** https://iloveresumes.ca  
 **Niche:** AI resume builder, ATS optimization, resume writing, Canada/Toronto job seekers  
-**Date:** March 2025
+**Date:** March 2026
 
 ---
 
@@ -86,13 +86,13 @@ Sitemap: https://iloveresumes.ca/sitemap.xml
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://iloveresumes.ca/</loc>
-    <lastmod>2025-03-11</lastmod>
+    <lastmod>2026-03-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://iloveresumes.ca/contact</loc>
-    <lastmod>2025-03-11</lastmod>
+    <lastmod>2026-03-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -267,7 +267,7 @@ Sitemap: https://iloveresumes.ca/sitemap.xml
 | resume builder that matches job description | Low | Low | / | Transactional |
 | free ATS resume checker | Low | Low | /ats-resume-checker | Transactional |
 | resume keyword extractor from job description | Low | Low | /ats-resume-checker | Transactional |
-| how to optimize resume for ATS 2025 | Med | Med | /blog | Informational |
+| how to optimize resume for ATS 2026 | Med | Med | /blog | Informational |
 | best resume format for software engineer | Low | Low | /blog | Informational |
 
 ## Local (Location Pages)
@@ -348,7 +348,7 @@ Sitemap: https://iloveresumes.ca/sitemap.xml
 
 ### /blog/[slug] (example posts)
 - /blog/how-ats-works
-- /blog/best-resume-format-2025
+- /blog/best-resume-format-2026
 - /blog/canadian-resume-format
 - etc.
 
@@ -358,22 +358,22 @@ Sitemap: https://iloveresumes.ca/sitemap.xml
 
 | # | Title | Target Keyword | Intent | Comp |
 |---|-------|----------------|--------|------|
-| 1 | How to Optimize Your Resume for ATS in 2025 | ATS resume optimization | Info | Med |
-| 2 | Best Resume Format for 2025 | resume format 2025 | Info | Med |
+| 1 | How to Optimize Your Resume for ATS in 2026 | ATS resume optimization | Info | Med |
+| 2 | Best Resume Format for 2026 | resume format 2026 | Info | Med |
 | 3 | How AI Resume Builders Work | AI resume builder | Info | Low |
 | 4 | Resume Keywords: What Recruiters Search For | resume keywords | Info | Med |
 | 5 | How to Match Your Resume to a Job Description | tailor resume job description | Info | Med |
 | 6 | Canadian Resume Format: Complete Guide | Canadian resume format | Info | Low |
 | 7 | Resume vs CV: What's the Difference in Canada? | resume vs CV Canada | Info | Low |
 | 8 | Technical Resume Guide for Software Engineers | technical resume | Info | Med |
-| 9 | Best Free AI Resume Builders Compared (2025) | free AI resume builder | Trans | High |
+| 9 | Best Free AI Resume Builders Compared (2026) | free AI resume builder | Trans | High |
 | 10 | How to Pass Workday ATS | Workday ATS | Info | Low |
 | 11 | How to Pass Greenhouse ATS | Greenhouse ATS | Info | Low |
 | 12 | Entry-Level Resume Examples and Tips | entry level resume | Info | Med |
 | 13 | Career Change Resume: How to Pivot | career change resume | Info | Med |
 | 14 | Resume Length: One Page or Two? | resume length | Info | Low |
 | 15 | Resume Fonts That Pass ATS | ATS resume font | Info | Low |
-| 16 | Toronto Job Market: Resume Tips for 2025 | resume Toronto | Info | Low |
+| 16 | Toronto Job Market: Resume Tips for 2026 | resume Toronto | Info | Low |
 | 17 | Vancouver Resume Guide | Vancouver resume | Info | Low |
 | 18 | Montreal Resume Format | Montreal resume | Info | Low |
 | 19 | How to Extract Keywords from Job Descriptions | job description keywords | Info | Low |
@@ -446,7 +446,7 @@ Sitemap: https://iloveresumes.ca/sitemap.xml
   "featureList": ["AI resume analysis", "Job description alignment", "Real-time editing", "Word & PDF export"],
   "screenshot": "https://iloveresumes.ca/logo.png",
   "datePublished": "2024-01-01",
-  "dateModified": "2025-03-11"
+  "dateModified": "2026-03-11"
 }
 ```
 
@@ -509,8 +509,8 @@ Sitemap: https://iloveresumes.ca/sitemap.xml
   "description": "Learn how applicant tracking systems screen resumes.",
   "author": { "@type": "Organization", "name": "I Love Resumes" },
   "publisher": { "@type": "Organization", "name": "I Love Resumes", "logo": { "@type": "ImageObject", "url": "https://iloveresumes.ca/logo.png" } },
-  "datePublished": "2025-03-11",
-  "dateModified": "2025-03-11"
+  "datePublished": "2026-03-11",
+  "dateModified": "2026-03-11"
 }
 ```
 
@@ -629,7 +629,7 @@ Contact | Privacy | Terms
 |------|------|
 | 2 | Create /blog index |
 | 2 | Publish: How ATS Systems Work |
-| 2 | Publish: Best Resume Format 2025 |
+| 2 | Publish: Best Resume Format 2026 |
 | 3 | Publish: Canadian Resume Format Guide |
 | 3 | Create /ats-resume-checker (or MVP) |
 | 4 | Publish: How to Match Resume to Job Description |
