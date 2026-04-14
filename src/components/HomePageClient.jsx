@@ -84,34 +84,34 @@ export default function HomePageClient() {
   const features = [
     {
       icon: Upload,
-      title: "PDF or text",
+      title: "Upload PDF or paste text",
       description:
-        "Upload a PDF or paste your resume as text. We extract content and keep structure ATS-friendly.",
+        "Upload a PDF or paste plain text. We extract your content and keep formatting easy for ATS parsers to read.",
     },
     {
       icon: Target,
-      title: "Match the posting",
+      title: "Align to the job description",
       description:
-        "Paste a job description to surface relevant keywords and align phrasing with what employers expect.",
+        "Paste the posting to surface relevant keywords and align phrasing with what employers and parsers look for.",
     },
     {
       icon: Edit3,
-      title: "Edit before export",
+      title: "Edit, then export",
       description:
-        "Review suggestions, refine wording in place, then export when the resume reflects how you want to be seen.",
+        "Review AI suggestions, rewrite in your voice, and export when the resume reflects how you want to be seen.",
     },
     {
       icon: Download,
-      title: "Word and PDF",
+      title: "Word & PDF download",
       description:
-        "Download standard .docx or PDF files suitable for most application portals and recruiters.",
+        "Download .docx or PDF files that work with most employer portals and recruiter inboxes.",
     },
   ];
 
   const trustItems = [
-    { icon: Shield, label: "Google sign-in" },
-    { icon: FileCheck, label: "ATS-oriented structure" },
-    { icon: Download, label: "No card required" },
+    { icon: Shield, label: "Secure Google sign-in" },
+    { icon: FileCheck, label: "ATS-friendly structure" },
+    { icon: Download, label: "No credit card" },
   ];
 
   return (
@@ -186,7 +186,9 @@ export default function HomePageClient() {
 
       <div className="mx-auto max-w-6xl px-4 pb-16 pt-28 sm:px-6 sm:pb-20 sm:pt-32 lg:px-8 lg:pb-24 lg:pt-36">
         <section className="mx-auto max-w-3xl text-center">
-          <p className="mb-4 text-xs font-medium uppercase tracking-wider text-zinc-500">Free · No credit card</p>
+          <p className="mb-4 text-xs font-medium uppercase tracking-wider text-zinc-500">
+            Free resume builder · Clear, ATS-friendly layout · No credit card
+          </p>
           <div className="mb-8 flex flex-col items-center gap-5 sm:mb-10 sm:flex-row sm:justify-center sm:gap-6">
             <Image
               src="/logo.png"
@@ -210,11 +212,11 @@ export default function HomePageClient() {
           </div>
 
           <h1 className="text-balance text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl md:text-[2.5rem] md:leading-[1.15]">
-            Free AI resume builder for applications that need a tight match
+            Free AI resume builder for applications that demand a tight match
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-pretty text-base leading-relaxed text-zinc-600 sm:text-lg">
-            Built for people in Canada and elsewhere who already have a draft: add a job posting, tighten wording and
-            keywords, then export a clean Word or PDF file. You stay in control of every line.
+            For candidates who already have a draft: paste the job description, align keywords and phrasing for recruiters
+            and ATS parsers, export a polished Word or PDF—every line stays yours to approve.
           </p>
 
           <div className="mx-auto mt-8 flex w-full max-w-sm flex-col items-stretch gap-3 sm:mt-10 sm:items-center">
@@ -239,10 +241,10 @@ export default function HomePageClient() {
               className="inline-flex min-h-[48px] w-full items-center justify-center gap-2.5 rounded-lg border border-zinc-300 bg-white px-5 py-3 text-sm font-semibold text-zinc-900 shadow-sm transition-colors hover:border-zinc-400 hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-50 enabled:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
             >
               <Image src="/google-logo.svg" alt="" width={18} height={18} className="h-[18px] w-[18px]" />
-              Continue with Google
+              Sign in with Google
               <ArrowRight className="h-4 w-4 text-zinc-400" aria-hidden />
             </button>
-            <p className="text-center text-xs text-zinc-500">Free to use · No credit card</p>
+            <p className="text-center text-xs text-zinc-500">Free · No credit card required</p>
           </div>
 
           <ul className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 border-t border-zinc-200/80 pt-10 text-sm text-zinc-600">
@@ -257,8 +259,8 @@ export default function HomePageClient() {
 
         <section className="mx-auto mt-16 max-w-3xl space-y-3 border-t border-zinc-200 pt-16 sm:mt-20 sm:pt-20">
           <p className="text-center text-sm leading-relaxed text-zinc-600 sm:text-base">
-            Most broad “resume builder” searches are crowded. I Love Resumes focuses on one workflow: take your existing
-            resume, align it to a specific posting, and ship a file employers can open.
+            Most resume builders stop at templates. I Love Resumes is built for one workflow: align an existing resume to a
+            specific posting, then export a file recruiters can open.
           </p>
           <p className="text-center text-sm leading-relaxed text-zinc-600 sm:text-base">
             If you are applying in Canada, start with our{" "}
@@ -281,10 +283,10 @@ export default function HomePageClient() {
             <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-zinc-200 bg-white shadow-sm">
               <BookOpen className="h-5 w-5 text-blue-700" strokeWidth={1.75} aria-hidden />
             </div>
-            <h2 className="text-2xl font-semibold tracking-tight text-zinc-900 sm:text-3xl">Guides and templates</h2>
+            <h2 className="text-2xl font-semibold tracking-tight text-zinc-900 sm:text-3xl">Guides & templates</h2>
             <p className="max-w-2xl text-sm text-zinc-600 sm:text-base">
-              Practical pages—long-tail topics, not generic buzzwords. Each links deeper into the blog where we go line by
-              line.
+              Practical guides on tailoring, ATS readability, Canada-specific norms, and downloads—written for people who
+              are actively applying.
             </p>
           </div>
           <ul className="grid gap-3 sm:grid-cols-2">
@@ -304,7 +306,7 @@ export default function HomePageClient() {
                 href="/resume-builder"
                 className="flex min-h-[48px] items-center justify-between gap-3 rounded-xl border border-zinc-200 bg-zinc-900 px-4 py-3 text-sm font-medium text-white shadow-sm transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30"
               >
-                All guides hub
+                All guides
                 <ArrowRight className="h-4 w-4 shrink-0 opacity-80" aria-hidden />
               </Link>
             </li>
@@ -315,7 +317,7 @@ export default function HomePageClient() {
           <div className="mx-auto mb-10 max-w-2xl text-center sm:mb-14">
             <h2 className="text-2xl font-semibold tracking-tight text-zinc-900 sm:text-3xl">How it works</h2>
             <p className="mt-3 text-sm text-zinc-600 sm:text-base">
-              Four steps from upload to a file you can submit with confidence.
+              Four steps from upload to an application-ready file.
             </p>
           </div>
 
@@ -342,28 +344,28 @@ export default function HomePageClient() {
           <div className="mx-auto max-w-3xl divide-y divide-zinc-200 rounded-xl border border-zinc-200 bg-white px-5 py-1 shadow-sm sm:px-8">
             {[
               {
-                q: "Is I Love Resumes free?",
-                a: "Yes. Create and optimize resumes for free and export to Word and PDF at no cost.",
+                q: "Is I Love Resumes really free?",
+                a: "Yes—create tailored drafts and export Word or PDF at no charge. No credit card.",
               },
               {
-                q: "How does the AI work?",
-                a: "Upload your resume and paste a job description. We suggest improvements and keywords to better match the role.",
+                q: "How does AI resume tailoring work?",
+                a: "You upload or paste your resume and add the job description. We suggest stronger wording and relevant keywords; you edit and approve everything before export.",
               },
               {
-                q: "Does it work for ATS?",
-                a: "We emphasize clear structure and keyword alignment so automated screening can parse your resume reliably.",
+                q: "Will this help with ATS resume screening?",
+                a: "We focus on clean structure and role-relevant keywords so automated parsers and recruiters can read your resume reliably—results still depend on the employer's system and your qualifications.",
               },
               {
                 q: "What formats can I export?",
-                a: "Word (.docx) and PDF—formats accepted by most employers and portals.",
+                a: "Word (.docx) and PDF—the formats most application portals accept.",
               },
               {
-                q: "Is my data private?",
-                a: "We use Google Sign-In for authentication. We do not sell your resume data.",
+                q: "How do you handle my resume data?",
+                a: "Google Sign-In secures your account. We don't sell your resume data. Some processing uses trusted service providers as described in our Privacy Policy.",
               },
               {
                 q: "Does it work for Canadian jobs?",
-                a: "Yes. The tool supports job seekers in Canada and internationally, including common Canadian resume conventions.",
+                a: "Yes—clear, keyword-aware resumes for Canada and international applications alike.",
               },
             ].map((item) => (
               <div key={item.q} className="py-5 sm:py-6">

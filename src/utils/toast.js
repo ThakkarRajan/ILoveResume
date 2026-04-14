@@ -130,7 +130,7 @@ export const showCustomToast = (message, style = {}, options = {}) => {
 
 // Toast for highlight/certificate additions
 export const showHighlightAdded = (isCertificate = false) => {
-  const message = isCertificate ? "Certificate added!" : "Highlight added!";
+  const message = isCertificate ? "Certificate added" : "Bullet added";
   return showSuccess(message, {
     duration: 1500,
   });
@@ -138,63 +138,63 @@ export const showHighlightAdded = (isCertificate = false) => {
 
 // Toast for save operations
 export const showSaveLoading = () => {
-  return showLoading('Saving your resume...', {
+  return showLoading("Saving your draft…", {
     duration: 800,
   });
 };
 
 export const showSaveSuccess = () => {
-  return showSuccess('Resume saved successfully!', {
+  return showSuccess("Draft saved", {
     duration: 2000,
   });
 };
 
 export const showSaveError = () => {
-  return showError('Failed to save. Please try again.', {
+  return showError("Couldn't save. Check your connection and try again.", {
     duration: 3000,
   });
 };
 
 // Toast for download operations
 export const showDownloadLoading = () => {
-  return showLoading('Preparing your resume for download...', {
+  return showLoading("Preparing your file…", {
     duration: 1000,
   });
 };
 
 export const showDownloadSuccess = () => {
-  return showSuccess('Redirecting to download page...', {
+  return showSuccess("Opening download options…", {
     duration: 2000,
   });
 };
 
 export const showDownloadError = () => {
-  return showError('Something went wrong. Please try again.', {
+  return showError("Something went wrong. Please try again.", {
     duration: 3000,
   });
 };
 
 // Toast for file operations
 export const showFileUploadSuccess = () => {
-  return showSuccess('File uploaded successfully!', {
+  return showSuccess("Upload complete", {
     duration: 2000,
   });
 };
 
-export const showFileUploadError = (message = 'File upload failed. Please try again.') => {
+export const showFileUploadError = (message = "File upload failed. Please try again.") => {
   return showError(message, {
     duration: 3000,
   });
 };
 
 export const showFileDeleteSuccess = () => {
-  return showSuccess('Resume deleted successfully!', {
+  return showSuccess("File removed", {
     duration: 2000,
   });
 };
 
 export const showFileDeleteError = () => {
-  return showError('Failed to delete file.', {
+  return showError("Couldn't delete that file. Try again.", {
     duration: 3000,
   });
 };
@@ -221,32 +221,32 @@ export const showNetworkRetry = () => {
 
 // Toast for AI processing (no technical details)
 export const showAIProcessingError = () => {
-  return showError('Please try again.', {
+  return showError("Something went wrong while tailoring. Please try again.", {
     duration: 3000,
   });
 };
 
 // Toast for form clearing
 export const showFormCleared = () => {
-  return showSuccess('Form cleared!', {
+  return showSuccess("Cleared", {
     duration: 2000,
   });
 };
 
 // Experience toasts
-export const showExperienceAdded = () => showSuccess("Experience added!", { duration: 1500 });
-export const showExperienceDeleted = () => showError("Experience deleted!", { duration: 2000 });
+export const showExperienceAdded = () => showSuccess("Role added", { duration: 1500 });
+export const showExperienceDeleted = () => showSuccess("Role removed", { duration: 2000 });
 
 // Education toasts
-export const showEducationAdded = () => showSuccess("Education added!", { duration: 1500 });
-export const showEducationDeleted = () => showError("Education deleted!", { duration: 2000 });
+export const showEducationAdded = () => showSuccess("Education added", { duration: 1500 });
+export const showEducationDeleted = () => showSuccess("Education removed", { duration: 2000 });
 
 // Project toasts
-export const showProjectAdded = () => showSuccess("Project added!", { duration: 1500 });
-export const showProjectDeleted = () => showError("Project deleted!", { duration: 2000 });
+export const showProjectAdded = () => showSuccess("Project added", { duration: 1500 });
+export const showProjectDeleted = () => showSuccess("Project removed", { duration: 2000 });
 
 // Highlight error
-export const showHighlightError = () => showError("Highlight cannot be empty!", { duration: 2000 });
+export const showHighlightError = () => showError("Add text before pressing Enter", { duration: 2000 });
 
 // Export default toast for backward compatibility
 export default toast; 

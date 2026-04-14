@@ -33,7 +33,7 @@ export default function PdfUploader({ onExtract }) {
         showError(getFriendlyError(data?.error, "extract"));
         return;
       }
-      onExtract(data.text || "No text found in the PDF.");
+      onExtract(data.text || "No selectable text found in this PDF. Try a text-based export or paste your resume as text.");
     } catch (error) {
       showError("Something went wrong. Please try again.");
     } finally {
@@ -43,7 +43,7 @@ export default function PdfUploader({ onExtract }) {
 
   return (
     <div style={{ marginBottom: "20px" }}>
-      <label htmlFor="resume">Upload Resume PDF:</label>
+      <label htmlFor="resume">Resume PDF</label>
       <input
         id="resume"
         type="file"
@@ -66,7 +66,7 @@ export default function PdfUploader({ onExtract }) {
           cursor: "pointer",
         }}
       >
-        {loading ? "Extracting..." : "Submit"}
+        {loading ? "Extracting text…" : "Extract text"}
       </button>
     </div>
   );

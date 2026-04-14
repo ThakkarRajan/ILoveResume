@@ -1,6 +1,11 @@
+import { pageMeta } from "../../config/site";
+
 export const metadata = {
-  title: "Resume Results | I Love Resumes",
-  description: "View your AI-optimized resume results.",
+  ...pageMeta({
+    title: "Resume editor",
+    description: "Edit your tailored resume draft, then export to Word or PDF.",
+    path: "/result",
+  }),
   robots: { index: false, follow: false },
 };
 

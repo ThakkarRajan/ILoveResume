@@ -1,6 +1,11 @@
+import { pageMeta } from "../../config/site";
+
 export const metadata = {
-  title: "My Profile | I Love Resumes",
-  description: "View your resume submissions and profile.",
+  ...pageMeta({
+    title: "Profile",
+    description: "Your Google account and tailoring activity from the dashboard.",
+    path: "/myprofile",
+  }),
   robots: { index: false, follow: false },
 };
 

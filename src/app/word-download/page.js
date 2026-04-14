@@ -28,32 +28,9 @@ import {
   Zap
 } from "lucide-react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import LegalConsentCheckbox from "../../components/legal/LegalConsentCheckbox";
 import SiteLegalLinks from "../../components/legal/SiteLegalLinks";
 import "../../utils/firebase.js";
-
-// Normalize contact values to full URLs for hyperlinks
-const toGithubUrl = (val) => {
-  if (!val || typeof val !== "string") return null;
-  const v = val.trim();
-  if (!v) return null;
-  if (/^https?:\/\//i.test(v)) return v;
-  return `https://github.com/${v.replace(/^github\.com\/?/i, "")}`;
-};
-const toLinkedInUrl = (val) => {
-  if (!val || typeof val !== "string") return null;
-  const v = val.trim();
-  if (!v) return null;
-  if (/^https?:\/\//i.test(v)) return v;
-  return `https://linkedin.com/in/${v.replace(/^linkedin\.com\/in\/?/i, "")}`;
-};
-const toWebsiteUrl = (val) => {
-  if (!val || typeof val !== "string") return null;
-  const v = val.trim();
-  if (!v) return null;
-  if (/^https?:\/\//i.test(v)) return v;
-  return `https://${v}`;
-};
+import { toGithubUrl, toLinkedInUrl, toWebsiteUrl } from "../../utils/resumeContactUrls.js";
 
 const getEduProgram = (edu) => (edu?.program || edu?.degree || edu?.area || edu?.studyType || "").trim() || "";
 const getEduSchool = (edu) => (edu?.school || edu?.institution || edu?.university || edu?.college || "").trim() || "";
@@ -143,7 +120,6 @@ export default function WordDownloadPage() {
   const [loading, setLoading] = useState(false);
   const [pdfUrl, setPdfUrl] = useState("");
   const [downloadType, setDownloadType] = useState("");
-  const [exportLegalConsent, setExportLegalConsent] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -634,7 +610,6 @@ export default function WordDownloadPage() {
 
   const handleDownloadWord = async () => {
     if (!resumeData) return;
-    if (!exportLegalConsent) return;
     setLoading(true);
     setDownloadType("word");
     
@@ -654,7 +629,6 @@ export default function WordDownloadPage() {
 
   const handleDownloadPDF = async () => {
     if (!resumeData) return;
-    if (!exportLegalConsent) return;
     setLoading(true);
     setDownloadType("pdf");
 
@@ -912,8 +886,10 @@ export default function WordDownloadPage() {
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl border border-zinc-200 bg-white shadow-sm sm:mb-5 sm:h-16 sm:w-16">
             <Download className="h-7 w-7 text-emerald-700 sm:h-8 sm:w-8" strokeWidth={1.75} />
           </div>
-          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 sm:text-3xl md:text-4xl">Export resume</h1>
-          <p className="mt-2 text-sm text-zinc-600 sm:text-base">Choose Word for edits or PDF for sharing.</p>
+          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 sm:text-3xl md:text-4xl">Download your resume</h1>
+          <p className="mt-2 text-sm text-zinc-600 sm:text-base">
+            Word for edits and ATS-friendly tweaks; PDF when the employer asks for a fixed layout.
+          </p>
           <motion.button
             type="button"
             whileTap={{ scale: 0.99 }}
@@ -946,17 +922,8 @@ export default function WordDownloadPage() {
           transition={{ delay: 0.2 }}
           className="w-full max-w-4xl rounded-xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-8"
         >
-          <LegalConsentCheckbox
-            id="word-download-export-consent"
-            checked={exportLegalConsent}
-            onChange={setExportLegalConsent}
-            disabled={loading}
-          />
-          {!exportLegalConsent && (
-            <p className="mt-3 text-xs text-zinc-500 sm:text-sm">Check the box above to enable Word and PDF downloads.</p>
-          )}
           {/* Download Options */}
-          <div className="mt-6 grid grid-cols-1 gap-4 sm:gap-6 mb-6 sm:mb-8 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:gap-6 mb-6 sm:mb-8 md:grid-cols-2">
             {/* Word Document */}
             <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.15 }} className="rounded-xl border border-zinc-200 bg-zinc-50/50 p-6">
               <div className="mb-4 flex items-center gap-4">
@@ -972,11 +939,11 @@ export default function WordDownloadPage() {
               <div className="space-y-3 mb-6">
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <CheckCircle className="w-4 h-4 text-green-500" />
-                  <span>Fully editable</span>
+                  <span>Fully editable in Word</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <CheckCircle className="w-4 h-4 text-green-500" />
-                  <span>Professional formatting</span>
+                  <span>Clean, recruiter-ready layout</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <CheckCircle className="w-4 h-4 text-green-500" />
@@ -988,7 +955,7 @@ export default function WordDownloadPage() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={handleDownloadWord}
-                disabled={loading || !exportLegalConsent}
+                disabled={loading}
                 className={`flex w-full items-center justify-center gap-2 rounded-lg py-3 px-6 text-sm font-semibold text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 ${
                   loading && downloadType === "word" ? "cursor-not-allowed bg-zinc-400" : "bg-zinc-900 hover:bg-zinc-800"
                 }`}
@@ -996,7 +963,7 @@ export default function WordDownloadPage() {
                 {loading && downloadType === "word" ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                    <span>Generating...</span>
+                    <span>Generating…</span>
                   </>
                 ) : (
                   <>
@@ -1038,7 +1005,7 @@ export default function WordDownloadPage() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={handleDownloadPDF}
-                disabled={loading || !exportLegalConsent}
+                disabled={loading}
                 className={`flex w-full items-center justify-center gap-2 rounded-lg py-3 px-6 text-sm font-semibold text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 ${
                   loading && downloadType === "pdf" ? "cursor-not-allowed bg-blue-300" : "bg-blue-600 hover:bg-blue-700"
                 }`}
@@ -1046,7 +1013,7 @@ export default function WordDownloadPage() {
                 {loading && downloadType === "pdf" ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                    <span>Generating...</span>
+                    <span>Generating…</span>
                   </>
                 ) : (
                   <>
@@ -1090,15 +1057,15 @@ export default function WordDownloadPage() {
               <div className="flex items-center gap-3 p-3 bg-green-50 rounded-xl">
                 <Zap className="w-5 h-5 text-green-600" />
                 <div>
-                  <p className="text-sm font-medium text-green-900">AI-Optimized</p>
-                  <p className="text-xs text-green-700">Tailored for your job</p>
+                  <p className="text-sm font-medium text-green-900">Posting-aligned</p>
+                  <p className="text-xs text-green-700">Tailored to your job description</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-xl">
                 <Clock className="w-5 h-5 text-blue-600" />
                 <div>
-                  <p className="text-sm font-medium text-blue-900">Instant Download</p>
-                  <p className="text-xs text-blue-700">No waiting time</p>
+                  <p className="text-sm font-medium text-blue-900">Fast export</p>
+                  <p className="text-xs text-blue-700">Usually ready in seconds</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 rounded-lg border border-zinc-200 bg-zinc-50 p-3">

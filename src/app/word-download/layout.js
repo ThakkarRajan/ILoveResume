@@ -1,6 +1,11 @@
+import { pageMeta } from "../../config/site";
+
 export const metadata = {
-  title: "Download Resume | I Love Resumes",
-  description: "Download your resume in Word or PDF format.",
+  ...pageMeta({
+    title: "Download resume",
+    description: "Export your edited resume as Word (.docx) or PDF for job applications.",
+    path: "/word-download",
+  }),
   robots: { index: false, follow: false },
 };
 

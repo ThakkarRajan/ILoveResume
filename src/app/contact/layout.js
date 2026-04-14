@@ -1,9 +1,9 @@
 import { pageMeta } from "../../config/site";
 
 export const metadata = pageMeta({
-  title: "Contact",
+  title: "Contact us",
   description:
-    "Contact I Love Resumes for product questions, feedback, or support. Free AI resume builder for tailoring resumes and exporting Word or PDF.",
+    "Product questions, partnerships, or support for I Love Resumes—tailor resumes to job descriptions, edit drafts, export Word or PDF.",
   path: "/contact",
 });
 

@@ -12,15 +12,15 @@ export default function NotFound() {
           <FileQuestion className="h-7 w-7 text-zinc-500" strokeWidth={1.5} aria-hidden />
         </div>
         <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">404</p>
-        <h1 className="mt-2 text-2xl font-semibold tracking-tight text-zinc-900 sm:text-3xl">Page not found</h1>
+        <h1 className="mt-2 text-2xl font-semibold tracking-tight text-zinc-900 sm:text-3xl">We couldn&apos;t find that page</h1>
         <p className="mt-3 text-sm leading-relaxed text-zinc-600 sm:text-base">
-          The link may be outdated or the page may have been moved. Use the navigation above or return home.
+          That link may be old, or the page moved. Use the menu above or head home.
         </p>
         <Link
           href="/"
           className="mt-8 inline-flex min-h-[48px] items-center justify-center rounded-lg bg-zinc-900 px-6 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-50"
         >
-          Back to home
+          Go to homepage
         </Link>
 
         <div className="mt-10 w-full max-w-lg border-t border-zinc-200 pt-8">

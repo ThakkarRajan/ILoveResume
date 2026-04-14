@@ -26,7 +26,6 @@ import "../../utils/firebase.js";
 
 import { unescapeHtml } from "../../utils/safeHtml";
 import SiteLegalLinks from "../../components/legal/SiteLegalLinks";
-import LegalConsentCheckbox from "../../components/legal/LegalConsentCheckbox";
 import LegalSupportEmailLink from "../../components/legal/LegalSupportEmailLink";
 import { LEGAL_BUSINESS_ADDRESS } from "../../components/legal/legal-constants";
 
@@ -42,7 +41,6 @@ export default function Contact() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null); // 'success', 'error', null
-  const [legalConsent, setLegalConsent] = useState(false);
 
   useEffect(() => {
     const auth = getAuth();
@@ -67,19 +65,14 @@ export default function Contact() {
     
     // Basic validation
     if (!formData.name.trim() || !formData.email.trim() || !formData.subject.trim() || !formData.message.trim()) {
-      toast.error("Please fill in all fields");
+      toast.error("Please complete all fields");
       return;
     }
 
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
-      toast.error("Please enter a valid email address");
-      return;
-    }
-
-    if (!legalConsent) {
-      toast.error("Please agree to the Terms & Conditions and Privacy Policy.");
+      toast.error("Please enter a valid email");
       return;
     }
 
@@ -106,7 +99,7 @@ export default function Contact() {
 
       if (result.status === 200) {
         setSubmitStatus('success');
-        toast.success("Message sent successfully! We'll get back to you soon.");
+        toast.success("Message sent. We typically reply within one business day.");
         
         // Reset form
         setFormData({
@@ -120,7 +113,7 @@ export default function Contact() {
       }
     } catch (error) {
       setSubmitStatus('error');
-      toast.error("Failed to send message. Please try again or contact us directly.");
+      toast.error("Couldn't send your message. Try again or use the email links on this page.");
     } finally {
       setIsSubmitting(false);
     }
@@ -186,19 +179,19 @@ export default function Contact() {
   const features = [
     {
       icon: Sparkles,
-      title: "AI-Powered",
-      description: "Advanced AI technology for resume optimization"
+      title: "Tailored drafts",
+      description: "Suggestions aligned to your target role and job description—not generic templates.",
     },
     {
       icon: Send,
-      title: "Fast Processing",
-      description: "Quick turnaround time for your resume needs"
+      title: "Built for quick applications",
+      description: "Upload, tailor, edit, and export so you can submit faster with confidence.",
     },
     {
       icon: Heart,
-      title: "User-Friendly",
-      description: "Intuitive interface designed for ease of use"
-    }
+      title: "Simple workflow",
+      description: "Clear steps from job description to a resume you are proud to send.",
+    },
   ];
 
   return (
@@ -220,9 +213,9 @@ export default function Contact() {
           <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-xl border border-zinc-200 bg-white shadow-sm sm:h-14 sm:w-14">
             <MessageSquare className="h-6 w-6 text-blue-600 sm:h-7 sm:w-7" strokeWidth={1.75} />
           </div>
-          <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl">Contact</h1>
+          <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl">Contact us</h1>
           <p className="mx-auto mt-3 max-w-2xl text-base text-zinc-600 sm:text-lg">
-            Questions about the product, partnerships, or support—we read every message.
+            Product questions, partnerships, or support—we read every message.
           </p>
         </motion.div>
 
@@ -241,7 +234,7 @@ export default function Contact() {
                   <MessageSquare className="h-5 w-5 text-blue-700 sm:h-6 sm:w-6" strokeWidth={1.75} />
                 </div>
                 <div>
-                  <h2 className="text-lg font-semibold text-zinc-900 sm:text-xl">Team & links</h2>
+                  <h2 className="text-lg font-semibold text-zinc-900 sm:text-xl">Reach the team</h2>
                   <p className="text-sm text-zinc-600 sm:text-base">Choose the channel that works best for you.</p>
                 </div>
               </div>
@@ -310,7 +303,7 @@ export default function Contact() {
                 </div>
                 <div>
                   <h2 className="text-xl font-semibold text-zinc-900">What we focus on</h2>
-                  <p className="text-sm text-zinc-600">Straightforward tooling for serious applications.</p>
+                  <p className="text-sm text-zinc-600">Straightforward tooling for serious job applications.</p>
                 </div>
               </div>
 
@@ -348,7 +341,7 @@ export default function Contact() {
                 </div>
                 <div>
                   <h2 className="text-xl font-semibold text-zinc-900">Send a message</h2>
-                  <p className="text-sm text-zinc-600">We usually reply within a business day.</p>
+                  <p className="text-sm text-zinc-600">We typically reply within one business day.</p>
                 </div>
               </div>
 
@@ -363,7 +356,7 @@ export default function Contact() {
                     value={unescapeHtml(formData.name)}
                     onChange={handleInputChange}
                     className="w-full rounded-lg border border-zinc-200 bg-white px-3.5 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 transition-colors focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15"
-                    placeholder="Your name"
+                    placeholder="Full name"
                     required
                   />
                 </div>
@@ -393,7 +386,7 @@ export default function Contact() {
                     value={unescapeHtml(formData.subject)}
                     onChange={handleInputChange}
                     className="w-full rounded-lg border border-zinc-200 bg-white px-3.5 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 transition-colors focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15"
-                    placeholder="How can we help?"
+                    placeholder="What is this about?"
                     required
                   />
                 </div>
@@ -408,17 +401,15 @@ export default function Contact() {
                     onChange={handleInputChange}
                     rows={4}
                     className="w-full resize-none rounded-lg border border-zinc-200 bg-white px-3.5 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 transition-colors focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15"
-                    placeholder="Tell us more about your inquiry..."
+                    placeholder="Include details, links, or screenshots if helpful…"
                     required
                   />
                 </div>
 
-                <LegalConsentCheckbox id="contact-legal-consent" checked={legalConsent} onChange={setLegalConsent} disabled={isSubmitting} />
-
                 <motion.button
                   whileTap={{ scale: 0.99 }}
                   type="submit"
-                  disabled={isSubmitting || !legalConsent}
+                  disabled={isSubmitting}
                   className={`flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-semibold shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 focus-visible:ring-offset-2 ${
                     isSubmitting
                       ? "cursor-not-allowed bg-zinc-200 text-zinc-500"
@@ -447,7 +438,7 @@ export default function Contact() {
                   ) : (
                     <>
                       <Send className="w-4 h-4" />
-                      Send Message
+                      Send message
                       <ArrowRight className="w-4 h-4" />
                     </>
                   )}
@@ -457,7 +448,7 @@ export default function Contact() {
               <div className="mt-6 rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3">
                 <div className="flex items-center gap-2 text-sm text-zinc-700">
                   <Heart className="h-4 w-4 shrink-0 text-zinc-500" />
-                  <span>We aim to respond within one business day.</span>
+                  <span>We typically reply within one business day.</span>
                 </div>
               </div>
 
@@ -478,7 +469,7 @@ export default function Contact() {
           className="mt-16 text-center sm:mt-20"
         >
           <div className="mx-auto max-w-2xl rounded-xl border border-zinc-200 bg-white px-6 py-10 shadow-sm sm:px-10">
-            <h3 className="text-lg font-semibold text-zinc-900 sm:text-xl">Ready to tailor a resume?</h3>
+            <h3 className="text-lg font-semibold text-zinc-900 sm:text-xl">Ready to tailor your resume?</h3>
             <p className="mx-auto mt-2 max-w-lg text-sm text-zinc-600 sm:text-base">
               Sign in with Google to open the dashboard, add a job description, and export when you are satisfied.
             </p>
@@ -489,7 +480,7 @@ export default function Contact() {
               className="mx-auto mt-6 inline-flex min-h-[48px] items-center gap-2 rounded-lg bg-zinc-900 px-6 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 focus-visible:ring-offset-2"
             >
               <Sparkles className="h-4 w-4 opacity-90" />
-              Open dashboard
+              Open resume dashboard
               <ArrowRight className="h-4 w-4 opacity-80" />
             </motion.button>
           </div>

@@ -90,7 +90,7 @@ export default function Navbar() {
                 Dashboard
               </Link>
               <Link href="/myprofile" className={navItem}>
-                My Profile
+                Profile
               </Link>
               <Link href="/resume-builder" className={navItem}>
                 Guides
@@ -159,7 +159,7 @@ export default function Navbar() {
                       </Link>
                       <Link href="/myprofile" onClick={() => setShowMenu(false)} className={`${navItem} w-full gap-3`}>
                         <User className="h-4 w-4 text-zinc-500" />
-                        My Profile
+                        Profile
                       </Link>
                       <Link href="/resume-builder" onClick={() => setShowMenu(false)} className={`${navItem} w-full gap-3`}>
                         <BookOpen className="h-4 w-4 text-zinc-500" />
@@ -186,7 +186,7 @@ export default function Navbar() {
                         className="mt-0.5 flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600/20"
                       >
                         <LogOut className="h-4 w-4" />
-                        Log out
+                        Sign out
                       </button>
                     </div>
                   </motion.div>
@@ -218,7 +218,7 @@ export default function Navbar() {
                     Dashboard
                   </Link>
                   <Link href="/myprofile" onClick={() => setShowMobileNav(false)} className={navItemMobile}>
-                    My Profile
+                    Profile
                   </Link>
                   <Link href="/resume-builder" onClick={() => setShowMobileNav(false)} className={navItemMobile}>
                     Guides
@@ -254,7 +254,9 @@ export default function Navbar() {
                 className="w-full max-w-sm rounded-xl border border-zinc-200 bg-white p-6 shadow-xl"
               >
                 <h2 className="text-lg font-semibold text-zinc-900">Sign out?</h2>
-                <p className="mt-2 text-sm text-zinc-600">You will need to sign in again to access your resumes.</p>
+                <p className="mt-2 text-sm text-zinc-600">
+                  You&apos;ll need to sign in again to open your drafts and exports.
+                </p>
                 <div className="mt-6 flex gap-3">
                   <button
                     type="button"
@@ -268,7 +270,7 @@ export default function Navbar() {
                     onClick={handleLogout}
                     className="flex-1 rounded-lg bg-red-600 py-2.5 text-sm font-medium text-white transition-colors hover:bg-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600/40"
                   >
-                    Log out
+                    Sign out
                   </button>
                 </div>
               </motion.div>

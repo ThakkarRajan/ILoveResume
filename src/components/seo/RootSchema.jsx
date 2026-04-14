@@ -18,7 +18,7 @@ export default function RootSchema() {
     url: SITE_URL,
     logo: { "@type": "ImageObject", url: `${SITE_URL}/logo.png` },
     description:
-      "Free web-based resume builder: tailor resumes to job descriptions, improve clarity, export Word and PDF.",
+      "Free resume builder for tailoring your resume to each job description, with in-browser editing and Word or PDF export.",
     address: { "@type": "PostalAddress", addressCountry: "CA" },
     ...(sameAs.length ? { sameAs } : {}),
     contactPoint: {
@@ -39,7 +39,7 @@ export default function RootSchema() {
         name: SITE_NAME,
         url: SITE_URL,
         description:
-          "Free resume builder with AI-assisted tailoring, ATS-friendly structure, and Word/PDF export for Canadian and international job seekers.",
+          "Free resume builder with AI-assisted tailoring, clear structure and role-relevant keywords, and Word or PDF export for Canadian and international job seekers.",
         publisher: { "@id": `${SITE_URL}/#organization` },
         inLanguage: "en-CA",
       },
@@ -54,7 +54,7 @@ export default function RootSchema() {
         browserRequirements: "Requires JavaScript. Modern browser.",
         featureList: [
           "Resume upload or paste",
-          "Job description alignment",
+          "Job description alignment and keyword suggestions",
           "In-browser editing",
           "Word and PDF export",
         ],

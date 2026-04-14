@@ -6,36 +6,36 @@ import SiteLegalLinks from "../../components/legal/SiteLegalLinks";
 
 const faqs = [
   {
-    q: "How does the AI resume builder work?",
-    a: "Upload your resume in PDF format or paste it as text. Optionally, paste a job description to get keyword suggestions that align with what recruiters and ATS systems look for. Our AI analyzes your content and suggests improvements. You can edit in real time and export to Word or PDF.",
+    q: "How does AI resume tailoring work?",
+    a: "Upload your resume as a PDF or paste it as text, then add the job description. You get keyword-aware suggestions and clearer phrasing; you edit in real time and export to Word or PDF when you are ready.",
   },
   {
-    q: "Is I Love Resumes free?",
-    a: "Yes. You can create and optimize resumes for free. Export to Word and PDF at no cost. No credit card required.",
+    q: "Is I Love Resumes really free?",
+    a: "Yes—create tailored drafts and export Word or PDF at no charge. No credit card.",
   },
   {
-    q: "Is my resume data secure?",
-    a: "Yes. We use Google Sign-In for authentication. We do not share your data with third parties. Your resume is processed securely.",
+    q: "How do you handle my resume data?",
+    a: "Google Sign-In secures your account. We don't sell your resume data. Some processing uses trusted service providers as described in our Privacy Policy.",
   },
   {
-    q: "Does it work for ATS (Applicant Tracking Systems)?",
-    a: "Yes. We focus on ATS-friendly structure and keyword alignment. Our AI helps you tailor your resume to specific job descriptions so it gets past automated screening.",
+    q: "Will this help with ATS resume screening?",
+    a: "We focus on clean structure and role-relevant keywords so automated parsers and recruiters can read your resume reliably. Results still depend on the employer's system and your qualifications—no tool can guarantee a pass.",
   },
   {
     q: "What formats can I export my resume to?",
-    a: "Word (.docx) and PDF—both standard formats for job applications. Most employers accept these formats.",
+    a: "Word (.docx) and PDF—the formats most application portals accept.",
   },
   {
     q: "Can I use this for Canadian jobs?",
-    a: "Yes. Our tool works for job seekers worldwide, including Canada. Canadian resume formats are similar to US formats; our AI optimizes for clarity and keywords regardless of location.",
+    a: "Yes. The workflow works worldwide, including Canada: clear sections, strong bullets, and posting-aligned keywords.",
   },
   {
     q: "Do I need to create an account?",
-    a: "Yes. We use Google Sign-In for a quick, secure login. No separate password to remember.",
+    a: "Yes. Google Sign-In keeps login quick and secure—no separate password to remember.",
   },
   {
     q: "How do I match my resume to a job description?",
-    a: "In the dashboard, paste the job description when prompted. Our AI will suggest keywords and improvements to better align your resume with that specific job. You can edit the suggestions in real time.",
+    a: "On the dashboard, paste the full posting. We align suggestions to that description; you refine the draft, then export.",
   },
 ];
 
@@ -63,7 +63,7 @@ export default function FAQPage() {
           </div>
           <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl">Frequently asked questions</h1>
           <p className="mx-auto mt-3 max-w-xl text-sm text-zinc-600 sm:text-base">
-            Practical answers about accounts, exports, ATS, and privacy.
+            Accounts, exports, ATS-friendly tailoring, and how we handle your data.
           </p>
         </div>
 
@@ -82,7 +82,7 @@ export default function FAQPage() {
             className="inline-flex min-h-[48px] items-center gap-2 rounded-lg bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-50"
           >
             <Home className="h-4 w-4" strokeWidth={1.75} />
-            Back to home
+            Go to homepage
             <ArrowRight className="h-4 w-4 opacity-80" strokeWidth={1.75} />
           </Link>
         </div>

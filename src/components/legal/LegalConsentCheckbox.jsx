@@ -31,7 +31,7 @@ export default function LegalConsentCheckbox({ id = "legal-consent", checked, on
         </span>
       </label>
       <p className="mt-2.5 border-t border-zinc-200/80 pt-2.5 text-left text-[0.7rem] leading-snug text-zinc-500 sm:text-xs">
-        How we use cookies and limitations on AI output:{" "}
+        Cookies, analytics, and limits on AI-generated content:{" "}
         <Link href="/cookies" className="font-medium text-zinc-600 underline-offset-2 hover:text-zinc-900 hover:underline" target="_blank" rel="noopener noreferrer">
           Cookie Policy
         </Link>

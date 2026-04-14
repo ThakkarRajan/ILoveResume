@@ -212,8 +212,8 @@ export default function MyProfilePage() {
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl border border-zinc-200 bg-white shadow-sm sm:mb-5 sm:h-14 sm:w-14">
             <User className="h-6 w-6 text-blue-700 sm:h-7 sm:w-7" strokeWidth={1.75} />
           </div>
-          <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl">My profile</h1>
-          <p className="mt-2 text-sm text-zinc-600 sm:text-base">Account details and submission history.</p>
+          <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl">Profile</h1>
+          <p className="mt-2 text-sm text-zinc-600 sm:text-base">Your Google account and tailoring activity on this site.</p>
         </motion.div>
 
         {/* Profile Info Card */}
@@ -247,7 +247,7 @@ export default function MyProfilePage() {
               <div className="flex flex-wrap justify-center md:justify-start gap-4">
                 <div className="flex items-center gap-2 rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1">
                   <FileText className="h-4 w-4 text-zinc-600" strokeWidth={1.75} />
-                  <span className="text-sm font-medium text-zinc-800">{submissions.length} submissions</span>
+                  <span className="text-sm font-medium text-zinc-800">{submissions.length} runs</span>
                 </div>
                 <div className="flex items-center gap-2 bg-green-50 px-3 py-1 rounded-full">
                   <CheckCircle className="w-4 h-4 text-green-600" />
@@ -271,8 +271,8 @@ export default function MyProfilePage() {
                 <Briefcase className="w-5 h-5 text-blue-600" />
               </div>
               <div>
-                <h2 className="text-2xl md:text-3xl font-bold text-gray-900">Job Submissions</h2>
-                <p className="text-gray-600">Your resume processing history</p>
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900">Activity</h2>
+                <p className="text-gray-600">Each entry is a job description you ran with a resume from the dashboard.</p>
               </div>
             </div>
           </div>
@@ -286,15 +286,15 @@ export default function MyProfilePage() {
               <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <FileText className="w-8 h-8 text-gray-400" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">No submissions yet</h3>
-              <p className="text-gray-600 mb-6">Start by creating your first AI-powered resume</p>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">No activity yet</h3>
+              <p className="text-gray-600 mb-6">Tailor a resume from the dashboard to see it listed here.</p>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => router.push("/dashboard")}
                 className="rounded-lg bg-zinc-900 px-6 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30"
               >
-                Create Resume
+                Go to dashboard
               </motion.button>
             </motion.div>
           ) : (
@@ -322,7 +322,7 @@ export default function MyProfilePage() {
                             <FileText className="h-5 w-5 text-zinc-600" strokeWidth={1.75} />
                           </div>
                           <div>
-                            <h3 className="font-semibold text-gray-900">Submission #{index + 1}</h3>
+                            <h3 className="font-semibold text-gray-900">Tailoring #{index + 1}</h3>
                             <div className="flex items-center gap-2 text-sm text-gray-500">
                               <Calendar className="w-4 h-4" />
                               <span>

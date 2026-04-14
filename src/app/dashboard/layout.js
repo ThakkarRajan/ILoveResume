@@ -1,17 +1,13 @@
+import { pageMeta } from "../../config/site";
+
 export const metadata = {
-  title: "I Love Resumes | AI Resume Builder",
-  description: "Create and optimize your resume with AI. Upload, get personalized suggestions, and align with job descriptions.",
-  keywords: "resume dashboard, AI resume builder, resume optimization, job application, career tools",
+  ...pageMeta({
+    title: "Dashboard",
+    description:
+      "Add a job description and your resume for suggestions you can edit, then export Word or PDF. Private drafting area—sign in required.",
+    path: "/dashboard",
+  }),
   robots: { index: false, follow: false },
-  openGraph: {
-    title: "I Love Resumes",
-    description: "Create and optimize your resume with AI-powered insights in our intelligent dashboard.",
-    url: "https://iloveresumes.ca/dashboard",
-  },
-  twitter: {
-    title: "I Love Resumes",
-    description: "Create and optimize your resume with AI-powered insights in our intelligent dashboard.",
-  }
 };
 
 export default function DashboardLayout({ children }) {

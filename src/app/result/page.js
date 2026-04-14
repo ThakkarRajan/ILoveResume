@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Toaster } from "react-hot-toast";
 import { 
@@ -52,7 +53,6 @@ import {
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import "../../utils/firebase.js";
 import { unescapeHtml } from "../../utils/safeHtml";
-import LegalConsentCheckbox from "../../components/legal/LegalConsentCheckbox";
 import SiteLegalLinks from "../../components/legal/SiteLegalLinks";
 
 // Utility to escape HTML special characters (display only, not inputs)
@@ -65,7 +65,7 @@ const escapeHtml = (unsafe) =>
     .replace(/'/g, "&#039;");
 
 // Highlights Editor Component
-const HighlightsEditor = ({ highlights = [], onChange, placeholder = "Enter highlights..." }) => {
+const HighlightsEditor = ({ highlights = [], onChange, placeholder = "Add a bullet: action, scope, outcome…" }) => {
   const [inputValue, setInputValue] = useState("");
   
   // Ensure highlights is always an array
@@ -81,7 +81,7 @@ const HighlightsEditor = ({ highlights = [], onChange, placeholder = "Enter high
     const newHighlights = [...safeHighlights, inputValue.trim()];
     onChange(newHighlights);
     setInputValue("");
-    const isCertificate = placeholder.toLowerCase().includes("certificate");
+    const isCertificate = /certific/i.test(placeholder);
     showHighlightAdded(isCertificate);
   };
 
@@ -111,8 +111,8 @@ const HighlightsEditor = ({ highlights = [], onChange, placeholder = "Enter high
           className="min-h-[4.5rem] w-full resize-y rounded-lg border border-zinc-200 bg-white px-3 py-2.5 text-sm leading-relaxed text-zinc-900 placeholder:text-zinc-400 transition-colors focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15 sm:text-[0.9375rem]"
         />
         <p className="mt-1.5 text-xs text-zinc-500">
-          <span className="font-medium text-zinc-600">Enter</span> adds a bullet.{" "}
-          <span className="font-medium text-zinc-600">Shift+Enter</span> for a new line in the same bullet.
+          <span className="font-medium text-zinc-600">Enter</span> saves a bullet.{" "}
+          <span className="font-medium text-zinc-600">Shift+Enter</span> starts a new line in the same bullet.
         </p>
       </div>
 
@@ -132,7 +132,7 @@ const HighlightsEditor = ({ highlights = [], onChange, placeholder = "Enter high
                 onChange={(e) => handleEditHighlight(index, e.target.value)}
                 rows={rowsForText(highlight)}
                 className="min-h-[6rem] w-full resize-y rounded-lg border border-zinc-200 bg-white px-3 py-2.5 text-sm leading-relaxed text-zinc-900 transition-colors focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15 sm:text-[0.9375rem]"
-                placeholder="Edit highlight..."
+                placeholder="Edit bullet…"
                 spellCheck
               />
             </div>
@@ -142,7 +142,7 @@ const HighlightsEditor = ({ highlights = [], onChange, placeholder = "Enter high
               whileTap={{ scale: 0.95 }}
               onClick={() => handleRemoveHighlight(index)}
               className="mt-1 shrink-0 rounded-md p-2 text-red-600 transition-colors hover:bg-red-50 hover:text-red-700"
-              title="Remove highlight"
+              title="Remove bullet"
             >
               <X className="h-4 w-4" />
             </motion.button>
@@ -153,12 +153,51 @@ const HighlightsEditor = ({ highlights = [], onChange, placeholder = "Enter high
       {/* Empty state */}
       {safeHighlights.length === 0 && (
         <div className="text-center py-4 text-gray-500 text-sm">
-          No highlights yet. Type above, then press Enter to add one (Shift+Enter for a new line before adding).
+          No bullets yet. Type above, then press Enter to add one (Shift+Enter for a line break before you add).
         </div>
       )}
     </div>
   );
 };
+
+function ResultLoadingScreen({ title, subtitle, icon: Icon = FileText }) {
+  return (
+    <div className="flex min-h-dvh items-center justify-center bg-gradient-to-b from-zinc-50 to-zinc-100/90 px-4 py-12">
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+        className="w-full max-w-md rounded-2xl border border-zinc-200/90 bg-white/95 p-8 text-center shadow-lg shadow-zinc-300/40 backdrop-blur-sm sm:p-10"
+      >
+        <Image
+          src="/logo.png"
+          alt=""
+          width={52}
+          height={52}
+          className="mx-auto h-[52px] w-[52px] rounded-xl border border-zinc-200 bg-white object-contain"
+          priority
+        />
+        <div className="relative mx-auto mt-8 h-[4.5rem] w-[4.5rem]">
+          <div
+            className="absolute inset-0 rounded-full border-[3px] border-zinc-100 border-t-blue-600 animate-spin"
+            style={{ animationDuration: "0.9s" }}
+            aria-hidden
+          />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Icon className="h-7 w-7 text-blue-600" strokeWidth={1.65} aria-hidden />
+          </div>
+        </div>
+        <h2 className="mt-8 text-lg font-semibold tracking-tight text-zinc-900 sm:text-xl">{title}</h2>
+        <p className="mt-2 text-sm leading-relaxed text-zinc-500">{subtitle}</p>
+        <div className="mx-auto mt-8 flex max-w-[240px] flex-col items-center gap-2">
+          <div className="h-1.5 w-full animate-pulse rounded-full bg-zinc-100" />
+          <div className="h-1.5 w-[88%] animate-pulse rounded-full bg-zinc-100" />
+          <div className="h-1.5 w-[64%] animate-pulse rounded-full bg-zinc-100" />
+        </div>
+      </motion.div>
+    </div>
+  );
+}
 
 export default function ResultPage() {
   // All hooks at the top
@@ -173,7 +212,6 @@ export default function ResultPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [autoSaveStatus, setAutoSaveStatus] = useState("saved"); // "saving", "saved", "error"
   const [showDownloadSkeleton, setShowDownloadSkeleton] = useState(false);
-  const [exportLegalConsent, setExportLegalConsent] = useState(false);
 
   useEffect(() => {
     const auth = getAuth();
@@ -212,14 +250,14 @@ export default function ResultPage() {
     if (!user) return;
     const stored = localStorage.getItem("tailoredResume");
     if (!stored) {
-      setError("No resume data found. Redirecting to dashboard...");
+      setError("We couldn't find a resume draft. Returning you to the dashboard…");
       setTimeout(() => router.push("/dashboard"), 3000);
       return;
     }
     try {
       const parsed = JSON.parse(stored);
       if (!parsed || Object.keys(parsed).length === 0) {
-        setError("Empty resume data. Redirecting to dashboard...");
+        setError("Your draft looks empty. Returning you to the dashboard…");
         setTimeout(() => router.push("/dashboard"), 3000);
         return;
       }
@@ -235,40 +273,65 @@ export default function ResultPage() {
           : [];
       setResumeData(normalized);
     } catch (err) {
-      setError("Resume is corrupted. Redirecting to dashboard...");
+      setError("We couldn't read this draft. Returning you to the dashboard…");
       setTimeout(() => router.push("/dashboard"), 3000);
     }
   }, [user, router]);
 
   // Only after all hooks:
   if (!user) {
-    return <div>Loading user...</div>;
+    return (
+      <ResultLoadingScreen
+        title="Signing you in"
+        subtitle="Securing your session—this only takes a moment."
+        icon={User}
+      />
+    );
   }
   if (error) {
-    return <div>{error}</div>;
+    return (
+      <div className="flex min-h-dvh items-center justify-center bg-gradient-to-b from-zinc-50 to-zinc-100/90 px-4 py-12">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.28 }}
+          className="w-full max-w-md rounded-2xl border border-red-200/90 bg-white p-8 text-center shadow-lg shadow-zinc-300/30 sm:p-10"
+        >
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-red-50 ring-1 ring-red-100">
+            <AlertCircle className="h-7 w-7 text-red-600" strokeWidth={1.75} aria-hidden />
+          </div>
+          <p className="mt-6 text-sm font-medium leading-relaxed text-red-900">{error}</p>
+          <motion.button
+            type="button"
+            whileTap={{ scale: 0.99 }}
+            onClick={() => router.push("/dashboard")}
+            className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-zinc-900 px-4 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30"
+          >
+            <ArrowLeft className="h-4 w-4" strokeWidth={1.75} aria-hidden />
+            Back to dashboard
+          </motion.button>
+        </motion.div>
+      </div>
+    );
   }
   if (!resumeData) {
-    return <div>Loading result...</div>;
+    return (
+      <ResultLoadingScreen
+        title="Loading your draft"
+        subtitle="Retrieving your resume from this browser session."
+        icon={FileText}
+      />
+    );
   }
 
   // ✅ Rendering logic AFTER hooks
   if (showDownloadSkeleton) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="text-center"
-        >
-          <div className="relative w-16 h-16 sm:w-20 sm:h-20 mb-4 sm:mb-6">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 border-4 border-blue-200/20 border-t-blue-500 rounded-full animate-spin" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <Download className="w-6 h-6 sm:w-8 sm:h-8 text-blue-400 animate-pulse" />
-            </div>
-          </div>
-          <p className="text-gray-600 font-medium text-base sm:text-lg">Preparing your Word document...</p>
-        </motion.div>
-      </div>
+      <ResultLoadingScreen
+        title="Preparing your download"
+        subtitle="Next: choose Word (editable) or PDF (share-ready)."
+        icon={Download}
+      />
     );
   }
 
@@ -280,27 +343,27 @@ export default function ResultPage() {
     if (Array.isArray(resumeData.tailored_experience)) {
       resumeData.tailored_experience.forEach((exp, index) => {
         if (!exp.company) {
-          errors[`experience_company_${index}`] = "Company name is required.";
+          errors[`experience_company_${index}`] = "Add a company name.";
           errorSections.add("Experience");
         }
         if (!exp.title) {
-          errors[`experience_title_${index}`] = "Job title is required.";
+          errors[`experience_title_${index}`] = "Add a job title.";
           errorSections.add("Experience");
         }
         if (!exp.location) {
-          errors[`experience_location_${index}`] = "Location is required.";
+          errors[`experience_location_${index}`] = "Add a location.";
           errorSections.add("Experience");
         }
         if (!exp.start) {
-          errors[`experience_start_${index}`] = "Start date is required.";
+          errors[`experience_start_${index}`] = "Add a start date.";
           errorSections.add("Experience");
         }
         if (!exp.end) {
-          errors[`experience_end_${index}`] = "End date is required.";
+          errors[`experience_end_${index}`] = "Add an end date.";
           errorSections.add("Experience");
         }
         if (!exp.highlights || exp.highlights.some((h) => !h.trim())) {
-          errors[`experience_highlights_${index}`] = "Complete all highlights.";
+          errors[`experience_highlights_${index}`] = "Fill in every bullet for this role.";
           errorSections.add("Experience");
         }
       });
@@ -315,23 +378,23 @@ export default function ResultPage() {
         const start = (edu.start || edu.startDate || "").trim();
         const end = (edu.end || edu.endDate || "").trim();
         if (!program) {
-          errors[`education_program_${index}`] = "Program or degree is required.";
+          errors[`education_program_${index}`] = "Add a program or degree.";
           errorSections.add("Education");
         }
         if (!school) {
-          errors[`education_school_${index}`] = "School or institution is required.";
+          errors[`education_school_${index}`] = "Add a school or institution.";
           errorSections.add("Education");
         }
         if (!location) {
-          errors[`education_location_${index}`] = "Location is required.";
+          errors[`education_location_${index}`] = "Add a location.";
           errorSections.add("Education");
         }
         if (!start) {
-          errors[`education_start_${index}`] = "Start date is required.";
+          errors[`education_start_${index}`] = "Add a start date.";
           errorSections.add("Education");
         }
         if (!end) {
-          errors[`education_end_${index}`] = "End date is required.";
+          errors[`education_end_${index}`] = "Add an end date.";
           errorSections.add("Education");
         }
       });
@@ -341,19 +404,18 @@ export default function ResultPage() {
     if (Array.isArray(resumeData.projects)) {
       resumeData.projects.forEach((proj, index) => {
         if (!proj.title) {
-          errors[`project_title_${index}`] = "Project title is required.";
+          errors[`project_title_${index}`] = "Add a project title.";
           errorSections.add("Projects");
         }
         if (!proj.tech || proj.tech.length === 0) {
-          errors[`project_tech_${index}`] = "Project tech stack is required.";
+          errors[`project_tech_${index}`] = "Add at least one technology.";
           errorSections.add("Projects");
         }
         if (
           !Array.isArray(proj.highlights) ||
           proj.highlights.some((h) => !h.trim())
         ) {
-          errors[`project_highlights_${index}`] =
-            "Complete all project highlights.";
+          errors[`project_highlights_${index}`] = "Fill in every project bullet.";
           errorSections.add("Projects");
         }
       });
@@ -381,7 +443,7 @@ export default function ResultPage() {
         return unique.length > 0 ? `${section} (${unique.join(", ")} required)` : section;
       });
       showError(
-        `Please fix: ${details.join(" • ")}`,
+        `Please complete: ${details.join(" · ")}`,
         {
           style: {
             borderRadius: "10px",
@@ -400,6 +462,27 @@ export default function ResultPage() {
     return true;
   };
 
+  const persistTailoredResume = (updated) => {
+    try {
+      localStorage.setItem("tailoredResume", JSON.stringify(updated));
+      const email = user?.email;
+      if (email) {
+        const existing = localStorage.getItem(`recentResults_${email}`);
+        if (existing) {
+          const recentResults = JSON.parse(existing);
+          if (recentResults.length > 0) {
+            recentResults[0].resultData = updated;
+            recentResults[0].timestamp = new Date().toISOString();
+            localStorage.setItem(`recentResults_${email}`, JSON.stringify(recentResults));
+          }
+        }
+      }
+      setAutoSaveStatus("saved");
+    } catch {
+      setAutoSaveStatus("error");
+    }
+  };
+
   const handleChange = (section, key, value, index) => {
     setResumeData((prev) => {
       const updated = { ...prev };
@@ -414,6 +497,7 @@ export default function ResultPage() {
       ) {
         updated[section][index][key] = value;
       } else if (section === "tailored_skills") {
+        updated[section] = { ...(updated[section] || {}) };
         updated[section][key] = value.split(",").map((s) => s.trim());
       } else if (section === "tailored_certificates") {
         // Handle certificates as array directly from HighlightsEditor
@@ -421,31 +505,8 @@ export default function ResultPage() {
       } else {
         updated[section] = value;
       }
-      
-      // Auto-save to localStorage on every change
-      try {
-        localStorage.setItem("tailoredResume", JSON.stringify(updated));
-        
-        // Update recent result in dashboard
-        const email = user?.email;
-        if (email) {
-          const existing = localStorage.getItem(`recentResults_${email}`);
-          if (existing) {
-            const recentResults = JSON.parse(existing);
-            if (recentResults.length > 0) {
-              recentResults[0].resultData = updated;
-              recentResults[0].timestamp = new Date().toISOString();
-              localStorage.setItem(`recentResults_${email}`, JSON.stringify(recentResults));
-            }
-          }
-        }
-        
-        setAutoSaveStatus("saved");
-      } catch (updateError) {
-        setAutoSaveStatus("error");
-        // Don't fail the operation if localStorage update fails
-      }
-      
+
+      persistTailoredResume(updated);
       return updated;
     });
   };
@@ -454,31 +515,51 @@ export default function ResultPage() {
     setResumeData((prev) => {
       const updated = { ...prev };
       updated[section][index][key] = value;
-      
-      // Auto-save to localStorage on every change
-      try {
-        localStorage.setItem("tailoredResume", JSON.stringify(updated));
-        
-        // Update recent result in dashboard
-        const email = user?.email;
-        if (email) {
-          const existing = localStorage.getItem(`recentResults_${email}`);
-          if (existing) {
-            const recentResults = JSON.parse(existing);
-            if (recentResults.length > 0) {
-              recentResults[0].resultData = updated;
-              recentResults[0].timestamp = new Date().toISOString();
-              localStorage.setItem(`recentResults_${email}`, JSON.stringify(recentResults));
-            }
-          }
-        }
-        
-        setAutoSaveStatus("saved");
-      } catch (updateError) {
-        setAutoSaveStatus("error");
-        // Don't fail the operation if localStorage update fails
+
+      persistTailoredResume(updated);
+      return updated;
+    });
+  };
+
+  const addSkillCategory = () => {
+    setResumeData((prev) => {
+      const skills = { ...(prev.tailored_skills || {}) };
+      const base = "New category";
+      let name = base;
+      let i = 2;
+      while (skills[name]) {
+        name = `${base} ${i}`;
+        i += 1;
       }
-      
+      skills[name] = [];
+      const updated = { ...prev, tailored_skills: skills };
+      persistTailoredResume(updated);
+      return updated;
+    });
+  };
+
+  const removeSkillCategory = (categoryKey) => {
+    setResumeData((prev) => {
+      const skills = { ...(prev.tailored_skills || {}) };
+      delete skills[categoryKey];
+      const updated = { ...prev, tailored_skills: skills };
+      persistTailoredResume(updated);
+      return updated;
+    });
+  };
+
+  const renameSkillCategory = (oldKey, newKeyRaw) => {
+    const newKey = newKeyRaw.trim();
+    if (!newKey || newKey === oldKey) return;
+    setResumeData((prev) => {
+      const skills = { ...(prev.tailored_skills || {}) };
+      if (!skills[oldKey]) return prev;
+      if (skills[newKey]) return prev;
+      const arr = skills[oldKey];
+      delete skills[oldKey];
+      skills[newKey] = Array.isArray(arr) ? arr : [];
+      const updated = { ...prev, tailored_skills: skills };
+      persistTailoredResume(updated);
       return updated;
     });
   };
@@ -530,10 +611,6 @@ export default function ResultPage() {
   const handleDownload = async () => {
     const valid = validateResume();
     if (!valid) return;
-    if (!exportLegalConsent) {
-      showError("Please agree to the Terms & Conditions and Privacy Policy before continuing to export.");
-      return;
-    }
 
     setIsDownloading(true);
     setShowDownloadSkeleton(true);
@@ -569,7 +646,7 @@ export default function ResultPage() {
   };
 
   const sections = [
-    { id: "personal", label: "Personal Info", icon: User },
+    { id: "personal", label: "Profile", icon: User },
     { id: "summary", label: "Summary", icon: FileText },
     { id: "skills", label: "Skills", icon: Star },
     { id: "experience", label: "Experience", icon: Briefcase },
@@ -604,26 +681,28 @@ export default function ResultPage() {
             <Edit3 className="h-7 w-7 text-blue-700" strokeWidth={1.75} />
           </div>
           <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 md:text-4xl">Resume editor</h1>
-          <p className="mt-2 text-sm text-zinc-600 md:text-base">Review and edit your tailored resume before export.</p>
+          <p className="mt-2 text-sm text-zinc-600 md:text-base">
+            Refine your tailored draft before export—whether AI suggested it or you started from the sample resume.
+          </p>
           
           {/* Auto-save Status */}
           <div className="flex items-center justify-center gap-2 mt-4">
             {autoSaveStatus === "saving" && (
               <div className="flex items-center gap-2 text-blue-600">
                 <div className="w-3 h-3 border-2 border-blue-300 border-t-blue-600 rounded-full animate-spin"></div>
-                <span className="text-sm font-medium">Saving...</span>
+                <span className="text-sm font-medium">Saving draft…</span>
               </div>
             )}
             {autoSaveStatus === "saved" && (
               <div className="flex items-center gap-2 text-green-600">
                 <CheckCircle className="w-4 h-4" />
-                <span className="text-sm font-medium">All changes saved</span>
+                <span className="text-sm font-medium">Draft saved</span>
               </div>
             )}
             {autoSaveStatus === "error" && (
               <div className="flex items-center gap-2 text-red-600">
                 <AlertCircle className="w-4 h-4" />
-                <span className="text-sm font-medium">Save failed</span>
+                <span className="text-sm font-medium">Couldn&apos;t save draft</span>
               </div>
             )}
           </div>
@@ -636,7 +715,7 @@ export default function ResultPage() {
             className="mt-6 inline-flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-4 py-2.5 text-sm font-medium text-zinc-800 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to Dashboard
+            Back to dashboard
           </motion.button>
         </motion.div>
 
@@ -654,13 +733,13 @@ export default function ResultPage() {
         )}
 
         {!error && resumeData && (
-          <div className="grid lg:grid-cols-4 gap-8">
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,220px)_1fr]">
             {/* Sidebar Navigation */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 }}
-              className="lg:col-span-1"
+              className="min-w-0"
             >
               <div className="sticky top-24 rounded-xl border border-zinc-200 bg-white p-5 shadow-sm lg:top-8">
                 <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">Sections</h3>
@@ -703,30 +782,21 @@ export default function ResultPage() {
                     {isSaving ? (
                       <>
                         <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        Saving...
+                        Saving…
                       </>
                     ) : (
                       <>
                         <Save className="w-5 h-5" />
-                        Save Resume
+                        Save draft
                       </>
                     )}
                   </motion.button>
 
-                  <div className="pt-2">
-                    <LegalConsentCheckbox
-                      id="result-export-consent"
-                      checked={exportLegalConsent}
-                      onChange={setExportLegalConsent}
-                      disabled={isDownloading || isSaving}
-                    />
-                  </div>
-                  
                   <motion.button
                     type="button"
                     whileTap={{ scale: isDownloading || isSaving ? 1 : 0.99 }}
                     onClick={handleDownload}
-                    disabled={isDownloading || isSaving || !exportLegalConsent}
+                    disabled={isDownloading || isSaving}
                     className={`flex w-full items-center justify-center gap-2 rounded-lg border border-zinc-200 bg-white px-4 py-3 text-sm font-semibold text-zinc-900 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25 disabled:cursor-not-allowed disabled:opacity-50 ${
                       isDownloading ? "border-blue-200 bg-blue-50/50" : ""
                     }`}
@@ -734,7 +804,7 @@ export default function ResultPage() {
                     {isDownloading ? (
                       <>
                         <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        Preparing...
+                        Preparing…
                       </>
                     ) : (
                       <>
@@ -752,7 +822,7 @@ export default function ResultPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="min-w-0 lg:col-span-3"
+              className="min-w-0"
             >
               <div className="responsive-card min-w-0 rounded-xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-8">
                 <AnimatePresence mode="wait">
@@ -770,8 +840,8 @@ export default function ResultPage() {
                           <User className="h-6 w-6 text-blue-700" strokeWidth={1.75} />
                         </div>
                         <div>
-                          <h2 className="text-2xl font-semibold text-gray-900">Personal Information</h2>
-                          <p className="text-gray-500">Update your contact details</p>
+                          <h2 className="text-2xl font-semibold text-gray-900">Profile & contact</h2>
+                          <p className="text-gray-500">Name, email, and links used in your exports</p>
                         </div>
                       </div>
 
@@ -781,7 +851,8 @@ export default function ResultPage() {
                       >
                         <CheckCircle className="h-5 w-5 shrink-0 text-emerald-600" strokeWidth={2} aria-hidden />
                         <p className="leading-relaxed text-emerald-900">
-                          Review your contact details and profile links before continuing. Make sure your name, email, phone number, GitHub, and LinkedIn are accurate. Use your full profile URLs or correct usernames, since your Word and PDF exports will use this information exactly as entered.
+                          Double-check your name, email, phone, GitHub, and LinkedIn—Word and PDF exports use this
+                          information exactly as you enter it. Prefer full profile URLs where possible.
                         </p>
                       </div>
 
@@ -794,7 +865,7 @@ export default function ResultPage() {
                 value={unescapeHtml(resumeData.name || "")}
                 onChange={(e) => handleChange("name", null, e.target.value)}
                                                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15 transition-all duration-200 text-gray-900 placeholder-gray-500"
-                             placeholder="Enter your full name"
+                             placeholder="Full name as it should appear on your resume"
                           />
                         </div>
 
@@ -805,7 +876,7 @@ export default function ResultPage() {
                               ? "GitHub username or profile URL"
                               : key === "linkedin"
                                 ? "LinkedIn username or profile URL"
-                                : `Enter your ${key}`;
+                                : `Add your ${key}`;
                           return (
                   <div key={key}>
                               <label className="block text-sm font-medium text-gray-700 mb-2 capitalize">
@@ -841,8 +912,8 @@ export default function ResultPage() {
                           <FileText className="w-6 h-6 text-blue-600" />
                         </div>
                         <div>
-                          <h2 className="text-2xl font-semibold text-gray-900">Professional Summary</h2>
-                          <p className="text-gray-500">Write a compelling summary of your experience</p>
+                          <h2 className="text-2xl font-semibold text-gray-900">Professional summary</h2>
+                          <p className="text-gray-500">Role, years of experience, top skills, and the impact you want next</p>
                         </div>
               </div>
 
@@ -855,7 +926,7 @@ export default function ResultPage() {
                           onChange={(e) => handleChange("tailored_summary", null, e.target.value)}
                                                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15 transition-all duration-200 resize-none text-gray-900 placeholder-gray-500"
                            rows={6}
-                           placeholder="Write a compelling professional summary..."
+                           placeholder="Tight summary: who you are, what you ship best, and what you're targeting next…"
               />
                       </div>
                     </motion.div>
@@ -870,29 +941,92 @@ export default function ResultPage() {
                       exit={{ opacity: 0, x: -20 }}
                       className="space-y-6"
                     >
-                      <div className="flex items-center gap-3 mb-6">
-                        <div className="w-12 h-12 bg-yellow-100 rounded-2xl flex items-center justify-center">
-                          <Star className="w-6 h-6 text-yellow-600" />
+                      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between mb-6">
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 bg-yellow-100 rounded-2xl flex items-center justify-center">
+                            <Star className="w-6 h-6 text-yellow-600" />
+                          </div>
+                          <div>
+                            <h2 className="text-2xl font-semibold text-gray-900">Skills & Expertise</h2>
+                            <p className="text-gray-500">
+                              Add category names (e.g. Technical, Languages), then list skills separated by commas.
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <h2 className="text-2xl font-semibold text-gray-900">Skills & Expertise</h2>
-                          <p className="text-gray-500">Organize your skills by category</p>
-                        </div>
+                        <motion.button
+                          type="button"
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={addSkillCategory}
+                          className="inline-flex shrink-0 items-center gap-2 self-start rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30"
+                        >
+                          <Plus className="w-4 h-4" />
+                          Add category
+                        </motion.button>
                       </div>
 
                       <div className="space-y-4">
+                        {Object.entries(resumeData.tailored_skills || {}).length === 0 && (
+                          <p className="rounded-lg border border-dashed border-zinc-200 bg-zinc-50 px-4 py-6 text-center text-sm text-zinc-500">
+                            No skill categories yet. Use &quot;Add category&quot; to create one.
+                          </p>
+                        )}
                         {Object.entries(resumeData.tailored_skills || {}).map(([category, skills]) => (
-                          <div key={category} className="bg-gray-50 rounded-xl p-4">
-                            <label className="block text-sm font-medium text-gray-700 mb-2 capitalize">
-                              {category}
-                            </label>
-                    <input
-                      value={unescapeHtml(skills.join(", "))}
-                              onChange={(e) => handleChange("tailored_skills", category, e.target.value)}
-                                                             className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15 transition-all duration-200 text-gray-900 placeholder-gray-500"
-                               placeholder={`Enter ${category} skills separated by commas`}
-                    />
-                  </div>
+                          <div
+                            key={category}
+                            className="relative rounded-xl border border-gray-200 bg-gray-50 p-4 sm:p-5"
+                          >
+                            <motion.button
+                              type="button"
+                              whileHover={{ scale: 1.08 }}
+                              whileTap={{ scale: 0.92 }}
+                              onClick={() => removeSkillCategory(category)}
+                              className="absolute right-3 top-3 rounded-md p-2 text-red-600 transition-colors hover:bg-red-50 hover:text-red-700"
+                              title="Remove this category"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </motion.button>
+
+                            <div className="pr-10">
+                              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                                Category name
+                              </label>
+                              <input
+                                key={category}
+                                defaultValue={category}
+                                onBlur={(e) => {
+                                  const next = e.target.value.trim();
+                                  if (!next) {
+                                    e.target.value = category;
+                                    showError("Add a category name.");
+                                    return;
+                                  }
+                                  if (next === category) return;
+                                  const skillsObj = resumeData.tailored_skills || {};
+                                  if (skillsObj[next]) {
+                                    showError("You already have a category with that name.");
+                                    e.target.value = category;
+                                    return;
+                                  }
+                                  renameSkillCategory(category, next);
+                                }}
+                                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15 transition-all duration-200 text-gray-900 placeholder-gray-500"
+                                placeholder="e.g. Technical, Tools, Languages"
+                              />
+                            </div>
+
+                            <div className="mt-4">
+                              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                                Skills in this category (comma-separated)
+                              </label>
+                              <input
+                                value={unescapeHtml((Array.isArray(skills) ? skills : []).join(", "))}
+                                onChange={(e) => handleChange("tailored_skills", category, e.target.value)}
+                                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15 transition-all duration-200 text-gray-900 placeholder-gray-500"
+                                placeholder="TypeScript, React, Node.js…"
+                              />
+                            </div>
+                          </div>
                         ))}
                       </div>
                     </motion.div>
@@ -913,8 +1047,8 @@ export default function ResultPage() {
                             <Briefcase className="w-6 h-6 text-green-600" />
                           </div>
                           <div>
-                            <h2 className="text-2xl font-semibold text-gray-900">Work Experience</h2>
-                            <p className="text-gray-500">Manage your professional experience</p>
+                            <h2 className="text-2xl font-semibold text-gray-900">Work experience</h2>
+                            <p className="text-gray-500">Roles, impact, and outcomes recruiters scan first</p>
                           </div>
                         </div>
                         <motion.button
@@ -940,7 +1074,7 @@ export default function ResultPage() {
                           className="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30"
                     >
                           <Plus className="w-4 h-4" />
-                        Add Experience
+                        Add role
                         </motion.button>
                   </div>
 
@@ -965,7 +1099,7 @@ export default function ResultPage() {
                           showExperienceDeleted();
                         }}
                                 className="absolute -top-2 -right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 shadow-lg transition-all duration-200"
-                                title="Remove experience"
+                                title="Remove role"
                       >
                                 <Trash2 className="w-4 h-4" />
                               </motion.button>
@@ -987,7 +1121,7 @@ export default function ResultPage() {
                                   idx
                                 )
                               }
-                              placeholder="Enter job highlights (one per line)"
+                              placeholder="Add a win: action, scope, measurable outcome…"
                             />
                           ) : (
                             <input
@@ -1102,7 +1236,7 @@ export default function ResultPage() {
                                             newHighlights
                                           )
                                         }
-                                        placeholder="Enter education highlights/achievements (one per line)"
+                                        placeholder="Coursework, honors, or leadership (one bullet per line)…"
                                       />
                                     ) : (
                                       <input
@@ -1214,7 +1348,7 @@ export default function ResultPage() {
                                             idx
                                           )
                                         }
-                                        placeholder="Enter project highlights (one per line)"
+                                        placeholder="Problem, what you built, result (one bullet per line)…"
                                       />
                                     ) : (
                             <input
@@ -1268,7 +1402,7 @@ export default function ResultPage() {
                           onChange={(newCertificates) =>
                             handleChange("tailored_certificates", null, newCertificates)
                           }
-                          placeholder="Enter your certificates"
+                          placeholder="Add each certification (name and issuer, one per line)…"
                         />
                       </div>
                     </motion.div>

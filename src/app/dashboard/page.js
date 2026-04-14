@@ -50,12 +50,13 @@ import {
   Type,
   FileUp,
   Edit3,
-  Home
+  Home,
+  Loader2,
 } from "lucide-react";
 import { getAuth, signInWithCredential, GoogleAuthProvider, onAuthStateChanged } from "firebase/auth";
 import { wakeBackend, API_BASE, processText } from "../../utils/api.js";
+import { getEmptyResumeDraft } from "../../utils/emptyResumeDraft.js";
 import { unescapeHtml } from "../../utils/safeHtml";
-import LegalConsentCheckbox from "../../components/legal/LegalConsentCheckbox";
 import SiteLegalLinks from "../../components/legal/SiteLegalLinks";
 
 const JOB_DESCRIPTION_MAX_CHARS = 15_000;
@@ -76,6 +77,7 @@ export default function Dashboard() {
   const [isOnline, setIsOnline] = useState(true);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [fileToDelete, setFileToDelete] = useState(null);
+  const [isDeletingResume, setIsDeletingResume] = useState(false);
   const [showResultSkeleton, setShowResultSkeleton] = useState(false);
   const [aiData, setAiData] = useState(null);
   const [showRecentResults, setShowRecentResults] = useState(false);
@@ -84,7 +86,6 @@ export default function Dashboard() {
   const [loadingPhase, setLoadingPhase] = useState('idle'); // 'idle' | 'upload' | 'extract' | 'ai'
   const [uploadAttempts, setUploadAttempts] = useState(0);
   const [user, setUser] = useState(null);
-  const [legalConsent, setLegalConsent] = useState(false);
 
   useEffect(() => {
     const auth = getAuth();
@@ -175,7 +176,7 @@ export default function Dashboard() {
 
       setUploadedResumes(files.filter(Boolean));
     } catch (error) {
-      showError("Failed to load your resumes.");
+      showError("We couldn't load your uploaded files. Refresh and try again.");
       setUploadedResumes([]);
     }
   };
@@ -201,19 +202,25 @@ export default function Dashboard() {
   };
 
   const confirmDelete = (file) => {
+    if (isDeletingResume || showDeleteConfirm) return;
     setFileToDelete(file);
     setShowDeleteConfirm(true);
   };
 
   const executeDelete = async () => {
-    if (fileToDelete) {
+    if (!fileToDelete || isDeletingResume) return;
+    setIsDeletingResume(true);
+    try {
       await handleDelete(fileToDelete);
+    } finally {
+      setIsDeletingResume(false);
       setShowDeleteConfirm(false);
       setFileToDelete(null);
     }
   };
 
   const cancelDelete = () => {
+    if (isDeletingResume) return;
     setShowDeleteConfirm(false);
     setFileToDelete(null);
   };
@@ -245,7 +252,7 @@ export default function Dashboard() {
         const userEmail = user.email.toLowerCase();
         fileName = pdfFile.name;
         const storageRef = ref(storage, `resumes/${userEmail}/${fileName}`);
-        const uploadToast = showLoading('Uploading PDF ...');
+        const uploadToast = showLoading("Uploading your PDF…");
         let uploadSuccess = false;
         let uploadAttemptsLocal = 0;
         while (!uploadSuccess && uploadAttemptsLocal < 3) {
@@ -335,7 +342,7 @@ export default function Dashboard() {
     if (uploadMode === "pdf") {
       if (pdfFile) {
         setLoadingPhase("extract");
-        const extractToast = showLoading('Extracting text from PDF...');
+        const extractToast = showLoading("Reading your PDF…");
         try {
           if (!navigator.onLine) throw new Error("No internet connection. Please check your network.");
           if (pdfFile.size > 10 * 1024 * 1024) throw new Error("File size too large. Please upload a PDF under 10MB.");
@@ -404,7 +411,7 @@ export default function Dashboard() {
         }
       } else if (selectedResume) {
         setLoadingPhase("extract");
-        const extractToast = showLoading('Extracting text from selected resume...');
+        const extractToast = showLoading("Reading your selected PDF…");
         try {
           if (!navigator.onLine) throw new Error("No internet connection. Please check your network.");
           const controller = new AbortController();
@@ -483,7 +490,7 @@ export default function Dashboard() {
     let aiData = null;
     let retryCount = 0;
     const maxRetries = 5;
-    const aiToast = showLoading('AI is analyzing your resume and job description...');
+    const aiToast = showLoading("Tailoring your resume to this posting…");
     while (retryCount < maxRetries) {
       try {
         const processRes = await processText(resumeText, jobText);
@@ -566,15 +573,12 @@ export default function Dashboard() {
 
   // Refactored handleSubmit
   const handleSubmit = async () => {
-    if (!jobText.trim()) return showValidationError("Please enter job description.");
+    if (!jobText.trim()) return showValidationError("Add a job description to continue.");
     if (uploadMode === "pdf" && !pdfFile && !selectedResume) {
-      return showValidationError("Please upload or select a PDF resume.");
+      return showValidationError("Upload or select a PDF to continue.");
     }
     if (uploadMode === "text" && !textResume.trim()) {
-      return showValidationError("Please enter your resume text.");
-    }
-    if (!legalConsent) {
-      return showValidationError("Please agree to the Terms & Conditions and Privacy Policy.");
+      return showValidationError("Paste your resume text to continue.");
     }
     if (!navigator.onLine) {
       showNetworkError();
@@ -715,7 +719,7 @@ export default function Dashboard() {
   };
 
   // Save result to recent results (only keep the latest one)
-  const saveToRecentResults = (resultData, jobText) => {
+  const saveToRecentResults = (resultData, jobText, fileNameOverride = null) => {
     try {
       const email = user?.email;
       if (!email) return;
@@ -725,7 +729,7 @@ export default function Dashboard() {
         timestamp: new Date().toISOString(),
         jobText: jobText,
         resultData: resultData,
-        fileName: pdfFile?.name || `text-resume-${Date.now()}.txt`
+        fileName: fileNameOverride || pdfFile?.name || `text-resume-${Date.now()}.txt`
       };
 
       // Store only the latest result
@@ -747,7 +751,7 @@ export default function Dashboard() {
       setShowResultSkeleton(true);
       setTimeout(() => router.push("/result"), 400);
     } catch (error) {
-      showError("Failed to load recent result");
+      showError("Couldn't open that draft. Try again.");
     }
   };
 
@@ -759,10 +763,18 @@ export default function Dashboard() {
 
       localStorage.removeItem(`recentResults_${email}`);
       setRecentResults([]);
-      showSuccess("Recent result deleted");
+      showSuccess("Draft removed from this device");
     } catch (error) {
-      showError("Failed to delete recent result");
+      showError("Couldn't remove that draft.");
     }
+  };
+
+  const openScratchEditor = () => {
+    const draft = getEmptyResumeDraft();
+    localStorage.setItem("tailoredResume", JSON.stringify(draft));
+    saveToRecentResults(draft, "Sample resume (no job posting yet)", "scratch-resume-draft");
+    setShowResultSkeleton(true);
+    setTimeout(() => router.push("/result"), 400);
   };
 
   const escapeHtml = (unsafe) =>
@@ -776,7 +788,7 @@ export default function Dashboard() {
   if (!user) {
     return (
       <div className="flex min-h-dvh items-center justify-center bg-zinc-50 text-sm text-zinc-500">
-        Loading…
+        Loading your workspace…
       </div>
     );
   }
@@ -784,12 +796,12 @@ export default function Dashboard() {
   if (loading) {
     const phaseLabel =
       loadingPhase === "upload"
-        ? "Uploading file"
+        ? "Uploading your file"
         : loadingPhase === "extract"
-          ? "Extracting text"
+          ? "Reading your PDF"
           : loadingPhase === "ai"
-            ? "Analyzing with AI"
-            : "Working";
+            ? "Tailoring with AI"
+            : "Working on it";
 
     return (
       <div className="fixed inset-0 z-[9999] flex min-h-screen w-full items-center justify-center bg-zinc-50/95 px-4">
@@ -801,7 +813,9 @@ export default function Dashboard() {
         >
           <Image src="/logo.png" alt="" width={48} height={48} className="mx-auto h-12 w-12 rounded-lg border border-zinc-200 object-contain" priority />
           <h2 className="mt-6 text-lg font-semibold text-zinc-900">{phaseLabel}</h2>
-          <p className="mt-1 text-sm text-zinc-500">This can take a little while for long resumes or postings.</p>
+          <p className="mt-1 text-sm text-zinc-500">
+            Longer resumes or detailed postings may take up to a minute—we&apos;ll keep this screen updated.
+          </p>
           <div className="mt-6 h-2 w-full overflow-hidden rounded-full bg-zinc-100">
             <motion.div
               className="h-full rounded-full bg-blue-600"
@@ -815,7 +829,7 @@ export default function Dashboard() {
             {[
               { id: "upload", label: "Upload" },
               { id: "extract", label: "Extract" },
-              { id: "ai", label: "Analyze" },
+              { id: "ai", label: "Tailor" },
             ].map((step) => (
               <span
                 key={step.id}
@@ -844,8 +858,8 @@ export default function Dashboard() {
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
             <CheckCircle className="h-6 w-6" strokeWidth={1.75} />
           </div>
-          <h2 className="mt-5 text-lg font-semibold text-zinc-900">Resume ready</h2>
-          <p className="mt-2 text-sm text-zinc-500">Opening the editor—almost there.</p>
+          <h2 className="mt-5 text-lg font-semibold text-zinc-900">Draft ready</h2>
+          <p className="mt-2 text-sm text-zinc-500">Opening your editor—almost there.</p>
           <div className="mt-8 space-y-3 text-left">
             <div className="h-3 w-24 animate-pulse rounded bg-zinc-200" />
             <div className="h-10 w-full animate-pulse rounded-lg bg-zinc-100" />
@@ -879,7 +893,7 @@ export default function Dashboard() {
         whileTap={{ scale: 0.97 }}
         onClick={clearForm}
         className="group fixed bottom-5 right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full border border-zinc-200 bg-white text-zinc-900 shadow-md transition-colors hover:border-zinc-300 hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25 sm:bottom-8 sm:right-8"
-        title="Clear form"
+        title="Clear all fields"
       >
         <Plus className="h-6 w-6 transition-transform group-hover:rotate-45" strokeWidth={1.75} />
       </motion.button>
@@ -895,8 +909,8 @@ export default function Dashboard() {
             <div className="flex items-center gap-2 sm:gap-3">
               <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-red-600" />
               <div>
-                <p className="text-red-800 font-medium text-sm sm:text-base">You're currently offline</p>
-                <p className="text-red-700 text-xs sm:text-sm">Please check your internet connection to use AI features</p>
+                <p className="text-red-800 font-medium text-sm sm:text-base">You&apos;re offline</p>
+                <p className="text-red-700 text-xs sm:text-sm">Reconnect to upload files and run AI tailoring.</p>
               </div>
             </div>
           </motion.div>
@@ -910,8 +924,19 @@ export default function Dashboard() {
           <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 sm:text-3xl md:text-4xl">
             Welcome back{user?.displayName ? `, ${user.displayName.split(" ")[0]}` : ""}
           </h1>
-          <p className="mt-2 text-sm text-zinc-600 sm:text-base">Add a job description and resume, then generate a tailored draft.</p>
+          <p className="mt-2 text-sm text-zinc-600 sm:text-base">
+            Add a job description and your resume to generate a tailored draft—or open the editor with sample sections you can
+            replace in minutes.
+          </p>
           <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:mt-8 sm:flex-row sm:gap-4">
+            <button
+              type="button"
+              onClick={openScratchEditor}
+              className="inline-flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-800 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25"
+            >
+              <Edit3 className="h-4 w-4 text-blue-700" strokeWidth={1.75} />
+              Start from a sample resume
+            </button>
             {recentResults.length > 0 && (
               <button
                 type="button"
@@ -919,7 +944,7 @@ export default function Dashboard() {
                 className="inline-flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-800 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25"
               >
                 <Clock className="h-4 w-4 text-zinc-500" strokeWidth={1.75} />
-                Last result
+                Recent draft
               </button>
             )}
           </div>
@@ -941,8 +966,11 @@ export default function Dashboard() {
                     <Briefcase className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
                   </div>
                   <div>
-                    <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">Job Description</h2>
-                    <p className="text-gray-500 text-sm sm:text-base">Paste the job posting details here (max {JOB_DESCRIPTION_MAX_CHARS.toLocaleString()} characters)</p>
+                    <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">Job description</h2>
+                    <p className="text-gray-500 text-sm sm:text-base">
+                      Paste the full posting: role overview, requirements, and responsibilities (max{" "}
+                      {JOB_DESCRIPTION_MAX_CHARS.toLocaleString()} characters).
+                    </p>
                   </div>
                 </div>
                 <motion.button
@@ -950,7 +978,7 @@ export default function Dashboard() {
                   whileTap={{ scale: 0.95 }}
                   onClick={clearForm}
                   className="p-2 text-gray-400 hover:text-red-500 transition-colors"
-                  title="Clear job description"
+                  title="Clear job description field"
                 >
                   <X className="w-4 h-4 sm:w-5 sm:h-5" />
                 </motion.button>
@@ -958,7 +986,7 @@ export default function Dashboard() {
 
         <textarea
                 className="h-40 w-full resize-none rounded-lg border border-zinc-200 p-4 text-base text-zinc-900 transition-colors focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15 sm:h-48 sm:p-5 sm:text-lg"
-                placeholder="Copy and paste the job description, requirements, and responsibilities here..."
+                placeholder="Paste the job description here—including must-have skills, tools, and responsibilities."
           value={unescapeHtml(jobText)}
           onChange={(e) => setJobText(e.target.value.slice(0, JOB_DESCRIPTION_MAX_CHARS))}
           maxLength={JOB_DESCRIPTION_MAX_CHARS}
@@ -989,8 +1017,8 @@ export default function Dashboard() {
                     <Upload className="w-6 h-6 text-green-600" />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-semibold text-gray-900">Upload Resume</h2>
-                    <p className="text-gray-500 text-sm">Choose between PDF upload or text input</p>
+                    <h2 className="text-2xl font-semibold text-gray-900">Your resume</h2>
+                    <p className="text-gray-500 text-sm">Upload a PDF or paste the full text of your resume.</p>
                   </div>
                 </div>
               </div>
@@ -1009,7 +1037,7 @@ export default function Dashboard() {
                     }`}
                   >
                     <FileUp className="w-4 h-4" />
-                    PDF Upload
+                    PDF
                   </motion.button>
                   <motion.button
                     whileHover={{ scale: 1.02 }}
@@ -1022,7 +1050,7 @@ export default function Dashboard() {
                     }`}
                   >
                     <Type className="w-4 h-4" />
-                    Text Input
+                    Paste text
                   </motion.button>
             </div>
         </div>
@@ -1062,10 +1090,10 @@ export default function Dashboard() {
                         </div>
                         <div>
                           <p className="text-xl font-medium text-gray-900 mb-2">
-                            {pdfFile ? pdfFile.name : "Choose a PDF file"}
+                            {pdfFile ? pdfFile.name : "Drop a PDF here or click to browse"}
                           </p>
                           <p className="text-gray-500">
-                            {pdfFile ? "File selected successfully!" : "or drag and drop here"}
+                            {pdfFile ? "Ready to process · up to 10MB" : "Up to 10MB · text-based PDFs work best"}
                           </p>
                         </div>
                         {pdfFile && (
@@ -1075,7 +1103,7 @@ export default function Dashboard() {
                             className="flex items-center justify-center text-green-600"
                           >
                             <CheckCircle className="w-5 h-5 mr-2" />
-                            <span className="text-sm font-medium">File uploaded</span>
+                            <span className="text-sm font-medium">Ready to process</span>
                           </motion.div>
                         )}
                       </div>
@@ -1096,14 +1124,14 @@ export default function Dashboard() {
                     <div className="flex items-center gap-3 rounded-lg border border-zinc-200 bg-zinc-50 p-4">
                       <Edit3 className="h-5 w-5 shrink-0 text-zinc-600" strokeWidth={1.75} />
                       <div>
-                        <p className="text-sm font-medium text-zinc-900">Resume as text</p>
-                        <p className="text-xs text-zinc-600 sm:text-sm">Paste your content (max {RESUME_TEXT_MAX_CHARS.toLocaleString()} characters).</p>
+                        <p className="text-sm font-medium text-zinc-900">Resume text</p>
+                        <p className="text-xs text-zinc-600 sm:text-sm">Paste your full resume (max {RESUME_TEXT_MAX_CHARS.toLocaleString()} characters).</p>
                       </div>
         </div>
 
                     <textarea
                       className="h-64 w-full resize-none rounded-lg border border-zinc-200 p-5 text-base text-zinc-900 transition-colors focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15 sm:text-lg"
-                      placeholder="Enter your resume content here... Include your experience, skills, education, and any other relevant information..."
+                      placeholder="Paste your full resume—experience, skills, education, and links. Clear section headings help us map your content accurately."
                       value={unescapeHtml(textResume)}
                       onChange={(e) => setTextResume(e.target.value.slice(0, RESUME_TEXT_MAX_CHARS))}
                       maxLength={RESUME_TEXT_MAX_CHARS}
@@ -1140,9 +1168,9 @@ export default function Dashboard() {
                     <FileText className="w-6 h-6 text-orange-600" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-semibold text-gray-900">Previous Resumes</h2>
+                    <h2 className="text-xl font-semibold text-gray-900">Your uploads</h2>
                     <p className="text-gray-500">{uploadedResumes.length} files</p>
-                    <p className="text-sm text-gray-500">  Choose a resume to continue editing</p>
+                    <p className="text-sm text-gray-500">Select a file to reuse for the next tailored version.</p>
                   </div>
                 </div>
               </div>
@@ -1152,7 +1180,7 @@ export default function Dashboard() {
                   <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <FileText className="w-8 h-8 text-gray-400" />
                   </div>
-                  <p className="text-gray-500">No resumes uploaded yet</p>
+                  <p className="text-gray-500">No PDFs uploaded yet</p>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -1183,7 +1211,7 @@ export default function Dashboard() {
                             <p className="text-sm font-medium text-gray-900 truncate max-w-[160px] md:max-w-[240px] lg:max-w-[320px]" title={resume.name}>
                               {escapeHtml(resume.name)}
                             </p>
-                            <p className="text-xs text-gray-500">PDF Document</p>
+                            <p className="text-xs text-gray-500">PDF</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2 flex-shrink-0 ml-2">
@@ -1198,11 +1226,13 @@ export default function Dashboard() {
                             <Download className="w-4 h-4" />
                           </button>
         <button
+                            type="button"
+                            disabled={isDeletingResume || showDeleteConfirm}
                             onClick={(e) => {
                               e.stopPropagation();
                               confirmDelete(resume);
                             }}
-                            className="p-1 text-gray-400 hover:text-red-500 transition-colors"
+                            className="p-1 text-gray-400 transition-colors hover:text-red-500 disabled:pointer-events-none disabled:opacity-40"
                             title="Delete"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -1221,7 +1251,6 @@ export default function Dashboard() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
             >
-              <LegalConsentCheckbox id="dashboard-legal-consent" checked={legalConsent} onChange={setLegalConsent} disabled={loading} />
               <div className="mt-4">
               <motion.button
                 whileHover={{ scale: 1.02 }}
@@ -1230,14 +1259,13 @@ export default function Dashboard() {
                 disabled={
                   !jobText.trim() ||
                   (uploadMode === "pdf" && !pdfFile && !selectedResume) ||
-                  (uploadMode === "text" && !textResume.trim()) ||
-                  !legalConsent
+                  (uploadMode === "text" && !textResume.trim())
                 }
                 className="w-full rounded-lg bg-zinc-900 py-4 text-base font-semibold text-white shadow-sm transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 focus-visible:ring-offset-2 sm:py-4 sm:text-lg"
               >
                 <div className="flex items-center justify-center space-x-3">
                   <Sparkles className="w-6 h-6" />
-                  <span>Generate AI Resume</span>
+                  <span>Tailor my resume</span>
                   <ArrowRight className="w-5 h-5" />
                 </div>
               </motion.button>
@@ -1252,12 +1280,11 @@ export default function Dashboard() {
                   <div className="flex items-center space-x-2">
                     <AlertCircle className="w-5 h-5 text-amber-600" />
                     <p className="text-amber-800 text-sm font-medium">
-                      {!jobText.trim() 
-                        ? "Please enter a job description" 
-                        : uploadMode === "pdf" 
-                          ? "Please upload or select a PDF resume"
-                          : "Please enter your resume text"
-                      }
+                      {!jobText.trim()
+                        ? "Add a job description to continue"
+                        : uploadMode === "pdf"
+                          ? "Upload or select a PDF to continue"
+                          : "Paste your resume text to continue"}
                     </p>
                   </div>
                 </motion.div>
@@ -1286,6 +1313,7 @@ export default function Dashboard() {
               exit={{ scale: 0.98, opacity: 0 }}
               transition={{ duration: 0.15 }}
               className="w-full max-w-md rounded-xl border border-zinc-200 bg-white p-6 shadow-xl"
+              aria-busy={isDeletingResume}
             >
               <div className="text-center">
                 <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-50">
@@ -1293,22 +1321,32 @@ export default function Dashboard() {
                 </div>
                 <h3 className="text-lg font-semibold text-zinc-900">Delete resume</h3>
                 <p className="mt-2 text-sm text-zinc-600">
-                  Delete &quot;{escapeHtml(fileToDelete?.name)}&quot;? This cannot be undone.
+                  Delete &quot;{escapeHtml(fileToDelete?.name)}&quot;? This removes the file from your account. This
+                  can&apos;t be undone.
                 </p>
                 <div className="mt-6 flex gap-3">
                   <button
                     type="button"
                     onClick={cancelDelete}
-                    className="flex-1 rounded-lg border border-zinc-300 bg-white py-2.5 text-sm font-medium text-zinc-800 transition-colors hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25"
+                    disabled={isDeletingResume}
+                    className="flex-1 rounded-lg border border-zinc-300 bg-white py-2.5 text-sm font-medium text-zinc-800 transition-colors hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     Cancel
                   </button>
                   <button
                     type="button"
-                    onClick={executeDelete}
-                    className="flex-1 rounded-lg bg-red-600 py-2.5 text-sm font-medium text-white transition-colors hover:bg-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600/30"
+                    onClick={() => void executeDelete()}
+                    disabled={isDeletingResume}
+                    className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-red-600 py-2.5 text-sm font-medium text-white transition-colors hover:bg-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600/30 disabled:cursor-wait disabled:opacity-90"
                   >
-                    Delete
+                    {isDeletingResume ? (
+                      <>
+                        <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
+                        Deleting…
+                      </>
+                    ) : (
+                      "Delete"
+                    )}
                   </button>
                 </div>
               </div>
@@ -1339,8 +1377,10 @@ export default function Dashboard() {
                     <Clock className="h-5 w-5 text-blue-700" strokeWidth={1.75} />
                   </div>
                   <div className="min-w-0">
-                    <h3 className="text-base font-semibold text-zinc-900 sm:text-lg">Recent result</h3>
-                    <p className="text-xs text-zinc-500 sm:text-sm">Your last generated draft on this device.</p>
+                    <h3 className="text-base font-semibold text-zinc-900 sm:text-lg">Recent drafts</h3>
+                    <p className="text-xs text-zinc-500 sm:text-sm">
+                      Saved locally on this device—another browser may not show the same list.
+                    </p>
                   </div>
                 </div>
                 <button
@@ -1358,8 +1398,8 @@ export default function Dashboard() {
                     <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-zinc-100">
                       <Clock className="h-7 w-7 text-zinc-400" strokeWidth={1.5} />
                     </div>
-                    <h4 className="text-base font-semibold text-zinc-900">Nothing saved yet</h4>
-                    <p className="mt-2 text-sm text-zinc-600">Generate a resume to see it listed here.</p>
+                    <h4 className="text-base font-semibold text-zinc-900">No drafts saved here yet</h4>
+                    <p className="mt-2 text-sm text-zinc-600">Tailor a resume to see it listed here.</p>
                   </div>
                 ) : (
                   <div className="space-y-4">
@@ -1395,7 +1435,7 @@ export default function Dashboard() {
                           onClick={loadRecentResult}
                           className="mt-4 w-full rounded-lg bg-zinc-900 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30"
                         >
-                          Continue editing
+                          Open in editor
                         </button>
                       </div>
                     ))}

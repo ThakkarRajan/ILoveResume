@@ -11,7 +11,7 @@ const ERROR_MAP = [
   ["Could not extract text from PDF.", "PDF could not be read. Try a different file or ensure it has selectable text."],
   ["Extracted text is too short.", "The PDF seems too short. Please upload a full resume."],
   ["The uploaded PDF doesn't appear to be a resume.", "This doesn't look like a resume. Please upload a resume PDF."],
-  ["Error processing PDF", "Something went wrong processing the PDF. Please try again."],
+  ["Error processing PDF", "We couldn't process this PDF. Try another file or a text-based PDF."],
 
   // POST /extract-from-url
   ["No URL provided.", "Please enter a PDF URL."],
@@ -29,13 +29,13 @@ const ERROR_MAP = [
   ["Pydantic validation", "Please provide both resume text and job description."],
   ["Resume text is too short.", "Resume text is too short (min 100 characters)."],
   ["Job description is too short.", "Job description is too short (min 50 characters)."],
-  ["The provided text doesn't appear to be a resume.", "The text doesn't look like a resume. Please paste your full resume."],
-  ["AI service temporarily unavailable.", "AI service is unavailable. Please try again in a moment."],
-  ["AI service temporarily unavailable", "AI service is unavailable. Please try again in a moment."],
-  ["Invalid response from AI service.", "Something went wrong with the AI. Please try again."],
-  ["Empty response from AI service.", "AI returned no response. Please try again."],
-  ["Failed to parse AI response.", "Could not interpret the AI result. Please try again."],
-  ["Incomplete or invalid response from AI service.", "AI response was incomplete. Please try again."],
+  ["The provided text doesn't appear to be a resume.", "This doesn't look like resume text yet. Paste your full resume and try again."],
+  ["AI service temporarily unavailable.", "Tailoring is temporarily unavailable. Please try again in a moment."],
+  ["AI service temporarily unavailable", "Tailoring is temporarily unavailable. Please try again in a moment."],
+  ["Invalid response from AI service.", "Something went wrong while generating suggestions. Please try again."],
+  ["Empty response from AI service.", "We didn't get a complete response. Please try again."],
+  ["Failed to parse AI response.", "Couldn't read the response. Please try again."],
+  ["Incomplete or invalid response from AI service.", "The response looked incomplete. Please try again."],
   ["An unexpected error occurred.", "Something went wrong. Please try again."],
 ];
 

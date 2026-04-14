@@ -14,17 +14,19 @@ export const defaultOpenGraphImage = {
 export const rootMetadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${SITE_NAME} — Free resume builder & job-matching help`,
+    default: `${SITE_NAME} — Free AI resume builder & job-tailored exports`,
     template: `%s | ${SITE_NAME}`,
   },
   description:
-    "Free tool to improve your resume for each job: upload or paste a resume, add a posting, refine wording, export Word or PDF. Built for Canada and international applications.",
+    "Tailor your resume to each job posting with AI-assisted edits you control—upload or paste, align clear structure and role-relevant keywords, then export Word or PDF. Built for Canada and international applications.",
   keywords: [
     "free resume builder",
+    "resume tailoring",
     "resume builder Canada",
     "tailor resume to job description",
     "ATS resume",
-    "Word PDF resume",
+    "resume download Word PDF",
+    "AI resume builder",
   ],
   authors: [{ name: SITE_NAME, url: SITE_URL }],
   creator: SITE_NAME,

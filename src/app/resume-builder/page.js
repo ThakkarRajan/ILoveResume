@@ -4,9 +4,9 @@ import GuideCta from "../../components/seo/GuideCta";
 import { pageMeta, SITE_NAME, SITE_URL } from "../../config/site";
 
 export const metadata = pageMeta({
-  title: "Resume builder guides — templates, ATS, and Canada",
+  title: "Resume builder guides: ATS, tailoring, Canada, templates",
   description:
-    "Hub for I Love Resumes guides: free resume builder for Canada, ATS-friendly formats, Harvard-style and Google Docs templates, tailoring to job descriptions, and examples.",
+    "Guides from I Love Resumes: free resume builder for Canada, ATS-friendly formats, Harvard-style and Google Docs templates, tailoring to job descriptions, and examples.",
   path: "/resume-builder",
 });
 
@@ -47,12 +47,12 @@ export default function ResumeBuilderHubPage() {
           <span className="font-medium text-zinc-800">Resume builder guides</span>
         </nav>
         <h1 className="text-balance text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl">
-          Resume builder guides and templates
+          Resume builder guides & templates
         </h1>
         <p className="mt-4 text-sm leading-relaxed text-zinc-600 sm:text-base">
           I Love Resumes is a free tool for uploading or pasting a resume, adding a job posting, and exporting Word or PDF.
-          These guides explain how to think about templates, ATS, and Canada-specific conventions—without pretending one
-          keyword fixes every search ranking.
+          These guides explain templates, ATS readability, and Canada-specific conventions—without claiming one keyword
+          alone will fix ATS or search rankings.
         </p>
         <h2 className="mt-10 text-lg font-semibold text-zinc-900">Start here</h2>
         <ul className="mt-4 space-y-2">
