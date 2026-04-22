@@ -18,7 +18,15 @@ export default function RootSchema() {
     url: SITE_URL,
     logo: { "@type": "ImageObject", url: `${SITE_URL}/logo.png` },
     description:
-      "Free resume builder for tailoring your resume to each job description, with in-browser editing and Word or PDF export.",
+      "Free resume builder and AI resume tailoring for Canada and beyond—job description keywords, skills phrasing, ATS-friendly structure, in-browser editing, Word or PDF export.",
+    knowsAbout: [
+      "Resume tailoring",
+      "Applicant tracking systems",
+      "Job description keywords",
+      "Resume writing for Canada",
+      "AI-assisted resume editing",
+      "Word and PDF resume export",
+    ],
     address: { "@type": "PostalAddress", addressCountry: "CA" },
     ...(sameAs.length ? { sameAs } : {}),
     contactPoint: {
@@ -39,8 +47,10 @@ export default function RootSchema() {
         name: SITE_NAME,
         url: SITE_URL,
         description:
-          "Free resume builder with AI-assisted tailoring, clear structure and role-relevant keywords, and Word or PDF export for Canadian and international job seekers.",
+          "Free resume builder with AI resume suggestions: resume templates and examples in guides, skills and keyword alignment to job postings, ATS-friendly exports to Word or PDF for Canadian and international job seekers.",
         publisher: { "@id": `${SITE_URL}/#organization` },
+        copyrightHolder: { "@id": `${SITE_URL}/#organization` },
+        about: { "@id": `${SITE_URL}/#organization` },
         inLanguage: "en-CA",
       },
       {
@@ -50,13 +60,15 @@ export default function RootSchema() {
         applicationCategory: "BusinessApplication",
         operatingSystem: "Any",
         url: SITE_URL,
+        description:
+          "Web app: sign in with Google, upload or paste a resume, add a job description, review AI-assisted wording and keyword ideas, edit in the browser, export Word or PDF. Core tailoring and export are free.",
         offers: { "@type": "Offer", price: "0", priceCurrency: "CAD" },
         browserRequirements: "Requires JavaScript. Modern browser.",
         featureList: [
           "Resume upload or paste",
-          "Job description alignment and keyword suggestions",
+          "Job description alignment, skills, and keyword suggestions",
           "In-browser editing",
-          "Word and PDF export",
+          "ATS-friendly structure and Word or PDF export",
         ],
         isPartOf: { "@id": `${SITE_URL}/#website` },
       },

@@ -4,7 +4,7 @@ export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://iloveresum
 export const SITE_NAME = "I Love Resumes";
 
 export const defaultOpenGraphImage = {
-  url: `${SITE_URL}/logo.png`,
+  url: `${SITE_URL}/og-image.png`,
   width: 1200,
   height: 630,
   alt: SITE_NAME,
@@ -13,20 +13,37 @@ export const defaultOpenGraphImage = {
 /** Root layout defaults; child routes override via export const metadata. */
 export const rootMetadata = {
   metadataBase: new URL(SITE_URL),
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/icon-192.png",
+  },
   title: {
-    default: `${SITE_NAME} — Free AI resume builder & job-tailored exports`,
+    default: `${SITE_NAME} — Free resume builder, AI resume & ATS-friendly exports`,
     template: `%s | ${SITE_NAME}`,
   },
   description:
-    "Tailor your resume to each job posting with AI-assisted edits you control—upload or paste, align clear structure and role-relevant keywords, then export Word or PDF. Built for Canada and international applications.",
+    "I Love Resumes (iloveresumes.ca): free resume builder and AI resume tailoring—upload or paste your resume, align skills and keywords from each posting, get ATS-friendly structure, then export Word or PDF. Templates, examples, and Canada-focused guides.",
   keywords: [
+    "free resume",
     "free resume builder",
-    "resume tailoring",
+    "my resume",
+    "resume builder",
     "resume builder Canada",
+    "AI resume",
+    "resume AI",
+    "resume tailoring",
     "tailor resume to job description",
+    "resume template",
+    "resume templates",
+    "resume examples",
+    "resume skills",
+    "what is a resume",
+    "cover letter for resume",
     "ATS resume",
+    "ATS resume optimization",
     "resume download Word PDF",
-    "AI resume builder",
+    "Toronto jobs resume",
+    "Canada resume",
   ],
   authors: [{ name: SITE_NAME, url: SITE_URL }],
   creator: SITE_NAME,
@@ -41,7 +58,7 @@ export const rootMetadata = {
     card: "summary_large_image",
     site: "@iloveresumes",
     creator: "@iloveresumes",
-    images: [`${SITE_URL}/logo.png`],
+    images: [`${SITE_URL}/og-image.png`],
   },
   robots: { index: true, follow: true },
 };
@@ -65,7 +82,7 @@ export function pageMeta({ title, description, path, ogType = "website" }) {
       card: "summary_large_image",
       title,
       description,
-      images: [`${SITE_URL}/logo.png`],
+      images: [`${SITE_URL}/og-image.png`],
     },
   };
 }

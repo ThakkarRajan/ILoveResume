@@ -1,3 +1,4 @@
+import { blogPosts } from "../data/blog-posts";
 import { SITE_URL } from "../config/site";
 
 const MARKETING_PATHS = [
@@ -40,6 +41,13 @@ export default function sitemap() {
     priority: 0.85,
   }));
 
-  // Blog posts live in /blog/sitemap.xml so you can submit a dedicated sitemap in GSC.
-  return [...staticEntries, ...marketingEntries];
+  const blogEntries = blogPosts.map((post) => ({
+    url: `${SITE_URL}/blog/${post.slug}`,
+    lastModified: post.date ? new Date(post.date) : lastMod,
+    changeFrequency: "monthly",
+    priority: 0.72,
+  }));
+
+  /** Single sitemap so crawlers get every public URL from one /sitemap.xml (better than split for smaller sites). */
+  return [...staticEntries, ...marketingEntries, ...blogEntries];
 }

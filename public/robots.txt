@@ -8,4 +8,3 @@ Disallow: /admin/
 Disallow: /api/
 
 Sitemap: https://iloveresumes.ca/sitemap.xml
-Sitemap: https://iloveresumes.ca/blog/sitemap.xml

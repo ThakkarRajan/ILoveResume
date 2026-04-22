@@ -811,7 +811,14 @@ export default function Dashboard() {
           transition={{ duration: 0.2 }}
           className="w-full max-w-md rounded-xl border border-zinc-200 bg-white p-8 text-center shadow-sm"
         >
-          <Image src="/logo.png" alt="" width={48} height={48} className="mx-auto h-12 w-12 rounded-lg border border-zinc-200 object-contain" priority />
+          <Image
+            src="/logo.png"
+            alt=""
+            width={1017}
+            height={850}
+            className="mx-auto h-12 w-auto max-w-[3rem] rounded-lg border border-zinc-200 object-contain"
+            priority
+          />
           <h2 className="mt-6 text-lg font-semibold text-zinc-900">{phaseLabel}</h2>
           <p className="mt-1 text-sm text-zinc-500">
             Longer resumes or detailed postings may take up to a minute—we&apos;ll keep this screen updated.
@@ -872,9 +879,9 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="relative min-h-screen bg-zinc-50">
+    <div className="relative min-h-screen min-w-0 bg-zinc-50">
       <Toaster 
-        position="top-right"
+        position="top-center"
         toastOptions={{
           duration: 4000,
           style: {
@@ -892,7 +899,7 @@ export default function Dashboard() {
         transition={{ delay: 0.15, duration: 0.2 }}
         whileTap={{ scale: 0.97 }}
         onClick={clearForm}
-        className="group fixed bottom-5 right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full border border-zinc-200 bg-white text-zinc-900 shadow-md transition-colors hover:border-zinc-300 hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25 sm:bottom-8 sm:right-8"
+        className="group fixed z-40 flex h-14 w-14 items-center justify-center rounded-full border border-zinc-200 bg-white text-zinc-900 shadow-md transition-colors hover:border-zinc-300 hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25 bottom-[max(1.25rem,env(safe-area-inset-bottom))] right-[max(1.25rem,env(safe-area-inset-right))] sm:bottom-[max(2rem,env(safe-area-inset-bottom))] sm:right-[max(2rem,env(safe-area-inset-right))]"
         title="Clear all fields"
       >
         <Plus className="h-6 w-6 transition-transform group-hover:rotate-45" strokeWidth={1.75} />
@@ -906,11 +913,11 @@ export default function Dashboard() {
             animate={{ opacity: 1, y: 0 }}
             className="mb-4 rounded-lg border border-red-200 bg-red-50/90 p-3 sm:mb-6 sm:p-4"
           >
-            <div className="flex items-center gap-2 sm:gap-3">
-              <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-red-600" />
-              <div>
-                <p className="text-red-800 font-medium text-sm sm:text-base">You&apos;re offline</p>
-                <p className="text-red-700 text-xs sm:text-sm">Reconnect to upload files and run AI tailoring.</p>
+            <div className="flex min-w-0 items-start gap-2 sm:items-center sm:gap-3">
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-600 sm:mt-0 sm:h-5 sm:w-5" />
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-red-800 sm:text-base">You&apos;re offline</p>
+                <p className="text-xs text-red-700 sm:text-sm">Reconnect to upload files and run AI tailoring.</p>
               </div>
             </div>
           </motion.div>
@@ -958,16 +965,16 @@ export default function Dashboard() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="responsive-card rounded-xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-8"
+              className="min-w-0 max-w-full rounded-xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-8"
             >
-              <div className="flex items-center justify-between mb-4 sm:mb-6">
-                <div className="flex items-center">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-2xl flex items-center justify-center mr-3 sm:mr-4">
-                    <Briefcase className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
+              <div className="mb-4 flex items-start justify-between gap-3 sm:mb-6 sm:items-center">
+                <div className="flex min-w-0 flex-1 items-start gap-3 sm:items-center sm:gap-3 sm:mr-4">
+                  <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-blue-100 sm:mt-0 sm:h-12 sm:w-12">
+                    <Briefcase className="h-5 w-5 text-blue-600 sm:h-6 sm:w-6" />
                   </div>
-                  <div>
-                    <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">Job description</h2>
-                    <p className="text-gray-500 text-sm sm:text-base">
+                  <div className="min-w-0 text-left">
+                    <h2 className="text-xl font-semibold text-gray-900 sm:text-2xl">Job description</h2>
+                    <p className="text-sm text-gray-500 sm:text-base">
                       Paste the full posting: role overview, requirements, and responsibilities (max{" "}
                       {JOB_DESCRIPTION_MAX_CHARS.toLocaleString()} characters).
                     </p>
@@ -977,10 +984,10 @@ export default function Dashboard() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={clearForm}
-                  className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                  className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-gray-400 transition-colors hover:text-red-500 sm:h-12 sm:w-12"
                   title="Clear job description field"
                 >
-                  <X className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <X className="h-4 w-4 sm:h-5 sm:w-5" />
                 </motion.button>
               </div>
 
@@ -1009,28 +1016,26 @@ export default function Dashboard() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="responsive-card rounded-xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-8"
+              className="min-w-0 max-w-full rounded-xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-8"
             >
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center">
-                  <div className="w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center mr-4">
-                    <Upload className="w-6 h-6 text-green-600" />
-                  </div>
-                  <div>
-                    <h2 className="text-2xl font-semibold text-gray-900">Your resume</h2>
-                    <p className="text-gray-500 text-sm">Upload a PDF or paste the full text of your resume.</p>
-                  </div>
+              <div className="mb-6 flex items-start gap-3 sm:items-center">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-green-100">
+                  <Upload className="h-6 w-6 text-green-600" />
+                </div>
+                <div className="min-w-0 text-left">
+                  <h2 className="text-xl font-semibold text-gray-900 sm:text-2xl">Your resume</h2>
+                  <p className="text-sm text-gray-500">Upload a PDF or paste the full text of your resume.</p>
                 </div>
               </div>
 
               {/* Upload Mode Toggle */}
               <div className="mb-6">
-                <div className="flex bg-gray-100 rounded-xl p-1">
+                <div className="flex flex-col gap-1 rounded-xl bg-gray-100 p-1 sm:flex-row">
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => switchUploadMode("pdf")}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                    className={`flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200 sm:py-2 ${
                       uploadMode === "pdf"
                         ? "bg-white text-blue-700 shadow-sm ring-1 ring-zinc-200/80"
                         : "text-zinc-600 hover:text-zinc-900"
@@ -1043,7 +1048,7 @@ export default function Dashboard() {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => switchUploadMode("text")}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                    className={`flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200 sm:py-2 ${
                       uploadMode === "text"
                         ? "bg-white text-blue-700 shadow-sm ring-1 ring-zinc-200/80"
                         : "text-zinc-600 hover:text-zinc-900"
@@ -1066,7 +1071,7 @@ export default function Dashboard() {
                     transition={{ duration: 0.3 }}
                   >
                     <div
-                      className={`relative border-2 border-dashed rounded-2xl p-8 text-center transition-all duration-200 ${
+                      className={`relative border-2 border-dashed rounded-2xl p-4 text-center transition-all duration-200 sm:p-8 ${
                         dragActive 
                           ? "border-blue-500 bg-blue-50/60"
                           : "border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50"
@@ -1088,8 +1093,11 @@ export default function Dashboard() {
                         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-zinc-100">
                           <FileText className="h-8 w-8 text-zinc-600" strokeWidth={1.75} />
                         </div>
-                        <div>
-                          <p className="text-xl font-medium text-gray-900 mb-2">
+                        <div className="min-w-0 px-1">
+                          <p
+                            className="mb-2 break-words text-base font-medium text-gray-900 sm:text-xl"
+                            title={pdfFile ? pdfFile.name : undefined}
+                          >
                             {pdfFile ? pdfFile.name : "Drop a PDF here or click to browse"}
                           </p>
                           <p className="text-gray-500">
@@ -1121,9 +1129,9 @@ export default function Dashboard() {
                     transition={{ duration: 0.3 }}
                     className="space-y-4"
                   >
-                    <div className="flex items-center gap-3 rounded-lg border border-zinc-200 bg-zinc-50 p-4">
-                      <Edit3 className="h-5 w-5 shrink-0 text-zinc-600" strokeWidth={1.75} />
-                      <div>
+                    <div className="flex min-w-0 items-start gap-3 rounded-lg border border-zinc-200 bg-zinc-50 p-4 sm:items-center">
+                      <Edit3 className="mt-0.5 h-5 w-5 shrink-0 text-zinc-600 sm:mt-0" strokeWidth={1.75} />
+                      <div className="min-w-0">
                         <p className="text-sm font-medium text-zinc-900">Resume text</p>
                         <p className="text-xs text-zinc-600 sm:text-sm">Paste your full resume (max {RESUME_TEXT_MAX_CHARS.toLocaleString()} characters).</p>
                       </div>
@@ -1160,18 +1168,16 @@ export default function Dashboard() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 }}
-              className="responsive-card rounded-xl border border-zinc-200 bg-white p-6 shadow-sm"
+              className="min-w-0 max-w-full rounded-xl border border-zinc-200 bg-white p-6 shadow-sm"
             >
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center">
-                  <div className="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center mr-4">
-                    <FileText className="w-6 h-6 text-orange-600" />
-                  </div>
-                  <div>
+              <div className="mb-6 flex items-start gap-3 sm:items-center">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-orange-100">
+                  <FileText className="h-6 w-6 text-orange-600" />
+                </div>
+                <div className="min-w-0 text-left">
                     <h2 className="text-xl font-semibold text-gray-900">Your uploads</h2>
                     <p className="text-gray-500">{uploadedResumes.length} files</p>
                     <p className="text-sm text-gray-500">Select a file to reuse for the next tailored version.</p>
-                  </div>
                 </div>
               </div>
 
@@ -1207,23 +1213,23 @@ export default function Dashboard() {
                           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-zinc-100">
                             <FileText className="h-5 w-5 text-zinc-600" strokeWidth={1.75} />
                           </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="text-sm font-medium text-gray-900 truncate max-w-[160px] md:max-w-[240px] lg:max-w-[320px]" title={resume.name}>
+                          <div className="min-w-0 flex-1 pr-1">
+                            <p className="truncate text-sm font-medium text-gray-900" title={resume.name}>
                               {escapeHtml(resume.name)}
                             </p>
                             <p className="text-xs text-gray-500">PDF</p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+                        <div className="ml-2 flex flex-shrink-0 items-center gap-0.5 sm:gap-1">
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
                               window.open(resume.url, '_blank');
                             }}
-                            className="p-1 text-gray-400 hover:text-blue-500 transition-colors"
+                            className="inline-flex h-11 w-11 items-center justify-center rounded-md text-gray-400 transition-colors hover:text-blue-500"
                             title="Download"
                           >
-                            <Download className="w-4 h-4" />
+                            <Download className="h-4 w-4" />
                           </button>
         <button
                             type="button"
@@ -1232,10 +1238,10 @@ export default function Dashboard() {
                               e.stopPropagation();
                               confirmDelete(resume);
                             }}
-                            className="p-1 text-gray-400 transition-colors hover:text-red-500 disabled:pointer-events-none disabled:opacity-40"
+                            className="inline-flex h-11 w-11 items-center justify-center rounded-md text-gray-400 transition-colors hover:text-red-500 disabled:pointer-events-none disabled:opacity-40"
                             title="Delete"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="h-4 w-4" />
         </button>
       </div>
                       </div>
@@ -1277,9 +1283,9 @@ export default function Dashboard() {
                   animate={{ opacity: 1, y: 0 }}
                   className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-xl"
                 >
-                  <div className="flex items-center space-x-2">
-                    <AlertCircle className="w-5 h-5 text-amber-600" />
-                    <p className="text-amber-800 text-sm font-medium">
+                  <div className="flex items-start gap-2 sm:items-center">
+                    <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-amber-600 sm:mt-0" />
+                    <p className="min-w-0 text-sm font-medium text-amber-800">
                       {!jobText.trim()
                         ? "Add a job description to continue"
                         : uploadMode === "pdf"
@@ -1324,12 +1330,12 @@ export default function Dashboard() {
                   Delete &quot;{escapeHtml(fileToDelete?.name)}&quot;? This removes the file from your account. This
                   can&apos;t be undone.
                 </p>
-                <div className="mt-6 flex gap-3">
+                <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:gap-3">
                   <button
                     type="button"
                     onClick={cancelDelete}
                     disabled={isDeletingResume}
-                    className="flex-1 rounded-lg border border-zinc-300 bg-white py-2.5 text-sm font-medium text-zinc-800 transition-colors hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="flex min-h-[44px] flex-1 items-center justify-center rounded-lg border border-zinc-300 bg-white py-2.5 text-sm font-medium text-zinc-800 transition-colors hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     Cancel
                   </button>
@@ -1337,7 +1343,7 @@ export default function Dashboard() {
                     type="button"
                     onClick={() => void executeDelete()}
                     disabled={isDeletingResume}
-                    className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-red-600 py-2.5 text-sm font-medium text-white transition-colors hover:bg-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600/30 disabled:cursor-wait disabled:opacity-90"
+                    className="flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-lg bg-red-600 py-2.5 text-sm font-medium text-white transition-colors hover:bg-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600/30 disabled:cursor-wait disabled:opacity-90"
                   >
                     {isDeletingResume ? (
                       <>

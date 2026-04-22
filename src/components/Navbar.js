@@ -73,12 +73,18 @@ export default function Navbar() {
         <motion.nav initial={{ y: -8, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.2 }} className={shellClass}>
           <div className="mx-auto flex max-w-6xl min-w-0 items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8 lg:py-3.5">
             <Link href="/dashboard" className="flex min-w-0 shrink-0 items-center gap-2 sm:gap-3 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25 focus-visible:ring-offset-2">
-              <Image src="/logo.png" alt="I Love Resumes" width={72} height={56} className="h-9 w-9 rounded-md object-contain sm:h-10 sm:w-10" />
+              <Image
+                src="/logo.png"
+                alt="I Love Resumes"
+                width={1017}
+                height={850}
+                className="h-9 w-auto rounded-md object-contain sm:h-10"
+              />
               <Image
                 src="/Iloveresumelogotext.png"
                 alt="I Love Resumes"
-                width={200}
-                height={56}
+                width={506}
+                height={74}
                 sizes="(max-width: 768px) 11rem, 13rem"
                 quality={60}
                 className="hidden h-8 w-auto max-w-[11rem] object-contain sm:block md:max-w-[13rem]"
@@ -115,7 +121,7 @@ export default function Navbar() {
               <button
                 type="button"
                 onClick={() => setShowMenu((p) => !p)}
-                className="flex min-h-[44px] max-w-[200px] items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm font-medium text-zinc-900 shadow-sm transition-colors hover:border-zinc-300 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25 focus-visible:ring-offset-2 sm:px-3.5"
+                className="flex min-h-[44px] max-w-[9.5rem] items-center gap-1.5 rounded-lg border border-zinc-200 bg-zinc-50 px-2 py-2 text-sm font-medium text-zinc-900 shadow-sm transition-colors hover:border-zinc-300 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25 focus-visible:ring-offset-2 sm:max-w-[200px] sm:gap-2 sm:px-3.5"
               >
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white ring-1 ring-zinc-200">
                   {user?.photoURL ? (
@@ -124,8 +130,11 @@ export default function Navbar() {
                     <User className="h-4 w-4 text-zinc-500" />
                   )}
                 </div>
-                <span className="hidden min-w-0 truncate sm:inline">{user?.displayName?.split(" ")[0] || "Account"}</span>
-                <ChevronDown className={`h-4 w-4 shrink-0 text-zinc-500 transition-transform ${showMenu ? "rotate-180" : ""}`} />
+                <span className="hidden min-w-0 flex-1 truncate sm:inline">{user?.displayName?.split(" ")[0] || "Account"}</span>
+                <ChevronDown
+                  className={`hidden h-4 w-4 shrink-0 text-zinc-500 transition-transform sm:block ${showMenu ? "rotate-180" : ""}`}
+                  aria-hidden
+                />
               </button>
 
               <AnimatePresence>
@@ -183,7 +192,7 @@ export default function Navbar() {
                           setShowMenu(false);
                           setShowModal(true);
                         }}
-                        className="mt-0.5 flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600/20"
+                        className="mt-0.5 flex min-h-[44px] w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600/20"
                       >
                         <LogOut className="h-4 w-4" />
                         Sign out
@@ -257,18 +266,18 @@ export default function Navbar() {
                 <p className="mt-2 text-sm text-zinc-600">
                   You&apos;ll need to sign in again to open your drafts and exports.
                 </p>
-                <div className="mt-6 flex gap-3">
+                <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:gap-3">
                   <button
                     type="button"
                     onClick={() => setShowModal(false)}
-                    className="flex-1 rounded-lg border border-zinc-300 bg-white py-2.5 text-sm font-medium text-zinc-800 transition-colors hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25"
+                    className="flex min-h-[44px] flex-1 items-center justify-center rounded-lg border border-zinc-300 bg-white py-2.5 text-sm font-medium text-zinc-800 transition-colors hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25"
                   >
                     Cancel
                   </button>
                   <button
                     type="button"
                     onClick={handleLogout}
-                    className="flex-1 rounded-lg bg-red-600 py-2.5 text-sm font-medium text-white transition-colors hover:bg-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600/40"
+                    className="flex min-h-[44px] flex-1 items-center justify-center rounded-lg bg-red-600 py-2.5 text-sm font-medium text-white transition-colors hover:bg-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600/40"
                   >
                     Sign out
                   </button>
@@ -286,12 +295,18 @@ export default function Navbar() {
       <motion.nav initial={{ y: -8, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.2 }} className={shellClass}>
         <div className="mx-auto flex max-w-6xl min-w-0 items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8 lg:py-3.5">
           <Link href="/" className="flex min-w-0 shrink-0 items-center gap-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25 focus-visible:ring-offset-2">
-            <Image src="/logo.png" alt="I Love Resumes" width={40} height={36} className="h-9 w-9 rounded-md sm:h-10 sm:w-10" />
+            <Image
+              src="/logo.png"
+              alt="I Love Resumes"
+              width={1017}
+              height={850}
+              className="h-9 w-auto rounded-md object-contain sm:h-10"
+            />
             <Image
               src="/Iloveresumelogotext.png"
               alt="I Love Resumes"
-              width={160}
-              height={48}
+              width={506}
+              height={74}
               sizes="(max-width: 768px) 10rem, 12rem"
               quality={60}
               className="hidden h-8 w-auto max-w-[10rem] object-contain sm:block md:max-w-[12rem]"

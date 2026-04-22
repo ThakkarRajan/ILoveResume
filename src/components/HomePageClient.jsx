@@ -125,10 +125,10 @@ export default function HomePageClient() {
             <Image
               src="/logo.png"
               alt="I Love Resumes logo"
-              width={36}
-              height={36}
+              width={1017}
+              height={850}
               sizes="36px"
-              className="rounded-md"
+              className="h-9 w-auto rounded-md object-contain"
             />
             <span className="hidden text-sm font-semibold tracking-tight text-zinc-900 sm:inline">
               I Love Resumes
@@ -189,25 +189,25 @@ export default function HomePageClient() {
           <p className="mb-4 text-xs font-medium uppercase tracking-wider text-zinc-500">
             Free resume builder · Clear, ATS-friendly layout · No credit card
           </p>
-          <div className="mb-8 flex flex-col items-center gap-5 sm:mb-10 sm:flex-row sm:justify-center sm:gap-6">
+          <div className="mb-8 flex w-full min-w-0 max-w-full flex-col items-center gap-5 sm:mb-10 sm:flex-row sm:justify-center sm:gap-6">
             <Image
               src="/logo.png"
               alt="I Love Resumes app icon"
-              width={72}
-              height={72}
+              width={1017}
+              height={850}
               priority
               fetchPriority="high"
               sizes="72px"
-              className="h-[72px] w-[72px] rounded-xl border border-zinc-200 bg-white object-contain shadow-sm"
+              className="h-[72px] w-auto shrink-0 rounded-xl border border-zinc-200 bg-white object-contain shadow-sm"
             />
             <Image
               src="/Iloveresumelogotext.png"
               alt="I Love Resumes wordmark"
-              width={200}
-              height={48}
+              width={506}
+              height={74}
               sizes="(max-width: 640px) 148px, 200px"
               quality={60}
-              className="h-9 w-auto object-contain sm:h-11"
+              className="h-9 w-auto max-w-[min(100%,12rem)] object-contain sm:h-11 sm:max-w-none"
             />
           </div>
 
@@ -215,8 +215,12 @@ export default function HomePageClient() {
             Free AI resume builder for applications that demand a tight match
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-pretty text-base leading-relaxed text-zinc-600 sm:text-lg">
-            For candidates who already have a draft: paste the job description, align keywords and phrasing for recruiters
-            and ATS parsers, export a polished Word or PDF—every line stays yours to approve.
+            <span className="font-medium text-zinc-800">
+              I Love Resumes (iloveresumes.ca) is a free AI-assisted resume builder for tailoring an existing draft to each
+              job posting.
+            </span>{" "}
+            Paste the job description, align keywords and phrasing for recruiters and ATS parsers, export a polished Word
+            or PDF—every line stays yours to approve.
           </p>
 
           <div className="mx-auto mt-8 flex w-full max-w-sm flex-col items-stretch gap-3 sm:mt-10 sm:items-center">
@@ -366,6 +370,18 @@ export default function HomePageClient() {
               {
                 q: "Does it work for Canadian jobs?",
                 a: "Yes—clear, keyword-aware resumes for Canada and international applications alike.",
+              },
+              {
+                q: "What is I Love Resumes?",
+                a: "I Love Resumes (iloveresumes.ca) is a free online resume builder focused on tailoring. You sign in with Google, upload or paste a resume, add a job description, review AI-assisted wording and keyword ideas, then export Word or PDF. Core drafting and export are free; no credit card is required.",
+              },
+              {
+                q: "Who should use I Love Resumes?",
+                a: "People who already have a resume draft and want to align bullets, skills, and keywords with a specific job posting—especially in Canada—before submitting through employer portals.",
+              },
+              {
+                q: "How is I Love Resumes different from template-only resume sites?",
+                a: "The default workflow is job-driven: you paste the posting so suggestions target that role’s language and requirements, not only visual layout. Guides cover templates and formats, but tailoring to a job description is the core experience.",
               },
             ].map((item) => (
               <div key={item.q} className="py-5 sm:py-6">

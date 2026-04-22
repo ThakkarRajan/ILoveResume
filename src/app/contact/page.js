@@ -112,6 +112,11 @@ export default function Contact() {
         throw new Error('Failed to send message');
       }
     } catch (error) {
+      const detail =
+        typeof error?.text === "string"
+          ? error.text
+          : error?.message || (typeof error === "string" ? error : JSON.stringify(error));
+      console.error("[contact] EmailJS send failed:", detail, error);
       setSubmitStatus('error');
       toast.error("Couldn't send your message. Try again or use the email links on this page.");
     } finally {
@@ -197,7 +202,7 @@ export default function Contact() {
   return (
     <div className="min-h-screen bg-zinc-50 text-zinc-900">
       <Toaster 
-        position="top-right"
+        position="top-center"
         toastOptions={{
           duration: 4000,
           style: {
@@ -248,19 +253,23 @@ export default function Contact() {
                     rel={method.href.startsWith('http') ? "noopener noreferrer" : undefined}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 + index * 0.1 }}
-                    whileHover={{ y: -1 }}
-                    transition={{ duration: 0.15 }}
+                    transition={{ delay: 0.2 + index * 0.1, duration: 0.2 }}
+                    whileHover={{ y: -1, transition: { duration: 0.15 } }}
                     className="group relative rounded-xl border border-zinc-200 bg-zinc-50/50 p-4 transition-colors hover:border-zinc-300 hover:bg-white hover:shadow-sm sm:p-5"
                   >
-                    <div className="relative flex w-full flex-col items-center justify-center gap-3 text-center">
-                      <ExternalLink className="absolute right-0 top-0 h-4 w-4 text-zinc-400 transition-colors group-hover:text-zinc-700" />
-                      <div className={`w-12 h-12 sm:w-14 sm:h-14 ${method.bgColor} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                        <method.icon className={`w-6 h-6 sm:w-7 sm:h-7 ${method.iconColor}`} />
+                    <div className="relative flex w-full min-w-0 flex-col items-center justify-center gap-3 text-center">
+                      <ExternalLink className="pointer-events-none absolute right-0 top-0 h-4 w-4 text-zinc-400 transition-colors group-hover:text-zinc-700" aria-hidden />
+                      <div className={`h-12 w-12 sm:h-14 sm:w-14 ${method.bgColor} flex items-center justify-center rounded-xl transition-transform group-hover:scale-110`}>
+                        <method.icon className={`h-6 w-6 sm:h-7 sm:w-7 ${method.iconColor}`} />
                       </div>
-                      <div className="w-full overflow-hidden">
-                        <h3 className="mb-1 truncate text-sm font-semibold text-zinc-900 sm:text-base">{method.title}</h3>
-                        <p className="truncate text-xs text-zinc-600 sm:text-sm">{method.value}</p>
+                      <div className="w-full min-w-0">
+                        <h3 className="mb-1 line-clamp-2 text-sm font-semibold text-zinc-900 sm:text-base">{method.title}</h3>
+                        <p
+                          className="break-words text-xs text-zinc-600 sm:text-sm"
+                          title={method.value}
+                        >
+                          {method.value}
+                        </p>
                       </div>
                     </div>
                   </motion.a>
@@ -334,20 +343,20 @@ export default function Contact() {
             transition={{ delay: 0.2 }}
             className="lg:col-span-1"
           >
-            <div className="sticky top-24 h-fit rounded-xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-8">
-              <div className="mb-8 flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-blue-50">
-                  <Send className="h-5 w-5 text-blue-700" strokeWidth={1.75} />
+            <div className="sticky top-20 h-fit rounded-xl border border-zinc-200 bg-white p-4 shadow-sm sm:top-24 sm:p-5">
+              <div className="mb-4 flex items-center gap-2.5 sm:gap-3">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 sm:h-10 sm:w-10">
+                  <Send className="h-4 w-4 text-blue-700 sm:h-[18px] sm:w-[18px]" strokeWidth={1.75} />
                 </div>
-                <div>
-                  <h2 className="text-xl font-semibold text-zinc-900">Send a message</h2>
-                  <p className="text-sm text-zinc-600">We typically reply within one business day.</p>
+                <div className="min-w-0">
+                  <h2 className="text-lg font-semibold leading-tight text-zinc-900 sm:text-xl">Send a message</h2>
+                  <p className="text-xs text-zinc-600 sm:text-sm">Reply within ~1 business day.</p>
                 </div>
               </div>
 
-              <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
+              <form ref={formRef} onSubmit={handleSubmit} className="space-y-3.5 sm:space-y-4">
                 <div>
-                  <label className="mb-2 block text-sm font-medium text-zinc-800">
+                  <label className="mb-1 block text-xs font-medium text-zinc-800 sm:text-sm">
                     Name *
                   </label>
                   <input
@@ -355,14 +364,14 @@ export default function Contact() {
                     name="name"
                     value={unescapeHtml(formData.name)}
                     onChange={handleInputChange}
-                    className="w-full rounded-lg border border-zinc-200 bg-white px-3.5 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 transition-colors focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15"
+                    className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 transition-colors focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15"
                     placeholder="Full name"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="mb-2 block text-sm font-medium text-zinc-800">
+                  <label className="mb-1 block text-xs font-medium text-zinc-800 sm:text-sm">
                     Email *
                   </label>
                   <input
@@ -370,14 +379,14 @@ export default function Contact() {
                     name="email"
                     value={unescapeHtml(formData.email)}
                     onChange={handleInputChange}
-                    className="w-full rounded-lg border border-zinc-200 bg-white px-3.5 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 transition-colors focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15"
+                    className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 transition-colors focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15"
                     placeholder="your@email.com"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="mb-2 block text-sm font-medium text-zinc-800">
+                  <label className="mb-1 block text-xs font-medium text-zinc-800 sm:text-sm">
                     Subject *
                   </label>
                   <input
@@ -385,23 +394,23 @@ export default function Contact() {
                     name="subject"
                     value={unescapeHtml(formData.subject)}
                     onChange={handleInputChange}
-                    className="w-full rounded-lg border border-zinc-200 bg-white px-3.5 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 transition-colors focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15"
+                    className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 transition-colors focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15"
                     placeholder="What is this about?"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="mb-2 block text-sm font-medium text-zinc-800">
+                  <label className="mb-1 block text-xs font-medium text-zinc-800 sm:text-sm">
                     Message *
                   </label>
                   <textarea
                     name="message"
                     value={unescapeHtml(formData.message)}
                     onChange={handleInputChange}
-                    rows={4}
-                    className="w-full resize-none rounded-lg border border-zinc-200 bg-white px-3.5 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 transition-colors focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15"
-                    placeholder="Include details, links, or screenshots if helpful…"
+                    rows={3}
+                    className="w-full resize-none rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm leading-snug text-zinc-900 placeholder:text-zinc-400 transition-colors focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15"
+                    placeholder="Details, links, or screenshots…"
                     required
                   />
                 </div>
@@ -410,7 +419,7 @@ export default function Contact() {
                   whileTap={{ scale: 0.99 }}
                   type="submit"
                   disabled={isSubmitting}
-                  className={`flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-semibold shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 focus-visible:ring-offset-2 ${
+                  className={`flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 focus-visible:ring-offset-2 ${
                     isSubmitting
                       ? "cursor-not-allowed bg-zinc-200 text-zinc-500"
                       : submitStatus === "success"
@@ -445,14 +454,10 @@ export default function Contact() {
                 </motion.button>
               </form>
 
-              <div className="mt-6 rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3">
-                <div className="flex items-center gap-2 text-sm text-zinc-700">
-                  <Heart className="h-4 w-4 shrink-0 text-zinc-500" />
-                  <span>We typically reply within one business day.</span>
-                </div>
-              </div>
-
-
+              <p className="mt-3 flex items-center gap-1.5 text-xs leading-snug text-zinc-500">
+                <Heart className="h-3.5 w-3.5 shrink-0 text-zinc-400" aria-hidden />
+                Thanks for reaching out—we read every message.
+              </p>
             </div>
           </motion.div>
         </div>

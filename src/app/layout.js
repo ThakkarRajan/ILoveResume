@@ -18,10 +18,10 @@ export default function RootLayout({ children }) {
 
   return (
     <html lang="en-CA" className={inter.className}>
-      <body className="min-h-dvh antialiased bg-zinc-50 text-zinc-900">
+      <body className="min-h-dvh min-w-0 overflow-x-clip antialiased bg-zinc-50 text-zinc-900">
         <RootSchema />
         <NavbarWrapper />
-        <main className="min-h-0">{children}</main>
+        <main className="min-h-0 min-w-0">{children}</main>
         {gaId ? (
           <>
             <Script src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`} strategy="lazyOnload" />

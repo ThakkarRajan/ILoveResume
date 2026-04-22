@@ -3,8 +3,16 @@ import { blogPosts } from "../../../data/blog-posts";
 import { postContent } from "../../../data/blog-content";
 import SiteLegalLinks from "../../../components/legal/SiteLegalLinks";
 import JsonLd from "../../../components/seo/JsonLd";
+import BlogPostHero from "../../../components/blog/BlogPostHero";
+import BlogCasualAside from "../../../components/blog/BlogCasualAside";
+import BlogSquiggle from "../../../components/blog/BlogSquiggle";
+import { getBlogCover } from "../../../data/blog-visuals";
 import { ArrowLeft, Calendar } from "lucide-react";
 import { pageMeta, SITE_NAME, SITE_URL } from "../../../config/site";
+
+export function generateStaticParams() {
+  return blogPosts.map((post) => ({ slug: post.slug }));
+}
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
@@ -20,6 +28,9 @@ export async function generateMetadata({ params }) {
     ogType: "article",
   });
 
+  const cover = getBlogCover(post.slug);
+  const coverAlt = post.coverImageAlt ?? `${post.title} — article cover`;
+
   return {
     ...base,
     keywords: post.tags?.join(", "),
@@ -27,6 +38,11 @@ export async function generateMetadata({ params }) {
       ...base.openGraph,
       publishedTime: post.date,
       modifiedTime: post.date,
+      images: [{ url: cover.src, width: 1600, height: 1067, alt: coverAlt }],
+    },
+    twitter: {
+      ...base.twitter,
+      images: [cover.src],
     },
   };
 }
@@ -50,7 +66,9 @@ export default async function BlogPostPage({ params }) {
   }
 
   const postUrl = `${SITE_URL}/blog/${post.slug}`;
-  const imageUrl = `${SITE_URL}/logo.png`;
+  const cover = getBlogCover(post.slug);
+  const coverAlt = post.coverImageAlt ?? `${post.title} — article cover`;
+  const orgLogoUrl = `${SITE_URL}/logo.png`;
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -65,9 +83,9 @@ export default async function BlogPostPage({ params }) {
         publisher: {
           "@type": "Organization",
           name: SITE_NAME,
-          logo: { "@type": "ImageObject", url: imageUrl },
+          logo: { "@type": "ImageObject", url: orgLogoUrl },
         },
-        image: imageUrl,
+        image: cover.src,
         mainEntityOfPage: { "@type": "WebPage", "@id": postUrl },
         url: postUrl,
         ...(post.tags?.length ? { keywords: post.tags.join(", ") } : {}),
@@ -84,9 +102,13 @@ export default async function BlogPostPage({ params }) {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-50 text-zinc-900">
+    <div className="min-h-screen bg-gradient-to-b from-violet-50/40 via-zinc-50 to-zinc-50 text-zinc-900">
       <JsonLd data={structuredData} />
-      <article className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8" itemScope itemType="https://schema.org/BlogPosting">
+      <article
+        className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8"
+        itemScope
+        itemType="https://schema.org/BlogPosting"
+      >
         <Link
           href="/blog"
           className="mb-8 inline-flex items-center gap-2 text-sm font-medium text-zinc-600 transition-colors hover:text-zinc-900"
@@ -95,9 +117,13 @@ export default async function BlogPostPage({ params }) {
           Back to blog
         </Link>
 
-        <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-8 lg:p-10">
-          <div className="mb-5 flex flex-wrap items-center gap-2">
-            <span className="rounded-md border border-blue-200 bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-800">{post.category}</span>
+        <BlogPostHero slug={post.slug} alt={coverAlt} />
+
+        <div className="rounded-2xl border border-zinc-200/90 bg-white/95 p-6 shadow-[var(--shadow-card)] backdrop-blur-[2px] sm:p-8 lg:p-10">
+          <div className="mb-4 flex flex-wrap items-center gap-2">
+            <span className="rounded-md border border-blue-200 bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-800">
+              {post.category}
+            </span>
             <time dateTime={post.date} itemProp="datePublished" className="flex items-center gap-1 text-sm text-zinc-500">
               <Calendar className="h-3.5 w-3.5" strokeWidth={1.75} />
               {post.date}
@@ -105,12 +131,21 @@ export default async function BlogPostPage({ params }) {
             <span className="text-sm text-zinc-500">{post.readTime}</span>
           </div>
 
-          <h1 className="mb-6 text-2xl font-semibold tracking-tight text-zinc-900 sm:text-3xl lg:text-[2rem] lg:leading-snug" itemProp="headline">
+          <h1
+            className="text-balance text-2xl font-semibold tracking-tight text-zinc-900 sm:text-3xl lg:text-[2rem] lg:leading-snug"
+            itemProp="headline"
+          >
             {post.title}
           </h1>
 
+          <div className="mx-auto mt-5 max-w-md">
+            <BlogSquiggle className="h-3 w-full text-violet-400" gradientId={`blog-sq-${post.slug}`} />
+          </div>
+
+          <BlogCasualAside slug={post.slug} category={post.category} />
+
           <div
-            className="blog-content text-zinc-600 [&_h2]:mb-3 [&_h2]:mt-8 [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-zinc-900 [&_h3]:mb-2 [&_h3]:mt-6 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-zinc-900 [&_p]:mb-4 [&_p]:leading-relaxed [&_ol]:mb-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_ul]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_li]:mb-1 [&_a]:font-medium [&_a]:text-blue-700 [&_a]:underline [&_a]:underline-offset-2 hover:[&_a]:text-blue-800"
+            className="blog-content"
             itemProp="articleBody"
             dangerouslySetInnerHTML={{ __html: content.content.trim() }}
           />

@@ -141,7 +141,7 @@ const HighlightsEditor = ({ highlights = [], onChange, placeholder = "Add a bull
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => handleRemoveHighlight(index)}
-              className="mt-1 shrink-0 rounded-md p-2 text-red-600 transition-colors hover:bg-red-50 hover:text-red-700"
+              className="mt-1 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-red-600 transition-colors hover:bg-red-50 hover:text-red-700"
               title="Remove bullet"
             >
               <X className="h-4 w-4" />
@@ -172,9 +172,9 @@ function ResultLoadingScreen({ title, subtitle, icon: Icon = FileText }) {
         <Image
           src="/logo.png"
           alt=""
-          width={52}
-          height={52}
-          className="mx-auto h-[52px] w-[52px] rounded-xl border border-zinc-200 bg-white object-contain"
+          width={1017}
+          height={850}
+          className="mx-auto h-[52px] w-auto max-w-[3.25rem] rounded-xl border border-zinc-200 bg-white object-contain"
           priority
         />
         <div className="relative mx-auto mt-8 h-[4.5rem] w-[4.5rem]">
@@ -680,8 +680,8 @@ export default function ResultPage() {
           <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-xl border border-zinc-200 bg-white shadow-sm">
             <Edit3 className="h-7 w-7 text-blue-700" strokeWidth={1.75} />
           </div>
-          <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 md:text-4xl">Resume editor</h1>
-          <p className="mt-2 text-sm text-zinc-600 md:text-base">
+          <h1 className="text-balance text-2xl font-semibold tracking-tight text-zinc-900 sm:text-3xl md:text-4xl">Resume editor</h1>
+          <p className="mt-2 text-pretty text-sm text-zinc-600 md:text-base">
             Refine your tailored draft before export—whether AI suggested it or you started from the sample resume.
           </p>
           
@@ -741,7 +741,7 @@ export default function ResultPage() {
               transition={{ delay: 0.2 }}
               className="min-w-0"
             >
-              <div className="sticky top-24 rounded-xl border border-zinc-200 bg-white p-5 shadow-sm lg:top-8">
+              <div className="sticky top-20 z-10 rounded-xl border border-zinc-200 bg-white p-5 shadow-sm sm:top-24 lg:top-8">
                 <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">Sections</h3>
                 <div className="space-y-1">
                   {sections.map((section) => {
@@ -752,7 +752,7 @@ export default function ResultPage() {
                         type="button"
                         whileTap={{ scale: 0.99 }}
                         onClick={() => setActiveSection(section.id)}
-                        className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition-colors ${
+                        className={`flex min-h-[44px] w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition-colors ${
                           activeSection === section.id
                             ? "bg-zinc-900 font-medium text-white shadow-sm"
                             : "text-zinc-700 hover:bg-zinc-100"
@@ -824,7 +824,7 @@ export default function ResultPage() {
               transition={{ delay: 0.3 }}
               className="min-w-0"
             >
-              <div className="responsive-card min-w-0 rounded-xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-8">
+              <div className="min-w-0 max-w-full rounded-xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-8">
                 <AnimatePresence mode="wait">
                   {/* Personal Info Section */}
                   {activeSection === "personal" && (

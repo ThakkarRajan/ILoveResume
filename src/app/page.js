@@ -3,9 +3,9 @@ import JsonLd from "../components/seo/JsonLd";
 import { pageMeta } from "../config/site";
 
 export const metadata = pageMeta({
-  title: "Free AI resume builder — tailor your resume to every job description",
+  title: "Free resume builder & AI resume — templates, skills, ATS export",
   description:
-    "Free resume builder: paste your resume and the job description, refine suggestions for clarity and keyword fit, then export Word or PDF for typical job portals—no credit card.",
+    "I Love Resumes (iloveresumes.ca): free resume builder and AI resume help—paste your resume and job description, tighten skills and keywords for ATS screening, then export Word or PDF. Templates, examples, and tailoring guides—no credit card.",
   path: "/",
 });
 
@@ -59,6 +59,30 @@ const homeFaqSchema = {
       acceptedAnswer: {
         "@type": "Answer",
         text: "Yes—clear, keyword-aware resumes for Canada and international applications alike.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "What is I Love Resumes?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "I Love Resumes (iloveresumes.ca) is a free online resume builder focused on tailoring. You sign in with Google, upload or paste a resume, add a job description, review AI-assisted wording and keyword ideas, then export Word or PDF. Core drafting and export are free and no credit card is required.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Who should use I Love Resumes?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "People who already have a resume draft and want to align bullets, skills, and keywords with a specific job posting—especially in Canada—before submitting through employer portals.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "How is I Love Resumes different from template-only resume sites?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "The default workflow is job-driven: you paste the posting so suggestions target that role’s language and requirements, not only visual layout. Guides cover templates and formats, but tailoring to a job description is the core experience.",
       },
     },
   ],
