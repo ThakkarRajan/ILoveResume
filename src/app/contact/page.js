@@ -213,13 +213,13 @@ export default function Contact() {
         }}
       />
       
-      <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
-        <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }} className="mb-12 text-center sm:mb-16">
+      <div className="mx-auto max-w-6xl px-page py-8 sm:py-14">
+        <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }} className="mb-10 text-center sm:mb-16">
           <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-xl border border-zinc-200 bg-white shadow-sm sm:h-14 sm:w-14">
             <MessageSquare className="h-6 w-6 text-blue-600 sm:h-7 sm:w-7" strokeWidth={1.75} />
           </div>
-          <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl">Contact us</h1>
-          <p className="mx-auto mt-3 max-w-2xl text-base text-zinc-600 sm:text-lg">
+          <h1 className="text-2xl font-semibold leading-tight tracking-tight text-zinc-900 min-[400px]:text-3xl sm:text-4xl">Contact us</h1>
+          <p className="mx-auto mt-3 max-w-2xl px-0.5 text-base text-zinc-600 sm:px-0 sm:text-lg">
             Product questions, partnerships, or support—we read every message.
           </p>
         </motion.div>
@@ -233,18 +233,18 @@ export default function Contact() {
             className="lg:col-span-2 space-y-6"
           >
             {/* Contact Methods */}
-            <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-8">
-              <div className="mb-6 flex items-center gap-3 sm:mb-8">
+            <div className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm sm:p-8">
+              <div className="mb-5 flex min-w-0 items-start gap-3 sm:mb-8 sm:items-center">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 sm:h-12 sm:w-12">
                   <MessageSquare className="h-5 w-5 text-blue-700 sm:h-6 sm:w-6" strokeWidth={1.75} />
                 </div>
-                <div>
+                <div className="min-w-0 text-left">
                   <h2 className="text-lg font-semibold text-zinc-900 sm:text-xl">Reach the team</h2>
                   <p className="text-sm text-zinc-600 sm:text-base">Choose the channel that works best for you.</p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
                 {contactMethods.map((method, index) => (
                   <motion.a
                     key={method.title}
@@ -277,7 +277,7 @@ export default function Contact() {
               </div>
             </div>
 
-            <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-8">
+            <div className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm sm:p-8">
               <h2 className="text-lg font-semibold text-zinc-900 sm:text-xl">Legal &amp; compliance</h2>
               <p className="mt-2 text-sm leading-relaxed text-zinc-600">
                 For privacy requests, compliance correspondence, and formal notices—not general product feedback (use the
@@ -305,13 +305,13 @@ export default function Contact() {
             </div>
 
             {/* Features Section */}
-            <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-8">
-              <div className="mb-8 flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-zinc-100">
+            <div className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm sm:p-8">
+              <div className="mb-6 flex min-w-0 items-start gap-3 sm:mb-8 sm:items-center">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-zinc-100">
                   <Sparkles className="h-5 w-5 text-zinc-700" strokeWidth={1.75} />
                 </div>
-                <div>
-                  <h2 className="text-xl font-semibold text-zinc-900">What we focus on</h2>
+                <div className="min-w-0 text-left">
+                  <h2 className="text-lg font-semibold text-zinc-900 sm:text-xl">What we focus on</h2>
                   <p className="text-sm text-zinc-600">Straightforward tooling for serious job applications.</p>
                 </div>
               </div>

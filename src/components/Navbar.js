@@ -71,7 +71,7 @@ export default function Navbar() {
     return (
       <>
         <motion.nav initial={{ y: -8, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.2 }} className={shellClass}>
-          <div className="mx-auto flex max-w-6xl min-w-0 items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8 lg:py-3.5">
+          <div className="mx-auto flex max-w-6xl min-w-0 items-center justify-between gap-2 py-3 sm:gap-3 lg:py-3.5 px-page">
             <Link href="/dashboard" className="flex min-w-0 shrink-0 items-center gap-2 sm:gap-3 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25 focus-visible:ring-offset-2">
               <Image
                 src="/logo.png"
@@ -293,7 +293,7 @@ export default function Navbar() {
   return (
     <>
       <motion.nav initial={{ y: -8, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.2 }} className={shellClass}>
-        <div className="mx-auto flex max-w-6xl min-w-0 items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8 lg:py-3.5">
+        <div className="mx-auto flex max-w-6xl min-w-0 items-center justify-between gap-2 py-3 sm:gap-3 lg:py-3.5 px-page">
           <Link href="/" className="flex min-w-0 shrink-0 items-center gap-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25 focus-visible:ring-offset-2">
             <Image
               src="/logo.png"

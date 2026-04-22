@@ -15,7 +15,26 @@
   --shadow-card: 0 1px 2px rgb(0 0 0 / 0.04), 0 1px 3px rgb(0 0 0 / 0.06);
   --shadow-card-hover: 0 4px 6px -1px rgb(0 0 0 / 0.06), 0 2px 4px -2px rgb(0 0 0 / 0.06);
   --section-y: clamp(3rem, 6vw, 5rem);
-  --container-px: clamp(1rem, 4vw, 1.5rem);
+  /* Slightly tighter minimum on 320px phones; still caps at 1.5rem */
+  --container-px: clamp(0.75rem, 4vw, 1.5rem);
+}
+
+/* Page gutters: min 12px, respect safe area on notched devices. Pair with sm:/lg: max-width sections. */
+.px-page {
+  padding-left: max(0.75rem, env(safe-area-inset-left, 0px));
+  padding-right: max(0.75rem, env(safe-area-inset-right, 0px));
+}
+@media (min-width: 640px) {
+  .px-page {
+    padding-left: max(1.5rem, env(safe-area-inset-left, 0px));
+    padding-right: max(1.5rem, env(safe-area-inset-right, 0px));
+  }
+}
+@media (min-width: 1024px) {
+  .px-page {
+    padding-left: max(2rem, env(safe-area-inset-left, 0px));
+    padding-right: max(2rem, env(safe-area-inset-right, 0px));
+  }
 }
 
 @theme inline {

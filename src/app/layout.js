@@ -5,6 +5,13 @@ import RootSchema from "../components/seo/RootSchema";
 import { rootMetadata } from "../config/site";
 import "./globals.css";
 
+/** Enables env(safe-area-inset-*) for notched devices; use with .px-page gutters. */
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
+
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",

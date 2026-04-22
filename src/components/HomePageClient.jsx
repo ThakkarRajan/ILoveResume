@@ -117,7 +117,7 @@ export default function HomePageClient() {
   return (
     <div className="min-h-screen bg-zinc-50 text-zinc-900">
       <header className="fixed top-0 left-0 right-0 z-40 border-b border-zinc-200/80 bg-white/90 backdrop-blur-md supports-[backdrop-filter]:bg-white/75">
-        <nav className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8 lg:py-3.5">
+        <nav className="mx-auto flex max-w-6xl items-center justify-between gap-2 py-3 sm:gap-4 lg:py-3.5 px-page">
           <Link
             href="/"
             className="flex min-h-[44px] min-w-[44px] shrink-0 items-center gap-2.5 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
@@ -162,7 +162,7 @@ export default function HomePageClient() {
           </button>
         </nav>
         {mobileMenuOpen && (
-          <div className="border-t border-zinc-200 bg-white px-4 py-3 md:hidden">
+          <div className="border-t border-zinc-200 bg-white py-3 md:hidden px-page">
             <div className="flex flex-col gap-0.5">
               <Link href="/resume-builder" onClick={() => setMobileMenuOpen(false)} className={`${navLink} rounded-lg`}>
                 Guides
@@ -184,7 +184,7 @@ export default function HomePageClient() {
         )}
       </header>
 
-      <div className="mx-auto max-w-6xl px-4 pb-16 pt-28 sm:px-6 sm:pb-20 sm:pt-32 lg:px-8 lg:pb-24 lg:pt-36">
+      <div className="mx-auto max-w-6xl px-page pb-14 pt-24 sm:pb-20 sm:pt-32 lg:pb-24 lg:pt-36">
         <section className="mx-auto max-w-3xl text-center">
           <p className="mb-4 text-xs font-medium uppercase tracking-wider text-zinc-500">
             Free resume builder · Clear, ATS-friendly layout · No credit card
@@ -211,10 +211,10 @@ export default function HomePageClient() {
             />
           </div>
 
-          <h1 className="text-balance text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl md:text-[2.5rem] md:leading-[1.15]">
+          <h1 className="text-balance text-2xl font-semibold leading-tight tracking-tight text-zinc-900 min-[400px]:text-3xl sm:text-4xl md:text-[2.5rem] md:leading-[1.15]">
             Free AI resume builder for applications that demand a tight match
           </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-pretty text-base leading-relaxed text-zinc-600 sm:text-lg">
+          <p className="mx-auto mt-5 max-w-2xl text-pretty px-0.5 text-base leading-relaxed text-zinc-600 sm:px-0 sm:text-lg">
             <span className="font-medium text-zinc-800">
               I Love Resumes (iloveresumes.ca) is a free AI-assisted resume builder for tailoring an existing draft to each
               job posting.
@@ -242,7 +242,7 @@ export default function HomePageClient() {
                 }
               }}
               disabled={!legalConsent}
-              className="inline-flex min-h-[48px] w-full items-center justify-center gap-2.5 rounded-lg border border-zinc-300 bg-white px-5 py-3 text-sm font-semibold text-zinc-900 shadow-sm transition-colors hover:border-zinc-400 hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-50 enabled:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+              className="inline-flex min-h-[48px] w-full min-w-0 items-center justify-center gap-2 rounded-lg border border-zinc-300 bg-white px-3 py-3 text-sm font-semibold text-zinc-900 shadow-sm transition-colors hover:border-zinc-400 hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-50 enabled:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 min-[380px]:gap-2.5 min-[380px]:px-5 sm:w-auto"
             >
               <Image src="/google-logo.svg" alt="" width={18} height={18} className="h-[18px] w-[18px]" />
               Sign in with Google
@@ -251,11 +251,11 @@ export default function HomePageClient() {
             <p className="text-center text-xs text-zinc-500">Free · No credit card required</p>
           </div>
 
-          <ul className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 border-t border-zinc-200/80 pt-10 text-sm text-zinc-600">
+          <ul className="mt-10 flex flex-col items-center justify-center gap-2.5 border-t border-zinc-200/80 pt-10 text-sm text-zinc-600 min-[400px]:flex-row min-[400px]:flex-wrap min-[400px]:gap-x-6 min-[400px]:gap-y-3">
             {trustItems.map(({ icon: Icon, label }) => (
-              <li key={label} className="flex items-center gap-2">
+              <li key={label} className="flex w-full max-w-sm items-center justify-center gap-2 min-[400px]:w-auto min-[400px]:max-w-none">
                 <Icon className="h-4 w-4 shrink-0 text-blue-600" strokeWidth={1.75} aria-hidden />
-                <span>{label}</span>
+                <span className="text-center min-[400px]:text-left">{label}</span>
               </li>
             ))}
           </ul>
@@ -298,17 +298,17 @@ export default function HomePageClient() {
               <li key={href}>
                 <Link
                   href={href}
-                  className="flex min-h-[48px] items-center justify-between gap-3 rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm font-medium text-zinc-900 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25"
+                  className="flex min-h-[48px] items-start justify-between gap-2 rounded-xl border border-zinc-200 bg-white px-3 py-3 text-sm font-medium text-zinc-900 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25 sm:items-center sm:gap-3 sm:px-4"
                 >
-                  {label}
-                  <ArrowRight className="h-4 w-4 shrink-0 text-zinc-400" aria-hidden />
+                  <span className="min-w-0 flex-1 break-words text-left leading-snug">{label}</span>
+                  <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 self-center text-zinc-400 sm:mt-0" aria-hidden />
                 </Link>
               </li>
             ))}
             <li>
               <Link
                 href="/resume-builder"
-                className="flex min-h-[48px] items-center justify-between gap-3 rounded-xl border border-zinc-200 bg-zinc-900 px-4 py-3 text-sm font-medium text-white shadow-sm transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30"
+                className="flex min-h-[48px] items-center justify-between gap-2 rounded-xl border border-zinc-200 bg-zinc-900 px-3 py-3 text-sm font-medium text-white shadow-sm transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 sm:gap-3 sm:px-4"
               >
                 All guides
                 <ArrowRight className="h-4 w-4 shrink-0 opacity-80" aria-hidden />
@@ -329,7 +329,7 @@ export default function HomePageClient() {
             {features.map((feature) => (
               <div
                 key={feature.title}
-                className="flex flex-col rounded-xl border border-zinc-200 bg-white p-5 shadow-[var(--shadow-card)] transition-shadow hover:shadow-[var(--shadow-card-hover)]"
+                className="flex flex-col rounded-xl border border-zinc-200 bg-white p-4 shadow-[var(--shadow-card)] transition-shadow hover:shadow-[var(--shadow-card-hover)] min-[400px]:p-5"
               >
                 <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-blue-700">
                   <feature.icon className="h-5 w-5" strokeWidth={1.75} aria-hidden />
@@ -345,7 +345,7 @@ export default function HomePageClient() {
           <div className="mx-auto mb-8 max-w-2xl text-center sm:mb-10">
             <h2 className="text-2xl font-semibold tracking-tight text-zinc-900 sm:text-3xl">Frequently asked questions</h2>
           </div>
-          <div className="mx-auto max-w-3xl divide-y divide-zinc-200 rounded-xl border border-zinc-200 bg-white px-5 py-1 shadow-sm sm:px-8">
+          <div className="mx-auto max-w-3xl divide-y divide-zinc-200 rounded-xl border border-zinc-200 bg-white px-3 py-1 shadow-sm sm:px-8">
             {[
               {
                 q: "Is I Love Resumes really free?",

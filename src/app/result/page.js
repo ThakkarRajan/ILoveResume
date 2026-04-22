@@ -670,7 +670,7 @@ export default function ResultPage() {
         }}
       />
 
-      <div className="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="relative z-10 mx-auto max-w-7xl px-page py-6 sm:py-8">
         <motion.div
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -680,8 +680,10 @@ export default function ResultPage() {
           <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-xl border border-zinc-200 bg-white shadow-sm">
             <Edit3 className="h-7 w-7 text-blue-700" strokeWidth={1.75} />
           </div>
-          <h1 className="text-balance text-2xl font-semibold tracking-tight text-zinc-900 sm:text-3xl md:text-4xl">Resume editor</h1>
-          <p className="mt-2 text-pretty text-sm text-zinc-600 md:text-base">
+          <h1 className="text-balance px-0.5 text-xl font-semibold leading-tight tracking-tight text-zinc-900 min-[400px]:text-2xl sm:px-0 sm:text-3xl md:text-4xl">
+            Resume editor
+          </h1>
+          <p className="mt-2 text-pretty px-0.5 text-sm text-zinc-600 sm:px-0 md:text-base">
             Refine your tailored draft before export—whether AI suggested it or you started from the sample resume.
           </p>
           
@@ -741,7 +743,7 @@ export default function ResultPage() {
               transition={{ delay: 0.2 }}
               className="min-w-0"
             >
-              <div className="sticky top-20 z-10 rounded-xl border border-zinc-200 bg-white p-5 shadow-sm sm:top-24 lg:top-8">
+              <div className="sticky top-20 z-10 rounded-xl border border-zinc-200 bg-white p-3 shadow-sm min-[400px]:p-5 sm:top-24 lg:top-8">
                 <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">Sections</h3>
                 <div className="space-y-1">
                   {sections.map((section) => {
@@ -824,7 +826,7 @@ export default function ResultPage() {
               transition={{ delay: 0.3 }}
               className="min-w-0"
             >
-              <div className="min-w-0 max-w-full rounded-xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-8">
+              <div className="min-w-0 max-w-full rounded-xl border border-zinc-200 bg-white p-4 shadow-sm sm:p-8">
                 <AnimatePresence mode="wait">
                   {/* Personal Info Section */}
                   {activeSection === "personal" && (

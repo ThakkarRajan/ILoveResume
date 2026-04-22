@@ -905,7 +905,7 @@ export default function Dashboard() {
         <Plus className="h-6 w-6 transition-transform group-hover:rotate-45" strokeWidth={1.75} />
       </motion.button>
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+      <div className="mx-auto max-w-7xl px-page py-5 sm:py-8">
         {/* Network Status Warning */}
         {!isOnline && (
           <motion.div
@@ -935,22 +935,22 @@ export default function Dashboard() {
             Add a job description and your resume to generate a tailored draft—or open the editor with sample sections you can
             replace in minutes.
           </p>
-          <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:mt-8 sm:flex-row sm:gap-4">
+          <div className="mt-6 flex w-full max-w-md flex-col items-stretch justify-center gap-2 min-[420px]:max-w-none min-[420px]:flex-row min-[420px]:items-center min-[420px]:gap-4 sm:mt-8">
             <button
               type="button"
               onClick={openScratchEditor}
-              className="inline-flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-800 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25"
+              className="inline-flex min-h-[44px] w-full min-w-0 items-center justify-center gap-2 rounded-lg border border-zinc-200 bg-white px-3 py-2.5 text-sm font-medium text-zinc-800 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25 min-[420px]:w-auto min-[420px]:px-4"
             >
-              <Edit3 className="h-4 w-4 text-blue-700" strokeWidth={1.75} />
-              Start from a sample resume
+              <Edit3 className="h-4 w-4 shrink-0 text-blue-700" strokeWidth={1.75} />
+              <span className="text-center">Start from a sample resume</span>
             </button>
             {recentResults.length > 0 && (
               <button
                 type="button"
                 onClick={() => setShowRecentResults(true)}
-                className="inline-flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-800 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25"
+                className="inline-flex min-h-[44px] w-full min-w-0 items-center justify-center gap-2 rounded-lg border border-zinc-200 bg-white px-3 py-2.5 text-sm font-medium text-zinc-800 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25 min-[420px]:w-auto min-[420px]:px-4"
               >
-                <Clock className="h-4 w-4 text-zinc-500" strokeWidth={1.75} />
+                <Clock className="h-4 w-4 shrink-0 text-zinc-500" strokeWidth={1.75} />
                 Recent draft
               </button>
             )}
@@ -965,10 +965,10 @@ export default function Dashboard() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="min-w-0 max-w-full rounded-xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-8"
+              className="min-w-0 max-w-full rounded-xl border border-zinc-200 bg-white p-4 shadow-sm sm:p-8"
             >
-              <div className="mb-4 flex items-start justify-between gap-3 sm:mb-6 sm:items-center">
-                <div className="flex min-w-0 flex-1 items-start gap-3 sm:items-center sm:gap-3 sm:mr-4">
+              <div className="mb-4 flex items-start justify-between gap-2 sm:mb-6 sm:gap-3 sm:items-center">
+                <div className="flex min-w-0 flex-1 items-start gap-2.5 sm:items-center sm:gap-3 sm:mr-4">
                   <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-blue-100 sm:mt-0 sm:h-12 sm:w-12">
                     <Briefcase className="h-5 w-5 text-blue-600 sm:h-6 sm:w-6" />
                   </div>
@@ -1016,9 +1016,9 @@ export default function Dashboard() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="min-w-0 max-w-full rounded-xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-8"
+              className="min-w-0 max-w-full rounded-xl border border-zinc-200 bg-white p-4 shadow-sm sm:p-8"
             >
-              <div className="mb-6 flex items-start gap-3 sm:items-center">
+              <div className="mb-5 flex items-start gap-2.5 sm:mb-6 sm:items-center sm:gap-3">
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-green-100">
                   <Upload className="h-6 w-6 text-green-600" />
                 </div>
@@ -1168,9 +1168,9 @@ export default function Dashboard() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 }}
-              className="min-w-0 max-w-full rounded-xl border border-zinc-200 bg-white p-6 shadow-sm"
+              className="min-w-0 max-w-full rounded-xl border border-zinc-200 bg-white p-4 shadow-sm sm:p-6"
             >
-              <div className="mb-6 flex items-start gap-3 sm:items-center">
+              <div className="mb-5 flex items-start gap-2.5 sm:mb-6 sm:items-center sm:gap-3">
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-orange-100">
                   <FileText className="h-6 w-6 text-orange-600" />
                 </div>

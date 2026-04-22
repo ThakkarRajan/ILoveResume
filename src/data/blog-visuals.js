@@ -1,59 +1,57 @@
 /**
  * Blog hero imagery — Unsplash (https://unsplash.com/license): free to use; we credit photographers on-page.
  * Add new rows here (never hotlink without license). `next.config` must allow `images.unsplash.com`.
+ *
+ * Do not build `unsplash.com/photos/...` URLs from `images.unsplash.com/photo-…` filenames — those paths 404.
+ * Per-photo page URLs change format over time; attribution via photographer profile is stable and license-compliant.
  */
 const UTM = "utm_source=iloveresumes&utm_medium=referral";
+const site = `https://unsplash.com?${UTM}`;
 
 export const BLOG_STOCK_COVERS = [
   {
     src: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1600&q=82",
     photographer: "Helloquence",
     photographerUrl: `https://unsplash.com/@helloquence?${UTM}`,
-    photoPageUrl: `https://unsplash.com/photos/1454165804606-c3d57bc86b40?${UTM}`,
   },
   {
     src: "https://images.unsplash.com/photo-1523240795612-9a054b055db1?auto=format&fit=crop&w=1600&q=82",
     photographer: "rawpixel",
     photographerUrl: `https://unsplash.com/@rawpixel?${UTM}`,
-    photoPageUrl: `https://unsplash.com/photos/1523240795612-9a054b055db1?${UTM}`,
   },
   {
     src: "https://images.unsplash.com/photo-1497032628192-86f99bc76fbc?auto=format&fit=crop&w=1600&q=82",
     photographer: "Brooke Cagle",
     photographerUrl: `https://unsplash.com/@brookecagle?${UTM}`,
-    photoPageUrl: `https://unsplash.com/photos/1497032628192-86f99bc76fbc?${UTM}`,
   },
   {
     src: "https://images.unsplash.com/photo-1517245385007-929edfb5cdfe?auto=format&fit=crop&w=1600&q=82",
     photographer: "Austin Distel",
     photographerUrl: `https://unsplash.com/@austindistel?${UTM}`,
-    photoPageUrl: `https://unsplash.com/photos/1517245385007-929edfb5cdfe?${UTM}`,
   },
   {
     src: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1600&q=82",
     photographer: "Campaign Creators",
     photographerUrl: `https://unsplash.com/@campaign_creators?${UTM}`,
-    photoPageUrl: `https://unsplash.com/photos/1542744173-8e7e53415bb0?${UTM}`,
   },
   {
     src: "https://images.unsplash.com/photo-1521737711867-e59b388dfccc?auto=format&fit=crop&w=1600&q=82",
     photographer: "LinkedIn Sales Solutions",
     photographerUrl: `https://unsplash.com/@linkedinsalesnavigator?${UTM}`,
-    photoPageUrl: `https://unsplash.com/photos/1521737711867-e59b388dfccc?${UTM}`,
   },
   {
     src: "https://images.unsplash.com/photo-1501504908252-473d47d871b1?auto=format&fit=crop&w=1600&q=82",
     photographer: "Carl Heyerdahl",
     photographerUrl: `https://unsplash.com/@carlheyerdahl?${UTM}`,
-    photoPageUrl: `https://unsplash.com/photos/1501504908252-473d47d871b1?${UTM}`,
   },
   {
     src: "https://images.unsplash.com/photo-1434030216611-0b793fd541d3?auto=format&fit=crop&w=1600&q=82",
     photographer: "Matthew Guay",
     photographerUrl: `https://unsplash.com/@matthewjoseph?${UTM}`,
-    photoPageUrl: `https://unsplash.com/photos/1434030216611-0b793fd541d3?${UTM}`,
   },
 ];
+
+export const unsplashSiteUrl = site;
 
 const CASUAL_BY_CATEGORY = {
   Templates: [
