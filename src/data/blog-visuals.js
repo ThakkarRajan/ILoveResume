@@ -1,57 +1,74 @@
 /**
- * Blog hero imagery — Unsplash (https://unsplash.com/license): free to use; we credit photographers on-page.
- * Add new rows here (never hotlink without license). `next.config` must allow `images.unsplash.com`.
+ * Blog hero imagery — Pexels (https://www.pexels.com/license/): free to use; attribution appreciated.
+ * `next.config` must allow `images.pexels.com` for next/image.
  *
- * Do not build `unsplash.com/photos/...` URLs from `images.unsplash.com/photo-…` filenames — those paths 404.
- * Per-photo page URLs change format over time; attribution via photographer profile is stable and license-compliant.
+ * We use Pexels CDN paths verified to return 200. (Unsplash hotlinks were intermittently 404ing via Next’s image optimizer.)
  */
 const UTM = "utm_source=iloveresumes&utm_medium=referral";
-const site = `https://unsplash.com?${UTM}`;
 
-export const BLOG_STOCK_COVERS = [
-  {
-    src: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1600&q=82",
-    photographer: "Helloquence",
-    photographerUrl: `https://unsplash.com/@helloquence?${UTM}`,
-  },
-  {
-    src: "https://images.unsplash.com/photo-1523240795612-9a054b055db1?auto=format&fit=crop&w=1600&q=82",
-    photographer: "rawpixel",
-    photographerUrl: `https://unsplash.com/@rawpixel?${UTM}`,
-  },
-  {
-    src: "https://images.unsplash.com/photo-1497032628192-86f99bc76fbc?auto=format&fit=crop&w=1600&q=82",
-    photographer: "Brooke Cagle",
-    photographerUrl: `https://unsplash.com/@brookecagle?${UTM}`,
-  },
-  {
-    src: "https://images.unsplash.com/photo-1517245385007-929edfb5cdfe?auto=format&fit=crop&w=1600&q=82",
-    photographer: "Austin Distel",
-    photographerUrl: `https://unsplash.com/@austindistel?${UTM}`,
-  },
-  {
-    src: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1600&q=82",
-    photographer: "Campaign Creators",
-    photographerUrl: `https://unsplash.com/@campaign_creators?${UTM}`,
-  },
-  {
-    src: "https://images.unsplash.com/photo-1521737711867-e59b388dfccc?auto=format&fit=crop&w=1600&q=82",
-    photographer: "LinkedIn Sales Solutions",
-    photographerUrl: `https://unsplash.com/@linkedinsalesnavigator?${UTM}`,
-  },
-  {
-    src: "https://images.unsplash.com/photo-1501504908252-473d47d871b1?auto=format&fit=crop&w=1600&q=82",
-    photographer: "Carl Heyerdahl",
-    photographerUrl: `https://unsplash.com/@carlheyerdahl?${UTM}`,
-  },
-  {
-    src: "https://images.unsplash.com/photo-1434030216611-0b793fd541d3?auto=format&fit=crop&w=1600&q=82",
-    photographer: "Matthew Guay",
-    photographerUrl: `https://unsplash.com/@matthewjoseph?${UTM}`,
-  },
-];
+export const pexelsSiteUrl = `https://www.pexels.com?${UTM}`;
+export const pexelsLicenseUrl = "https://www.pexels.com/license/";
 
-export const unsplashSiteUrl = site;
+const PEXELS_SIZE = "auto=compress&cs=tinysrgb&w=1600&h=1000&dpr=1";
+
+/** Pexels CDN url — IDs verified (jpeg 200) on their image host. */
+export function pexelsPhotoSrc(id) {
+  return `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?${PEXELS_SIZE}`;
+}
+
+/**
+ * One Pexels photo id per blog slug so each article has a unique cover.
+ * Add a row when you add a post in `blog-posts.js` (keep slugs in sync).
+ */
+const BLOG_COVER_PEXELS_ID_BY_SLUG = {
+  "harvard-resume-template-canada-guide": 3184292,
+  "free-resume-builder-download-canada": 3183150,
+  "resume-templates-canada-pick-right-one": 1181517,
+  "ai-resume-builder-canada-pros-cons": 1181677,
+  "resume-builder-canada-how-to-compare-options": 7688337,
+  "resume-examples-canada-by-role": 1181396,
+  "resume-samples-canada-how-to-use-them": 3184306,
+  "best-skills-to-put-on-resume-canada": 1181395,
+  "google-docs-resume-template-canada": 265087,
+  "overleaf-latex-resume-canada": 380769,
+  "indeed-resume-builder-canada-alternatives": 1181345,
+  "my-resume-checklist-canada-2026": 1181351,
+  "how-to-optimize-resume-for-ats-2026": 1181354,
+  "best-resume-format-2026": 1181360,
+  "canadian-resume-format-guide": 1181371,
+  "how-to-write-resume-with-no-experience": 1181381,
+  "how-to-explain-employment-gaps": 1181382,
+  "how-long-should-resume-be": 1181385,
+  "resume-for-career-change": 1181390,
+  "how-to-tailor-resume-to-job": 1181391,
+  "resume-summary-vs-objective": 1181392,
+  "how-to-quantify-resume-achievements": 1181393,
+  "should-you-include-references": 1181394,
+  "resume-for-remote-jobs": 1181398,
+  "how-to-write-cover-letter": 1181400,
+  "resume-keywords-that-get-interviews": 1181401,
+  "common-resume-mistakes": 1181403,
+  "resume-for-students-new-grads": 1181405,
+  "how-to-format-education-on-resume": 1181410,
+  "job-hopping-on-resume": 1181411,
+  "resume-for-immigrants-canada": 1181412,
+  "linkedin-vs-resume": 1181413,
+  "resume-for-tech-software-roles": 1181414,
+  "resume-for-healthcare-nursing": 1181415,
+  "resume-for-teachers": 1181417,
+  "resume-for-retail-service": 1181418,
+  "how-to-address-being-fired": 1181419,
+  "resume-for-senior-executive": 1181420,
+  "skills-section-resume": 1181421,
+  "resume-fonts-design-tips": 1181422,
+  "functional-vs-chronological-resume": 1181423,
+  "resume-for-freelancers": 1181424,
+  "overqualified-candidate-resume": 1181425,
+  "resume-without-degree": 3182805,
+};
+
+/** If a slug is missing from the map, pick from this pool (e.g. new post before map update). */
+const FALLBACK_PEXELS_IDS = [3182811, 3182812, 3182813, 3182814, 3184292, 3183150, 1181517, 1181677];
 
 const CASUAL_BY_CATEGORY = {
   Templates: [
@@ -108,10 +125,16 @@ function slugBucket(slug, modulo) {
   return Math.abs(h) % modulo;
 }
 
-/** Deterministic Unsplash cover + credit metadata for a slug. */
+/** Cover image + Pexels credit (unique photo per post when slug is in `BLOG_COVER_PEXELS_ID_BY_SLUG`). */
 export function getBlogCover(slug) {
-  const row = BLOG_STOCK_COVERS[slugBucket(slug, BLOG_STOCK_COVERS.length)];
-  return row;
+  const id =
+    BLOG_COVER_PEXELS_ID_BY_SLUG[slug] ?? FALLBACK_PEXELS_IDS[slugBucket(slug, FALLBACK_PEXELS_IDS.length)];
+  return {
+    src: pexelsPhotoSrc(id),
+    creditLabel: "Pexels",
+    creditUrl: pexelsSiteUrl,
+    licenseUrl: pexelsLicenseUrl,
+  };
 }
 
 /** Light, casual one-liner for the mood strip (deterministic per slug + category). */

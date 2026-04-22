@@ -20,7 +20,7 @@ Use this when writing or updating **I Love Resumes** blog posts so pages feel hu
 
 ## Images (legal)
 
-1. **Stock (default for this site):** Use **Unsplash** only via URLs documented in `src/data/blog-visuals.js`, with **photographer name + link** and **Unsplash license** note on the article page ([Unsplash License](https://unsplash.com/license)).
+1. **Stock (default for this site):** Use **Pexels** via URLs in `src/data/blog-visuals.js`, with **Pexels** credit and [Pexels License](https://www.pexels.com/license/) on the article page (see `BlogPostHero.jsx`).
 2. **Do not** hotlink random Google Images, Pinterest, or paid stock without a license.
 3. **Brand / product:** Use assets in `public/` (logo, OG image) for product-specific visuals.
 4. **Illustrations:** Prefer **original SVGs** in-repo or licensed packs; avoid copying trademarked mascots.

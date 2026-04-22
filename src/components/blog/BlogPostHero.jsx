@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { getBlogCover, unsplashSiteUrl } from "../../data/blog-visuals";
+import { getBlogCover } from "../../data/blog-visuals";
 
 export default function BlogPostHero({ slug, alt }) {
   const cover = getBlogCover(slug);
@@ -21,32 +21,23 @@ export default function BlogPostHero({ slug, alt }) {
         />
       </div>
       <figcaption className="mt-2 flex flex-wrap items-center gap-x-1 gap-y-1 text-xs leading-relaxed text-zinc-500">
-        <span>Photo by</span>
+        <span>Image from</span>
         <a
-          href={cover.photographerUrl}
+          href={cover.creditUrl}
           className="font-medium text-blue-700 underline-offset-2 hover:underline"
           rel="noopener noreferrer"
           target="_blank"
         >
-          {cover.photographer}
-        </a>
-        <span>on</span>
-        <a
-          href={unsplashSiteUrl}
-          className="text-zinc-600 underline-offset-2 hover:underline"
-          rel="noopener noreferrer"
-          target="_blank"
-        >
-          Unsplash
+          {cover.creditLabel}
         </a>
         <span aria-hidden>·</span>
         <a
-          href="https://unsplash.com/license"
+          href={cover.licenseUrl}
           className="text-zinc-600 underline-offset-2 hover:underline"
           rel="noopener noreferrer"
           target="_blank"
         >
-          License
+          Pexels License
         </a>
       </figcaption>
     </figure>

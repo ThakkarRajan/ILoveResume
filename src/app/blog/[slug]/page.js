@@ -38,7 +38,7 @@ export async function generateMetadata({ params }) {
       ...base.openGraph,
       publishedTime: post.date,
       modifiedTime: post.date,
-      images: [{ url: cover.src, width: 1600, height: 1067, alt: coverAlt }],
+      images: [{ url: cover.src, width: 1600, height: 1000, alt: coverAlt }],
     },
     twitter: {
       ...base.twitter,

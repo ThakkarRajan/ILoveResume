@@ -14,7 +14,7 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'images.unsplash.com',
+        hostname: 'images.pexels.com',
         pathname: '/**',
       },
     ],
@@ -46,7 +46,7 @@ const nextConfig = {
         headers: [
           {
             key: "Content-Security-Policy",
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://apis.google.com; style-src 'self' 'unsafe-inline'; frame-src 'self' blob: https://*.firebaseapp.com https://*.firebaseio.com https://accounts.google.com https://apis.google.com; connect-src 'self' https://api.emailjs.com https://identitytoolkit.googleapis.com https://*.firebaseio.com https://firestore.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://firebasestorage.googleapis.com https://jobdraftai-backend-production.up.railway.app; img-src 'self' https://lh3.googleusercontent.com https://images.unsplash.com;",
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://apis.google.com; style-src 'self' 'unsafe-inline'; frame-src 'self' blob: https://*.firebaseapp.com https://*.firebaseio.com https://accounts.google.com https://apis.google.com; connect-src 'self' https://api.emailjs.com https://identitytoolkit.googleapis.com https://*.firebaseio.com https://firestore.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://firebasestorage.googleapis.com https://jobdraftai-backend-production.up.railway.app; img-src 'self' https://lh3.googleusercontent.com https://images.pexels.com;",
           },
           {
             key: 'X-Frame-Options',

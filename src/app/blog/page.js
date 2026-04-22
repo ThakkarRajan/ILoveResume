@@ -73,14 +73,15 @@ export default function BlogPage() {
         </div>
 
         <p className="mx-auto mt-8 max-w-xl text-center text-xs leading-relaxed text-zinc-500">
-          Article covers use photos from{" "}
-          <a href="https://unsplash.com" className="text-blue-700 underline-offset-2 hover:underline" rel="noreferrer">
-            Unsplash
+          Article cover images are from{" "}
+          <a href="https://www.pexels.com" className="text-blue-700 underline-offset-2 hover:underline" rel="noreferrer">
+            Pexels
           </a>{" "}
-          (<a href="https://unsplash.com/license" className="text-blue-700 underline-offset-2 hover:underline" rel="noreferrer">
+          (
+          <a href="https://www.pexels.com/license/" className="text-blue-700 underline-offset-2 hover:underline" rel="noreferrer">
             license
           </a>
-          ); photographers are credited on each post.
+          ). Credits appear on each post.
         </p>
 
         <div className="mt-10 border-t border-zinc-200 pt-10">
