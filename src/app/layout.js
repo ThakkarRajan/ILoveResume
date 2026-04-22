@@ -19,6 +19,9 @@ const inter = Inter({
   adjustFontFallback: true,
 });
 
+/** Google Tag Manager container (site-wide). */
+const GTM_ID = "GTM-TCR8JMD4";
+
 export const metadata = rootMetadata;
 
 export default function RootLayout({ children }) {
@@ -27,7 +30,27 @@ export default function RootLayout({ children }) {
 
   return (
     <html lang="en-CA" className={inter.className}>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','${GTM_ID}');`,
+          }}
+        />
+      </head>
       <body className="min-h-dvh min-w-0 overflow-x-clip antialiased bg-zinc-50 text-zinc-900">
+        <noscript>
+          <iframe
+            src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
+            height="0"
+            width="0"
+            title="Google Tag Manager"
+            style={{ display: "none", visibility: "hidden" }}
+          />
+        </noscript>
         <RootSchema />
         <NavbarWrapper />
         <main className="min-h-0 min-w-0">{children}</main>

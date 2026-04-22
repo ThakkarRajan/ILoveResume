@@ -74,6 +74,11 @@ export default function PrivacyContent() {
             <strong className="text-zinc-800">Technical data:</strong> IP address, device type, browser, approximate
             location derived from IP, and diagnostic logs.
           </li>
+          <li>
+            <strong className="text-zinc-800">Analytics and UX recordings:</strong> when enabled, interaction data (for
+            example page views, clicks, scrolls, and session replay or heatmaps) processed by Microsoft Clarity or similar
+            tools to understand how the Services are used.
+          </li>
         </ul>
         <p>We do not require you to provide sensitive categories of data (such as health data). Please avoid uploading them.</p>
       </LegalSection>
@@ -156,6 +161,30 @@ export default function PrivacyContent() {
           </Link>
           .
         </p>
+        <p>
+          We partner with{" "}
+          <strong className="font-semibold text-zinc-800">Microsoft Clarity</strong> to capture how you use and interact
+          with our website through behavioral metrics, heatmaps, and session replay, so we can improve our products and
+          services. Usage data may be collected using first- and third-party cookies and other similar technologies to
+          understand how popular features are and how people move through the site. We also use this information for site
+          optimization, reliability, and to help detect fraud or abuse. Microsoft processes data under its own terms;
+          for more on how Microsoft collects and uses data in connection with Clarity, see the{" "}
+          <a
+            href="https://privacy.microsoft.com/privacystatement"
+            className="font-medium text-blue-700 underline-offset-2 hover:underline"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Microsoft Privacy Statement
+          </a>
+          . By using our site while Clarity is enabled, you acknowledge that we and Microsoft may collect and use this
+          category of information as described here and in the Microsoft Privacy Statement.
+        </p>
+        <p>
+          Where we enable <strong className="font-semibold text-zinc-800">Google Analytics</strong> or{" "}
+          <strong className="font-semibold text-zinc-800">Vercel Speed Insights</strong>, those services process technical
+          and usage metrics under their respective policies to help us measure performance and traffic.
+        </p>
       </LegalSection>
 
       <LegalSection title="10. Authentication providers">
@@ -170,9 +199,11 @@ export default function PrivacyContent() {
         <p>
           We use vendors for hosting, databases, storage, email delivery, analytics, authentication, and AI inference.
           Typical categories include Google (for example, Google Sign-In and, where used, Firebase or related Google Cloud
-          services), optional Google Analytics when enabled in our configuration, EmailJS or similar for contact-form delivery,
-          and our resume-processing API backend. Each processor receives only the data needed for its service. Email us for
-          a concise, current list if you need it for your records.
+          services), optional Google Analytics when enabled in our configuration,{" "}
+          <strong className="font-semibold text-zinc-800">Microsoft Clarity</strong> when enabled for session insights and
+          heatmaps, Vercel (including Speed Insights when enabled) for hosting and performance metrics, EmailJS or similar for
+          contact-form delivery, and our resume-processing API backend. Each processor receives only the data needed for its
+          service. Email us for a concise, current list if you need it for your records.
         </p>
       </LegalSection>
 

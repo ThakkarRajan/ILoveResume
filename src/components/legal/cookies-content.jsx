@@ -49,7 +49,22 @@ export default function CookiesContent() {
         <p>
           Help us understand aggregate traffic, feature usage, and errors so we can improve reliability and design. Where
           required by law, we will ask for your consent before enabling non-essential analytics. When enabled in our
-          configuration, we may use Google Analytics (see Google&apos;s cookie documentation for names and lifetimes).
+          configuration, we may use Google Analytics (see Google&apos;s cookie documentation for names and lifetimes) and{" "}
+          <strong className="font-semibold text-zinc-800">Microsoft Clarity</strong> for behavioral metrics, heatmaps, and
+          session replay. See our{" "}
+          <Link href="/privacy" className="font-medium text-blue-700 underline-offset-2 hover:underline">
+            Privacy Policy
+          </Link>{" "}
+          and the{" "}
+          <a
+            href="https://privacy.microsoft.com/privacystatement"
+            className="font-medium text-blue-700 underline-offset-2 hover:underline"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Microsoft Privacy Statement
+          </a>{" "}
+          for more detail.
         </p>
       </LegalSection>
 
