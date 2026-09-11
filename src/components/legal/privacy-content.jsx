@@ -28,15 +28,15 @@ export default function PrivacyContent() {
       <LegalSection title="2. Scope">
         <p>
           This policy applies to information processed through the Services. It should be read together with our{" "}
-          <Link href="/terms" className="font-medium text-blue-700 underline-offset-2 hover:underline">
+          <Link href="/terms" className="font-medium text-[var(--accent)] underline-offset-2 hover:underline">
             Terms &amp; Conditions
           </Link>
           ,{" "}
-          <Link href="/cookies" className="font-medium text-blue-700 underline-offset-2 hover:underline">
+          <Link href="/cookies" className="font-medium text-[var(--accent)] underline-offset-2 hover:underline">
             Cookie Policy
           </Link>
           , and{" "}
-          <Link href="/disclaimer" className="font-medium text-blue-700 underline-offset-2 hover:underline">
+          <Link href="/disclaimer" className="font-medium text-[var(--accent)] underline-offset-2 hover:underline">
             Disclaimer
           </Link>
           .
@@ -156,7 +156,7 @@ export default function PrivacyContent() {
         <p>
           We use cookies and similar technologies for essential operation, preferences, and analytics. Details, including
           categories and choices, are in our{" "}
-          <Link href="/cookies" className="font-medium text-blue-700 underline-offset-2 hover:underline">
+          <Link href="/cookies" className="font-medium text-[var(--accent)] underline-offset-2 hover:underline">
             Cookie Policy
           </Link>
           .
@@ -171,7 +171,7 @@ export default function PrivacyContent() {
           for more on how Microsoft collects and uses data in connection with Clarity, see the{" "}
           <a
             href="https://privacy.microsoft.com/privacystatement"
-            className="font-medium text-blue-700 underline-offset-2 hover:underline"
+            className="font-medium text-[var(--accent)] underline-offset-2 hover:underline"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -236,11 +236,11 @@ export default function PrivacyContent() {
         <p>
           This policy describes our practices in good faith; it is not a guarantee of a particular security outcome or legal
           result. For broader exclusions and monetary caps, see our{" "}
-          <Link href="/terms" className="font-medium text-blue-700 underline-offset-2 hover:underline">
+          <Link href="/terms" className="font-medium text-[var(--accent)] underline-offset-2 hover:underline">
             Terms &amp; Conditions
           </Link>{" "}
           and{" "}
-          <Link href="/disclaimer" className="font-medium text-blue-700 underline-offset-2 hover:underline">
+          <Link href="/disclaimer" className="font-medium text-[var(--accent)] underline-offset-2 hover:underline">
             Disclaimer
           </Link>
           .

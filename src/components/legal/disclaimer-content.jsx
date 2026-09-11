@@ -69,7 +69,7 @@ export default function DisclaimerContent() {
         <p>
           Except where prohibited by law, the Services are provided &quot;as is&quot; without warranties of any kind. See
           also our{" "}
-          <Link href="/terms" className="font-medium text-blue-700 underline-offset-2 hover:underline">
+          <Link href="/terms" className="font-medium text-[var(--accent)] underline-offset-2 hover:underline">
             Terms &amp; Conditions
           </Link>{" "}
           for additional disclaimers and liability limits.
@@ -88,7 +88,7 @@ export default function DisclaimerContent() {
         <p>
           Nothing here is intended to limit rights you may have under mandatory consumer or privacy laws that cannot be waived.
           For the operative caps and exclusions, see the{" "}
-          <Link href="/terms" className="font-medium text-blue-700 underline-offset-2 hover:underline">
+          <Link href="/terms" className="font-medium text-[var(--accent)] underline-offset-2 hover:underline">
             Terms &amp; Conditions
           </Link>{" "}
           (Limitation of liability).

@@ -11,7 +11,7 @@ export default function CookiesContent() {
         and its individual operators, not a registered company) uses cookies and similar technologies on our website and web
         application (together, the &quot;Site&quot;). Effective date: {LEGAL_EFFECTIVE_DATE}. For how we
         handle personal data more broadly, see our{" "}
-        <Link href="/privacy" className="font-medium text-blue-700 underline-offset-2 hover:underline">
+        <Link href="/privacy" className="font-medium text-[var(--accent)] underline-offset-2 hover:underline">
           Privacy Policy
         </Link>
         .
@@ -52,13 +52,13 @@ export default function CookiesContent() {
           configuration, we may use Google Analytics (see Google&apos;s cookie documentation for names and lifetimes) and{" "}
           <strong className="font-semibold text-zinc-800">Microsoft Clarity</strong> for behavioral metrics, heatmaps, and
           session replay. See our{" "}
-          <Link href="/privacy" className="font-medium text-blue-700 underline-offset-2 hover:underline">
+          <Link href="/privacy" className="font-medium text-[var(--accent)] underline-offset-2 hover:underline">
             Privacy Policy
           </Link>{" "}
           and the{" "}
           <a
             href="https://privacy.microsoft.com/privacystatement"
-            className="font-medium text-blue-700 underline-offset-2 hover:underline"
+            className="font-medium text-[var(--accent)] underline-offset-2 hover:underline"
             target="_blank"
             rel="noopener noreferrer"
           >

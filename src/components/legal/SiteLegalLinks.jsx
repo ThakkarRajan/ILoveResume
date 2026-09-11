@@ -11,7 +11,7 @@ export default function SiteLegalLinks({ className = "" }) {
         We use{" "}
         <strong className="font-medium text-zinc-600">Microsoft Clarity</strong> to see how people use this site so we can
         improve it. By using the site, you agree that we and Microsoft may collect and use that data as described in our{" "}
-        <Link href="/privacy" className="font-medium text-blue-700 underline-offset-2 hover:underline">
+        <Link href="/privacy" className="font-medium text-[var(--accent)] underline-offset-2 hover:underline">
           Privacy Policy
         </Link>
         .

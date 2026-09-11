@@ -20,11 +20,11 @@ export default function LegalConsentCheckbox({ id = "legal-consent", checked, on
         />
         <span>
           I agree to the{" "}
-          <Link href="/terms" className="font-medium text-blue-700 underline-offset-2 hover:underline" target="_blank" rel="noopener noreferrer">
+          <Link href="/terms" className="font-medium text-[var(--accent)] underline-offset-2 hover:underline" target="_blank" rel="noopener noreferrer">
             Terms &amp; Conditions
           </Link>{" "}
           and{" "}
-          <Link href="/privacy" className="font-medium text-blue-700 underline-offset-2 hover:underline" target="_blank" rel="noopener noreferrer">
+          <Link href="/privacy" className="font-medium text-[var(--accent)] underline-offset-2 hover:underline" target="_blank" rel="noopener noreferrer">
             Privacy Policy
           </Link>
           .

@@ -1,32 +1,61 @@
 "use client";
 
 import Link from "next/link";
-import { FileQuestion } from "lucide-react";
-import SiteLegalLinks from "../components/legal/SiteLegalLinks";
+import { ArrowLeft, FileQuestion, Home } from "lucide-react";
+import MarketingShell from "../components/ui/MarketingShell";
+import PageHeader from "../components/ui/PageHeader";
+
+const helpfulLinks = [
+  { href: "/resume-builder", label: "Resume guides" },
+  { href: "/dashboard", label: "Tailor a resume" },
+  { href: "/faq", label: "FAQ" },
+  { href: "/contact", label: "Contact support" },
+];
 
 export default function NotFound() {
   return (
-    <div className="flex min-h-dvh flex-col items-center justify-center bg-zinc-50 px-6 py-16 text-center">
-      <div className="mx-auto flex max-w-md flex-col items-center">
-        <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl border border-zinc-200 bg-white shadow-sm">
-          <FileQuestion className="h-7 w-7 text-zinc-500" strokeWidth={1.5} aria-hidden />
-        </div>
-        <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">404</p>
-        <h1 className="mt-2 text-2xl font-semibold tracking-tight text-zinc-900 sm:text-3xl">We couldn&apos;t find that page</h1>
-        <p className="mt-3 text-sm leading-relaxed text-zinc-600 sm:text-base">
-          That link may be old, or the page moved. Use the menu above or head home.
-        </p>
-        <Link
-          href="/"
-          className="mt-8 inline-flex min-h-[48px] items-center justify-center rounded-lg bg-zinc-900 px-6 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-50"
-        >
-          Go to homepage
-        </Link>
+    <MarketingShell narrow footerClassName="mt-10">
+      <PageHeader
+        align="left"
+        eyebrow="404"
+        title="Page not found"
+        description="The URL may be outdated, mistyped, or the page was moved. Use the links below to get back on track."
+      />
 
-        <div className="mt-10 w-full max-w-lg border-t border-zinc-200 pt-8">
-          <SiteLegalLinks />
+      <div className="panel">
+        <div className="panel-body space-y-6 p-6 sm:p-8">
+          <div className="flex items-start gap-3 rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] px-4 py-3">
+            <FileQuestion className="mt-0.5 h-5 w-5 shrink-0 text-[var(--accent)]" strokeWidth={1.75} aria-hidden />
+            <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
+              If you followed a bookmark or external link, try the homepage or resume dashboard instead.
+            </p>
+          </div>
+
+          <div>
+            <h2 className="text-sm font-semibold text-[var(--foreground)]">Helpful links</h2>
+            <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+              {helpfulLinks.map(({ href, label }) => (
+                <li key={href}>
+                  <Link href={href} className="card-interactive flex min-h-[44px] items-center px-4 py-3 text-sm font-medium">
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <Link href="/" className="btn btn-primary">
+              <Home className="h-4 w-4" aria-hidden />
+              Go to homepage
+            </Link>
+            <button type="button" onClick={() => window.history.back()} className="btn btn-secondary">
+              <ArrowLeft className="h-4 w-4" aria-hidden />
+              Go back
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </MarketingShell>
   );
 }

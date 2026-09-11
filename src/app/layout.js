@@ -1,7 +1,8 @@
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Inter } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import Script from "next/script";
 import NavbarWrapper from "../components/NavbarWrapper";
+import AppToaster from "../components/ui/AppToast";
 import RootSchema from "../components/seo/RootSchema";
 import { rootMetadata } from "../config/site";
 import "./globals.css";
@@ -13,10 +14,12 @@ export const viewport = {
   viewportFit: "cover",
 };
 
-const inter = Inter({
+const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
   display: "swap",
   adjustFontFallback: true,
+  variable: "--font-jakarta",
+  weight: ["400", "500", "600", "700"],
 });
 
 /** Google Tag Manager container (site-wide). */
@@ -29,7 +32,7 @@ export default function RootLayout({ children }) {
   const clarityProjectId = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID;
 
   return (
-    <html lang="en-CA" className={inter.className}>
+    <html lang="en-CA" className={jakarta.variable} data-scroll-behavior="smooth">
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -41,7 +44,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           }}
         />
       </head>
-      <body className="min-h-dvh min-w-0 overflow-x-clip antialiased bg-zinc-50 text-zinc-900">
+      <body className={`${jakarta.className} min-h-dvh min-w-0 overflow-x-clip antialiased bg-[var(--background)] text-[var(--foreground)]`}>
+        <a href="#main-content" className="skip-link">Skip to content</a>
         <noscript>
           <iframe
             src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
@@ -53,7 +57,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         </noscript>
         <RootSchema />
         <NavbarWrapper />
-        <main className="min-h-0 min-w-0">{children}</main>
+        <AppToaster />
+        <main id="main-content" className="min-h-0 min-w-0">{children}</main>
         {gaId ? (
           <>
             <Script src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`} strategy="lazyOnload" />

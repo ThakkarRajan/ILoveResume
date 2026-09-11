@@ -15,16 +15,12 @@ export default function BlogPostHero({ slug, alt }) {
           className="object-cover"
           priority
         />
-        <div
-          className="pointer-events-none absolute inset-0 bg-gradient-to-t from-zinc-900/25 via-transparent to-transparent"
-          aria-hidden
-        />
       </div>
       <figcaption className="mt-2 flex flex-wrap items-center gap-x-1 gap-y-1 text-xs leading-relaxed text-zinc-500">
         <span>Image from</span>
         <a
           href={cover.creditUrl}
-          className="font-medium text-blue-700 underline-offset-2 hover:underline"
+          className="font-medium text-[var(--accent)] underline-offset-2 hover:underline"
           rel="noopener noreferrer"
           target="_blank"
         >

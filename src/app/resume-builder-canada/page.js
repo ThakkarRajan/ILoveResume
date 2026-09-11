@@ -1,6 +1,5 @@
 import Link from "next/link";
 import MarketingGuideLayout from "../../components/seo/MarketingGuideLayout";
-import GuideCta from "../../components/seo/GuideCta";
 import { pageMeta } from "../../config/site";
 
 export const metadata = pageMeta({
@@ -48,7 +47,6 @@ export default function ResumeBuilderCanadaPage() {
           <Link href="/resume-templates">Resume templates overview</Link>
         </li>
       </ul>
-      <GuideCta />
     </MarketingGuideLayout>
   );
 }

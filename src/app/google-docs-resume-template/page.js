@@ -1,6 +1,5 @@
 import Link from "next/link";
 import MarketingGuideLayout from "../../components/seo/MarketingGuideLayout";
-import GuideCta from "../../components/seo/GuideCta";
 import { pageMeta } from "../../config/site";
 
 export const metadata = pageMeta({
@@ -35,7 +34,6 @@ export default function GoogleDocsResumeTemplatePage() {
         <Link href="/blog/google-docs-resume-template-canada">Google Docs resume templates for Canada</Link> goes deeper on
         collaboration and export hygiene.
       </p>
-      <GuideCta />
     </MarketingGuideLayout>
   );
 }

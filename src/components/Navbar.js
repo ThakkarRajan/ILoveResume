@@ -3,6 +3,7 @@
 import "../utils/firebase.js";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -18,13 +19,24 @@ import {
   BookOpen,
 } from "lucide-react";
 import { getAuth, onAuthStateChanged, signOut as firebaseSignOut } from "firebase/auth";
+import PublicNav from "./ui/PublicNav";
 
-const navItem =
-  "rounded-md px-3 py-2 text-sm font-medium text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900 min-h-[44px] flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25 focus-visible:ring-offset-2 focus-visible:ring-offset-white";
+const navItem = "nav-link";
 
-const navItemMobile = "min-h-[48px] flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium text-zinc-800 hover:bg-zinc-100";
+const navItemMobile = "nav-link min-h-[48px] rounded-lg text-zinc-800";
+
+function navClass(pathname, href) {
+  const active =
+    href === "/dashboard"
+      ? pathname === "/dashboard"
+      : href === "/myprofile"
+        ? pathname === "/myprofile"
+        : pathname === href || pathname.startsWith(`${href}/`);
+  return `${navItem}${active ? " nav-link-active" : ""}`;
+}
 
 export default function Navbar() {
+  const pathname = usePathname();
   const [user, setUser] = useState(null);
   const [showMenu, setShowMenu] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -64,15 +76,15 @@ export default function Navbar() {
   };
 
   const shellClass = `w-full sticky top-0 z-50 border-b transition-shadow duration-200 ${
-    isScrolled ? "border-zinc-200 bg-white/95 shadow-sm" : "border-zinc-200/80 bg-white/90 backdrop-blur-md supports-[backdrop-filter]:bg-white/80"
+    isScrolled ? "border-[var(--border)] bg-white/95 shadow-sm" : "border-[var(--border)]/80 bg-white/90 backdrop-blur-md supports-[backdrop-filter]:bg-white/80"
   }`;
 
   if (user) {
     return (
       <>
         <motion.nav initial={{ y: -8, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.2 }} className={shellClass}>
-          <div className="mx-auto flex max-w-6xl min-w-0 items-center justify-between gap-2 py-3 sm:gap-3 lg:py-3.5 px-page">
-            <Link href="/dashboard" className="flex min-w-0 shrink-0 items-center gap-2 sm:gap-3 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25 focus-visible:ring-offset-2">
+          <div className="app-container flex min-w-0 items-center justify-between gap-2 py-3 sm:gap-3 lg:py-3.5">
+            <Link href="/dashboard" className="flex min-w-0 shrink-0 items-center gap-2 sm:gap-3 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/30 focus-visible:ring-offset-2">
               <Image
                 src="/logo.png"
                 alt="I Love Resumes"
@@ -92,20 +104,17 @@ export default function Navbar() {
             </Link>
 
             <div className="hidden items-center gap-0.5 md:flex">
-              <Link href="/dashboard" className={navItem}>
-                Dashboard
+              <Link href="/dashboard" className={navClass(pathname, "/dashboard")}>
+                Tailor
               </Link>
-              <Link href="/myprofile" className={navItem}>
-                Profile
+              <Link href="/myprofile" className={navClass(pathname, "/myprofile")}>
+                Activity
               </Link>
-              <Link href="/resume-builder" className={navItem}>
+              <Link href="/resume-builder" className={navClass(pathname, "/resume-builder")}>
                 Guides
               </Link>
-              <Link href="/blog" className={navItem}>
-                Blog
-              </Link>
-              <Link href="/contact" className={navItem}>
-                Contact
+              <Link href="/contact" className={navClass(pathname, "/contact")}>
+                Help
               </Link>
             </div>
 
@@ -113,7 +122,7 @@ export default function Navbar() {
               <button
                 type="button"
                 onClick={() => setShowMobileNav(!showMobileNav)}
-                className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md text-zinc-600 hover:bg-zinc-100 md:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25"
+                className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md text-[var(--text-secondary)] hover:bg-[var(--surface-inset)] md:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/30"
                 aria-label="Menu"
               >
                 {showMobileNav ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -121,7 +130,7 @@ export default function Navbar() {
               <button
                 type="button"
                 onClick={() => setShowMenu((p) => !p)}
-                className="flex min-h-[44px] max-w-[9.5rem] items-center gap-1.5 rounded-lg border border-zinc-200 bg-zinc-50 px-2 py-2 text-sm font-medium text-zinc-900 shadow-sm transition-colors hover:border-zinc-300 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25 focus-visible:ring-offset-2 sm:max-w-[200px] sm:gap-2 sm:px-3.5"
+                className="flex min-h-[44px] max-w-[9.5rem] items-center gap-1.5 rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] px-2 py-2 text-sm font-medium text-[var(--foreground)] shadow-sm transition-colors hover:border-[var(--border-strong)] hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/30 focus-visible:ring-offset-2 sm:max-w-[200px] sm:gap-2 sm:px-3.5"
               >
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white ring-1 ring-zinc-200">
                   {user?.photoURL ? (
@@ -164,11 +173,11 @@ export default function Navbar() {
                     <div className="p-1.5">
                       <Link href="/dashboard" onClick={() => setShowMenu(false)} className={`${navItem} w-full gap-3`}>
                         <LayoutDashboard className="h-4 w-4 text-zinc-500" />
-                        Dashboard
+                        Tailor
                       </Link>
                       <Link href="/myprofile" onClick={() => setShowMenu(false)} className={`${navItem} w-full gap-3`}>
                         <User className="h-4 w-4 text-zinc-500" />
-                        Profile
+                        Activity
                       </Link>
                       <Link href="/resume-builder" onClick={() => setShowMenu(false)} className={`${navItem} w-full gap-3`}>
                         <BookOpen className="h-4 w-4 text-zinc-500" />
@@ -224,10 +233,10 @@ export default function Navbar() {
               >
                 <div className="flex flex-col gap-0.5 p-4 pt-20">
                   <Link href="/dashboard" onClick={() => setShowMobileNav(false)} className={navItemMobile}>
-                    Dashboard
+                    Tailor
                   </Link>
                   <Link href="/myprofile" onClick={() => setShowMobileNav(false)} className={navItemMobile}>
-                    Profile
+                    Activity
                   </Link>
                   <Link href="/resume-builder" onClick={() => setShowMobileNav(false)} className={navItemMobile}>
                     Guides
@@ -290,111 +299,5 @@ export default function Navbar() {
     );
   }
 
-  return (
-    <>
-      <motion.nav initial={{ y: -8, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.2 }} className={shellClass}>
-        <div className="mx-auto flex max-w-6xl min-w-0 items-center justify-between gap-2 py-3 sm:gap-3 lg:py-3.5 px-page">
-          <Link href="/" className="flex min-w-0 shrink-0 items-center gap-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25 focus-visible:ring-offset-2">
-            <Image
-              src="/logo.png"
-              alt="I Love Resumes"
-              width={1017}
-              height={850}
-              className="h-9 w-auto rounded-md object-contain sm:h-10"
-            />
-            <Image
-              src="/Iloveresumelogotext.png"
-              alt="I Love Resumes"
-              width={506}
-              height={74}
-              sizes="(max-width: 768px) 10rem, 12rem"
-              quality={60}
-              className="hidden h-8 w-auto max-w-[10rem] object-contain sm:block md:max-w-[12rem]"
-            />
-          </Link>
-
-          <div className="ml-auto hidden items-center gap-1 md:flex">
-            <Link href="/" className={navItem}>
-              Home
-            </Link>
-            <Link href="/resume-builder" className={navItem}>
-              Guides
-            </Link>
-            <Link href="/blog" className={navItem}>
-              Blog
-            </Link>
-            <Link href="/contact" className={navItem}>
-              Contact
-            </Link>
-            <Link
-              href="/"
-              className="ml-2 inline-flex min-h-[44px] items-center rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 focus-visible:ring-offset-2"
-            >
-              Sign in
-            </Link>
-          </div>
-
-          <div className="flex shrink-0 items-center gap-2 md:hidden">
-            <button
-              type="button"
-              onClick={() => setShowMobileNav(!showMobileNav)}
-              className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md text-zinc-600 hover:bg-zinc-100 touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25"
-              aria-label="Menu"
-            >
-              {showMobileNav ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </button>
-            <Link
-              href="/"
-              className="inline-flex min-h-[44px] items-center justify-center whitespace-nowrap rounded-lg bg-zinc-900 px-3 py-2 text-sm font-semibold text-white touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30"
-            >
-              Sign in
-            </Link>
-          </div>
-        </div>
-      </motion.nav>
-
-      <AnimatePresence>
-        {showMobileNav && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowMobileNav(false)}
-              className="fixed inset-0 z-40 bg-zinc-900/40 md:hidden"
-            />
-            <motion.div
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ duration: 0.2 }}
-              className="fixed bottom-0 right-0 top-0 z-50 flex w-[min(18rem,85vw)] flex-col overflow-y-auto border-l border-zinc-200 bg-white pb-6 pt-20 shadow-xl md:hidden"
-            >
-              <div className="flex flex-col gap-0.5 px-4">
-                <Link href="/" onClick={() => setShowMobileNav(false)} className={navItemMobile}>
-                  Home
-                </Link>
-                <Link href="/resume-builder" onClick={() => setShowMobileNav(false)} className={navItemMobile}>
-                  Guides
-                </Link>
-                <Link href="/blog" onClick={() => setShowMobileNav(false)} className={navItemMobile}>
-                  Blog
-                </Link>
-                <Link href="/contact" onClick={() => setShowMobileNav(false)} className={navItemMobile}>
-                  Contact
-                </Link>
-                <Link
-                  href="/"
-                  onClick={() => setShowMobileNav(false)}
-                  className="mt-4 inline-flex min-h-[48px] items-center justify-center rounded-lg bg-zinc-900 px-4 py-3 text-sm font-semibold text-white"
-                >
-                  Sign in
-                </Link>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-    </>
-  );
+  return <PublicNav />;
 }

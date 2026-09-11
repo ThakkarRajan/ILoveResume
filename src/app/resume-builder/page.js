@@ -1,6 +1,9 @@
 import Link from "next/link";
 import JsonLd from "../../components/seo/JsonLd";
 import GuideCta from "../../components/seo/GuideCta";
+import MarketingShell from "../../components/ui/MarketingShell";
+import BreadcrumbNav from "../../components/ui/BreadcrumbNav";
+import GuideCardGrid from "../../components/ui/GuideCardGrid";
 import { pageMeta, SITE_NAME, SITE_URL } from "../../config/site";
 
 export const metadata = pageMeta({
@@ -11,14 +14,14 @@ export const metadata = pageMeta({
 });
 
 const guides = [
-  { href: "/resume-builder-canada", name: "Free resume builder for Canada" },
-  { href: "/how-to-tailor-a-resume-to-a-job-description", name: "Tailor a resume to a job description" },
-  { href: "/ats-friendly-resume", name: "ATS-friendly resume" },
-  { href: "/resume-templates", name: "Resume templates" },
-  { href: "/resume-examples", name: "Resume examples" },
-  { href: "/harvard-resume-template", name: "Harvard resume template" },
-  { href: "/google-docs-resume-template", name: "Google Docs resume template" },
-  { href: "/ai-resume-builder", name: "AI resume builder" },
+  { href: "/resume-builder-canada", name: "Free resume builder for Canada", description: "Canadian resume conventions and length." },
+  { href: "/how-to-tailor-a-resume-to-a-job-description", name: "Tailor a resume to a job description", description: "Align bullets and skills to one posting." },
+  { href: "/ats-friendly-resume", name: "ATS-friendly resume", description: "Structure that parsers and recruiters read." },
+  { href: "/resume-templates", name: "Resume templates", description: "Layouts for Word, PDF, and online forms." },
+  { href: "/resume-examples", name: "Resume examples", description: "Sample bullets by role and level." },
+  { href: "/harvard-resume-template", name: "Harvard resume template", description: "Classic one-page academic format." },
+  { href: "/google-docs-resume-template", name: "Google Docs resume template", description: "Editable Docs-friendly layout." },
+  { href: "/ai-resume-builder", name: "AI resume builder", description: "Use AI without sounding generic." },
 ];
 
 export default function ResumeBuilderHubPage() {
@@ -36,59 +39,39 @@ export default function ResumeBuilderHubPage() {
   };
 
   return (
-    <>
+    <MarketingShell narrow>
       <JsonLd data={itemList} />
-      <article className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
-        <nav className="mb-8 text-sm text-zinc-500">
-          <Link href="/" className="font-medium text-blue-700 hover:underline">
-            Home
-          </Link>
-          <span className="mx-1.5 text-zinc-400">/</span>
-          <span className="font-medium text-zinc-800">Resume builder guides</span>
-        </nav>
-        <h1 className="text-balance text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl">
-          Resume builder guides & templates
-        </h1>
-        <p className="mt-4 text-sm leading-relaxed text-zinc-600 sm:text-base">
-          I Love Resumes is a free tool for uploading or pasting a resume, adding a job posting, and exporting Word or PDF.
-          These guides explain templates, ATS readability, and Canada-specific conventions—without claiming one keyword
-          alone will fix ATS or search rankings.
-        </p>
-        <h2 className="mt-10 text-lg font-semibold text-zinc-900">Start here</h2>
-        <ul className="mt-4 space-y-2">
-          {guides.map((g) => (
-            <li key={g.href}>
-              <Link href={g.href} className="font-medium text-blue-700 underline-offset-2 hover:underline">
-                {g.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
-        <h2 className="mt-10 text-lg font-semibold text-zinc-900">Deep dives on the blog</h2>
-        <p className="mt-3 text-sm leading-relaxed text-zinc-600">
-          Longer walkthroughs live in the{" "}
-          <Link href="/blog" className="font-medium text-blue-700 underline-offset-2 hover:underline">
-            blog
-          </Link>
-          —for example{" "}
-          <Link
-            href="/blog/free-resume-builder-download-canada"
-            className="font-medium text-blue-700 underline-offset-2 hover:underline"
-          >
-            free resume builder and download in Canada
-          </Link>
-          ,{" "}
-          <Link href="/blog/how-to-tailor-resume-to-job" className="font-medium text-blue-700 underline-offset-2 hover:underline">
-            how to tailor your resume to each job
-          </Link>
-          , and{" "}
-          <Link href="/blog/how-to-optimize-resume-for-ats-2026" className="font-medium text-blue-700 underline-offset-2 hover:underline">
-            ATS optimization
-          </Link>
-          .
-        </p>
+      <article>
+        <BreadcrumbNav
+          items={[
+            { href: "/", label: "Home" },
+            { label: "Resume builder guides" },
+          ]}
+        />
+        <header className="mb-8 sm:mb-9">
+          <h1 className="display-heading">Resume builder guides and templates</h1>
+          <p className="prose-lead mt-4">
+            I Love Resumes is a free tool for uploading or pasting a resume, adding a job posting, and exporting Word or
+            PDF. These guides explain templates, ATS readability, and Canada-specific conventions.
+          </p>
+        </header>
+
+        <GuideCardGrid guides={guides} />
+
+        <div className="prose-guide mt-8 space-y-4 border-t border-[var(--border)] pt-8">
+          <h2 className="!mt-0 !border-0 !pt-0 section-heading text-lg">Deep dives on the blog</h2>
+          <p>
+            Longer walkthroughs live in the{" "}
+            <Link href="/blog">blog</Link>
+            , for example{" "}
+            <Link href="/blog/free-resume-builder-download-canada">free resume builder and download in Canada</Link>,{" "}
+            <Link href="/blog/how-to-tailor-resume-to-job">how to tailor your resume to each job</Link>, and{" "}
+            <Link href="/blog/how-to-optimize-resume-for-ats-2026">ATS optimization</Link>.
+          </p>
+        </div>
+
         <GuideCta />
       </article>
-    </>
+    </MarketingShell>
   );
 }

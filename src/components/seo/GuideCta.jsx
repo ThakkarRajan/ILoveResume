@@ -2,15 +2,12 @@ import Link from "next/link";
 
 export default function GuideCta() {
   return (
-    <aside className="not-prose mt-12 rounded-xl border border-blue-200 bg-blue-50/60 px-5 py-6 text-center sm:px-8">
-      <p className="text-sm font-semibold text-zinc-900">Try the free resume builder</p>
-      <p className="mx-auto mt-2 max-w-md text-sm text-zinc-600">
+    <aside className="not-prose mt-8 rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-5 py-5 sm:px-6">
+      <p className="text-sm font-semibold text-[var(--foreground)]">Try the free resume builder</p>
+      <p className="mt-2 max-w-md text-sm leading-relaxed text-[var(--text-secondary)]">
         Sign in with Google, add your resume and a job description, edit the draft, then download Word or PDF.
       </p>
-      <Link
-        href="/"
-        className="mt-5 inline-flex min-h-[48px] items-center justify-center rounded-lg bg-zinc-900 px-6 py-3 text-sm font-semibold !text-white shadow-sm transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 focus-visible:ring-offset-2"
-      >
+      <Link href="/dashboard" className="btn btn-primary mt-5">
         Start tailoring a resume
       </Link>
     </aside>

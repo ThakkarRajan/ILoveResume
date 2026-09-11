@@ -1,6 +1,5 @@
 import Link from "next/link";
 import MarketingGuideLayout from "../../components/seo/MarketingGuideLayout";
-import GuideCta from "../../components/seo/GuideCta";
 import { pageMeta } from "../../config/site";
 
 export const metadata = pageMeta({
@@ -42,7 +41,6 @@ export default function AiResumeBuilderPage() {
           <Link href="/resume-builder-canada">Resume builder for Canada</Link>
         </li>
       </ul>
-      <GuideCta />
     </MarketingGuideLayout>
   );
 }

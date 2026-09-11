@@ -1,6 +1,5 @@
 import Link from "next/link";
 import MarketingGuideLayout from "../../components/seo/MarketingGuideLayout";
-import GuideCta from "../../components/seo/GuideCta";
 import { pageMeta } from "../../config/site";
 
 export const metadata = pageMeta({
@@ -39,7 +38,6 @@ export default function ResumeTemplatesPage() {
           <Link href="/ats-friendly-resume">ATS-friendly resume</Link>
         </li>
       </ul>
-      <GuideCta />
     </MarketingGuideLayout>
   );
 }

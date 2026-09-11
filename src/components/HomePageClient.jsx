@@ -1,16 +1,13 @@
 "use client";
 
-import dynamic from "next/dynamic";
-import { wakeBackend } from "../utils/api.js";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-
 import Link from "next/link";
-import LegalConsentCheckbox from "./legal/LegalConsentCheckbox";
-import { useEffect, useState } from "react";
-
-const SocialLinks = dynamic(() => import("./SocialLinks"), { ssr: true });
-const SiteLegalLinks = dynamic(() => import("./legal/SiteLegalLinks"), { ssr: true });
+import PublicNav from "./ui/PublicNav";
+import PageFooter from "./ui/PageFooter";
+import WorkflowStepper from "./ui/WorkflowStepper";
+import GuideCardGrid from "./ui/GuideCardGrid";
+import FaqAccordion from "./ui/FaqAccordion";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   ArrowRight,
   Upload,
@@ -19,30 +16,85 @@ import {
   Download,
   Shield,
   FileCheck,
-  Menu,
-  X,
-  BookOpen,
+  Check,
+  TrendingUp,
+  Search,
+  FileOutput,
 } from "lucide-react";
 
-const navLink =
-  "text-sm font-medium text-zinc-600 hover:text-zinc-900 transition-colors py-2.5 px-3 rounded-md min-h-[44px] flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-50";
+const workflowSteps = [
+  { id: "upload", label: "Add resume" },
+  { id: "job", label: "Paste job post" },
+  { id: "edit", label: "Review draft" },
+  { id: "export", label: "Export" },
+];
 
 const resourceLinks = [
-  { href: "/resume-builder-canada", label: "Resume builder for Canada" },
-  { href: "/how-to-tailor-a-resume-to-a-job-description", label: "Tailor resume to a job description" },
-  { href: "/ats-friendly-resume", label: "ATS-friendly resume" },
-  { href: "/resume-templates", label: "Resume templates" },
-  { href: "/resume-examples", label: "Resume examples" },
-  { href: "/harvard-resume-template", label: "Harvard-style template" },
-  { href: "/google-docs-resume-template", label: "Google Docs resume" },
-  { href: "/ai-resume-builder", label: "AI resume builder" },
+  { href: "/resume-builder-canada", name: "Resume builder for Canada", description: "Format and conventions for Canadian applications." },
+  { href: "/how-to-tailor-a-resume-to-a-job-description", name: "Tailor to a job description", description: "Match posting language without keyword stuffing." },
+  { href: "/ats-friendly-resume", name: "ATS-friendly resume", description: "Structure recruiters and parsers can read." },
+  { href: "/resume-templates", name: "Resume templates", description: "Layouts that stay readable in Word and PDF." },
+  { href: "/resume-examples", name: "Resume examples", description: "Bullet patterns by role and seniority." },
+  { href: "/harvard-resume-template", name: "Harvard-style template", description: "Classic one-page academic layout." },
+  { href: "/google-docs-resume-template", name: "Google Docs resume", description: "Editable template for Docs users." },
+  { href: "/ai-resume-builder", name: "AI resume builder", description: "Use AI suggestions without losing your voice." },
+];
+
+const steps = [
+  { icon: Upload, title: "Upload PDF or paste text", description: "We extract your content and keep formatting ATS-friendly." },
+  { icon: Target, title: "Align to the job description", description: "Surface relevant keywords from the posting." },
+  { icon: Edit3, title: "Edit, then export", description: "Review suggestions and rewrite in your voice." },
+  { icon: Download, title: "Word and PDF download", description: "Export files that work with employer portals." },
+];
+
+const outcomes = [
+  {
+    icon: TrendingUp,
+    title: "Postings drive the draft",
+    description: "Suggestions target one role's language, not a generic template.",
+  },
+  {
+    icon: Search,
+    title: "Readable for ATS and humans",
+    description: "Clean sections and role-relevant keywords, not layout tricks.",
+  },
+  {
+    icon: FileOutput,
+    title: "Export when you approve",
+    description: "Word and PDF only after you edit every line.",
+  },
+];
+
+const faqItems = [
+  {
+    q: "Is I Love Resumes really free?",
+    a: "Yes. Create tailored drafts and export Word or PDF at no charge. No credit card.",
+  },
+  {
+    q: "How does AI resume tailoring work?",
+    a: "You upload or paste your resume and add the job description. We suggest stronger wording and relevant keywords. You edit and approve everything before export.",
+  },
+  {
+    q: "Will this help with ATS resume screening?",
+    a: "We focus on clean structure and role-relevant keywords so automated parsers and recruiters can read your resume reliably. Results still depend on the employer's system and your qualifications.",
+  },
+  {
+    q: "What formats can I export?",
+    a: "Word (.docx) and PDF, the formats most application portals accept.",
+  },
+  {
+    q: "How do you handle my resume data?",
+    a: "Google Sign-In secures your account. We don't sell your resume data. Some processing uses trusted service providers as described in our Privacy Policy.",
+  },
+  {
+    q: "Does it work for Canadian jobs?",
+    a: "Yes. Clear, keyword-aware resumes for Canada and international applications alike.",
+  },
 ];
 
 export default function HomePageClient() {
   const router = useRouter();
-  const [user, setUser] = useState(null);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [legalConsent, setLegalConsent] = useState(false);
+
   useEffect(() => {
     let cancelled = false;
     let unsubscribe = () => {};
@@ -53,7 +105,6 @@ export default function HomePageClient() {
       if (cancelled) return;
       const auth = getAuth();
       unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-        setUser(firebaseUser);
         if (firebaseUser) {
           router.push("/dashboard");
         }
@@ -77,339 +128,141 @@ export default function HomePageClient() {
     };
   }, [router]);
 
-  if (user) {
-    return null;
-  }
-
-  const features = [
-    {
-      icon: Upload,
-      title: "Upload PDF or paste text",
-      description:
-        "Upload a PDF or paste plain text. We extract your content and keep formatting easy for ATS parsers to read.",
-    },
-    {
-      icon: Target,
-      title: "Align to the job description",
-      description:
-        "Paste the posting to surface relevant keywords and align phrasing with what employers and parsers look for.",
-    },
-    {
-      icon: Edit3,
-      title: "Edit, then export",
-      description:
-        "Review AI suggestions, rewrite in your voice, and export when the resume reflects how you want to be seen.",
-    },
-    {
-      icon: Download,
-      title: "Word & PDF download",
-      description:
-        "Download .docx or PDF files that work with most employer portals and recruiter inboxes.",
-    },
-  ];
-
-  const trustItems = [
-    { icon: Shield, label: "Secure Google sign-in" },
-    { icon: FileCheck, label: "ATS-friendly structure" },
-    { icon: Download, label: "No credit card" },
-  ];
-
   return (
-    <div className="min-h-screen bg-zinc-50 text-zinc-900">
-      <header className="fixed top-0 left-0 right-0 z-40 border-b border-zinc-200/80 bg-white/90 backdrop-blur-md supports-[backdrop-filter]:bg-white/75">
-        <nav className="mx-auto flex max-w-6xl items-center justify-between gap-2 py-3 sm:gap-4 lg:py-3.5 px-page">
-          <Link
-            href="/"
-            className="flex min-h-[44px] min-w-[44px] shrink-0 items-center gap-2.5 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
-          >
-            <Image
-              src="/logo.png"
-              alt="I Love Resumes logo"
-              width={1017}
-              height={850}
-              sizes="36px"
-              className="h-9 w-auto rounded-md object-contain"
-            />
-            <span className="hidden text-sm font-semibold tracking-tight text-zinc-900 sm:inline">
-              I Love Resumes
-            </span>
-          </Link>
-          <div className="hidden items-center gap-0.5 md:flex">
-            <Link href="/resume-builder" className={navLink}>
-              Guides
-            </Link>
-            <Link href="#features" className={navLink}>
-              Features
-            </Link>
-            <Link href="#faq" className={navLink}>
-              FAQ
-            </Link>
-            <Link href="/blog" className={navLink}>
-              Blog
-            </Link>
-            <Link href="/contact" className={navLink}>
-              Contact
-            </Link>
-          </div>
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900 md:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25 focus-visible:ring-offset-2"
-            aria-expanded={mobileMenuOpen}
-            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-          >
-            {mobileMenuOpen ? <X className="h-5 w-5" strokeWidth={1.75} /> : <Menu className="h-5 w-5" strokeWidth={1.75} />}
-          </button>
-        </nav>
-        {mobileMenuOpen && (
-          <div className="border-t border-zinc-200 bg-white py-3 md:hidden px-page">
-            <div className="flex flex-col gap-0.5">
-              <Link href="/resume-builder" onClick={() => setMobileMenuOpen(false)} className={`${navLink} rounded-lg`}>
-                Guides
+    <div className="page-canvas">
+      <PublicNav fixed />
+
+      <div className="app-container min-w-0 pb-12 pt-[calc(var(--nav-height)+1.25rem)] sm:pb-16 sm:pt-[calc(var(--nav-height)+1.75rem)] lg:pb-20">
+        <section className="grid items-start gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:gap-8 xl:gap-10">
+          <div className="min-w-0">
+            <WorkflowStepper steps={workflowSteps} current={0} className="mb-6" />
+            <h1 className="display-heading max-w-[16ch] sm:max-w-none">
+              Tailor your resume to each job posting
+            </h1>
+            <p className="prose-lead mt-5">
+              <span className="font-medium text-[var(--foreground)]">I Love Resumes</span> helps you align an existing
+              draft to a specific role. Paste the job description, refine keywords for recruiters and ATS parsers, then
+              export Word or PDF. Every line stays yours to approve.
+            </p>
+
+            <div className="mt-8 max-w-md">
+              <Link href="/dashboard" className="btn btn-primary w-full sm:w-auto">
+                Start tailoring free
+                <ArrowRight className="h-4 w-4 opacity-80" aria-hidden />
               </Link>
-              <Link href="#features" onClick={() => setMobileMenuOpen(false)} className={`${navLink} rounded-lg`}>
-                Features
-              </Link>
-              <Link href="#faq" onClick={() => setMobileMenuOpen(false)} className={`${navLink} rounded-lg`}>
-                FAQ
-              </Link>
-              <Link href="/blog" onClick={() => setMobileMenuOpen(false)} className={`${navLink} rounded-lg`}>
-                Blog
-              </Link>
-              <Link href="/contact" onClick={() => setMobileMenuOpen(false)} className={`${navLink} rounded-lg`}>
-                Contact
-              </Link>
+              <p className="mt-3 text-xs text-[var(--muted)]">Free. No credit card required.</p>
+            </div>
+
+            <div className="feature-strip mt-8">
+              {[
+                { icon: Shield, label: "Secure Google sign-in" },
+                { icon: FileCheck, label: "ATS-friendly structure" },
+                { icon: Download, label: "No credit card" },
+              ].map(({ icon: Icon, label }) => (
+                <div key={label} className="flex items-center gap-2.5 text-sm text-[var(--text-secondary)]">
+                  <Icon className="h-4 w-4 shrink-0 text-[var(--accent)]" strokeWidth={1.75} aria-hidden />
+                  {label}
+                </div>
+              ))}
             </div>
           </div>
-        )}
-      </header>
 
-      <div className="mx-auto max-w-6xl px-page pb-14 pt-24 sm:pb-20 sm:pt-32 lg:pb-24 lg:pt-36">
-        <section className="mx-auto max-w-3xl text-center">
-          <p className="mb-4 text-xs font-medium uppercase tracking-wider text-zinc-500">
-            Free resume builder · Clear, ATS-friendly layout · No credit card
-          </p>
-          <div className="mb-8 flex w-full min-w-0 max-w-full flex-col items-center gap-5 sm:mb-10 sm:flex-row sm:justify-center sm:gap-6">
-            <Image
-              src="/logo.png"
-              alt="I Love Resumes app icon"
-              width={1017}
-              height={850}
-              priority
-              fetchPriority="high"
-              sizes="72px"
-              className="h-[72px] w-auto shrink-0 rounded-xl border border-zinc-200 bg-white object-contain shadow-sm"
-            />
-            <Image
-              src="/Iloveresumelogotext.png"
-              alt="I Love Resumes wordmark"
-              width={506}
-              height={74}
-              sizes="(max-width: 640px) 148px, 200px"
-              quality={60}
-              className="h-9 w-auto max-w-[min(100%,12rem)] object-contain sm:h-11 sm:max-w-none"
-            />
+          <div className="card-elevated overflow-hidden">
+            <div className="border-b border-[var(--border)] bg-[var(--surface-raised)] px-5 py-3.5">
+              <p className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">How it works</p>
+            </div>
+            <ol className="divide-y divide-[var(--border)]">
+              {steps.map(({ icon: Icon, title, description }) => (
+                <li key={title} className="flex gap-4 px-5 py-4">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-muted)] text-[var(--accent)]">
+                    <Icon className="h-4 w-4" strokeWidth={1.75} aria-hidden />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-[var(--foreground)]">{title}</p>
+                    <p className="mt-0.5 text-sm leading-relaxed text-[var(--text-secondary)]">{description}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+            <div className="border-t border-[var(--border)] bg-[var(--surface-raised)] px-5 py-3">
+              <p className="flex items-center gap-2 text-xs text-[var(--muted)]">
+                <Check className="h-3.5 w-3.5 text-emerald-600" strokeWidth={2} aria-hidden />
+                Export only when you are satisfied with every line
+              </p>
+            </div>
           </div>
-
-          <h1 className="text-balance text-2xl font-semibold leading-tight tracking-tight text-zinc-900 min-[400px]:text-3xl sm:text-4xl md:text-[2.5rem] md:leading-[1.15]">
-            Free AI resume builder for applications that demand a tight match
-          </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-pretty px-0.5 text-base leading-relaxed text-zinc-600 sm:px-0 sm:text-lg">
-            <span className="font-medium text-zinc-800">
-              I Love Resumes (iloveresumes.ca) is a free AI-assisted resume builder for tailoring an existing draft to each
-              job posting.
-            </span>{" "}
-            Paste the job description, align keywords and phrasing for recruiters and ATS parsers, export a polished Word
-            or PDF—every line stays yours to approve.
-          </p>
-
-          <div className="mx-auto mt-8 flex w-full max-w-sm flex-col items-stretch gap-3 sm:mt-10 sm:items-center">
-            <LegalConsentCheckbox id="home-legal-consent" checked={legalConsent} onChange={setLegalConsent} />
-            <button
-              type="button"
-              onClick={async () => {
-                if (!legalConsent) return;
-                try {
-                  await import("../utils/firebase.js");
-                  const { getAuth, GoogleAuthProvider, signInWithPopup } = await import("firebase/auth");
-                  const auth = getAuth();
-                  const provider = new GoogleAuthProvider();
-                  await signInWithPopup(auth, provider);
-                  wakeBackend();
-                  router.push("/dashboard");
-                } catch {
-                  /* user closed popup or auth error */
-                }
-              }}
-              disabled={!legalConsent}
-              className="inline-flex min-h-[48px] w-full min-w-0 items-center justify-center gap-2 rounded-lg border border-zinc-300 bg-white px-3 py-3 text-sm font-semibold text-zinc-900 shadow-sm transition-colors hover:border-zinc-400 hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-50 enabled:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 min-[380px]:gap-2.5 min-[380px]:px-5 sm:w-auto"
-            >
-              <Image src="/google-logo.svg" alt="" width={18} height={18} className="h-[18px] w-[18px]" />
-              Sign in with Google
-              <ArrowRight className="h-4 w-4 text-zinc-400" aria-hidden />
-            </button>
-            <p className="text-center text-xs text-zinc-500">Free · No credit card required</p>
-          </div>
-
-          <ul className="mt-10 flex flex-col items-center justify-center gap-2.5 border-t border-zinc-200/80 pt-10 text-sm text-zinc-600 min-[400px]:flex-row min-[400px]:flex-wrap min-[400px]:gap-x-6 min-[400px]:gap-y-3">
-            {trustItems.map(({ icon: Icon, label }) => (
-              <li key={label} className="flex w-full max-w-sm items-center justify-center gap-2 min-[400px]:w-auto min-[400px]:max-w-none">
-                <Icon className="h-4 w-4 shrink-0 text-blue-600" strokeWidth={1.75} aria-hidden />
-                <span className="text-center min-[400px]:text-left">{label}</span>
-              </li>
-            ))}
-          </ul>
         </section>
 
-        <section className="mx-auto mt-16 max-w-3xl space-y-3 border-t border-zinc-200 pt-16 sm:mt-20 sm:pt-20">
-          <p className="text-center text-sm leading-relaxed text-zinc-600 sm:text-base">
-            Most resume builders stop at templates. I Love Resumes is built for one workflow: align an existing resume to a
-            specific posting, then export a file recruiters can open.
-          </p>
-          <p className="text-center text-sm leading-relaxed text-zinc-600 sm:text-base">
-            If you are applying in Canada, start with our{" "}
-            <Link href="/resume-builder-canada" className="font-medium text-blue-700 underline-offset-2 hover:underline">
+        <section className="section-gap border-t border-[var(--border)] pt-[var(--section-y)]">
+          <div className="mb-6 max-w-2xl">
+            <h2 className="section-heading">Built for serious applications</h2>
+            <p className="mt-2 text-sm text-[var(--text-secondary)] sm:text-base">
+              Most builders stop at templates. This product is for people who already have a draft and need it aligned to
+              one posting before they hit submit.
+            </p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-3 sm:gap-5">
+            {outcomes.map(({ icon: Icon, title, description }) => (
+              <article key={title} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
+                <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--accent-muted)]">
+                  <Icon className="h-5 w-5 text-[var(--accent)]" strokeWidth={1.75} aria-hidden />
+                </div>
+                <h3 className="text-sm font-semibold text-[var(--foreground)]">{title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-[var(--text-secondary)]">{description}</p>
+              </article>
+            ))}
+          </div>
+          <p className="mt-6 text-sm leading-relaxed text-[var(--text-secondary)]">
+            Applying in Canada? Start with our{" "}
+            <Link href="/resume-builder-canada" className="font-medium text-[var(--accent)] underline-offset-2 hover:underline">
               Canada-focused guide
             </Link>{" "}
-            or the step-by-step on{" "}
+            or learn{" "}
             <Link
               href="/how-to-tailor-a-resume-to-a-job-description"
-              className="font-medium text-blue-700 underline-offset-2 hover:underline"
+              className="font-medium text-[var(--accent)] underline-offset-2 hover:underline"
             >
-              tailoring to a job description
+              how to tailor to a job description
             </Link>
             .
           </p>
         </section>
 
-        <section className="mx-auto mt-14 max-w-4xl scroll-mt-24 border-t border-zinc-200 pt-14 sm:scroll-mt-28 sm:pt-16" id="guides">
-          <div className="mb-8 flex flex-col items-center gap-3 text-center sm:mb-10">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-zinc-200 bg-white shadow-sm">
-              <BookOpen className="h-5 w-5 text-blue-700" strokeWidth={1.75} aria-hidden />
+        <section id="guides" className="section-gap scroll-mt-24 border-t border-[var(--border)] pt-[var(--section-y)] sm:scroll-mt-28">
+          <div className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <h2 className="section-heading">Guides and templates</h2>
+              <p className="mt-1 text-sm text-[var(--text-secondary)] sm:text-base">
+                Practical reads for people actively applying.
+              </p>
             </div>
-            <h2 className="text-2xl font-semibold tracking-tight text-zinc-900 sm:text-3xl">Guides & templates</h2>
-            <p className="max-w-2xl text-sm text-zinc-600 sm:text-base">
-              Practical guides on tailoring, ATS readability, Canada-specific norms, and downloads—written for people who
-              are actively applying.
+            <Link href="/resume-builder" className="btn btn-secondary shrink-0">
+              All guides
+              <ArrowRight className="h-4 w-4" aria-hidden />
+            </Link>
+          </div>
+          <GuideCardGrid guides={resourceLinks} />
+        </section>
+
+        <section id="faq" className="section-gap scroll-mt-24 border-t border-[var(--border)] pt-[var(--section-y)] sm:scroll-mt-28">
+          <h2 className="section-heading mb-6 sm:mb-8">Frequently asked questions</h2>
+          <FaqAccordion items={faqItems} />
+        </section>
+
+        <section className="section-gap border-t border-[var(--border)] pt-[var(--section-y)]">
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-6 py-8 text-center sm:px-10">
+            <h2 className="section-heading text-xl sm:text-2xl">Ready to tailor your next application?</h2>
+            <p className="mx-auto mt-3 max-w-lg text-sm text-[var(--text-secondary)] sm:text-base">
+              Open the dashboard, paste a job posting, and export when the draft reads like you.
             </p>
-          </div>
-          <ul className="grid gap-3 sm:grid-cols-2">
-            {resourceLinks.map(({ href, label }) => (
-              <li key={href}>
-                <Link
-                  href={href}
-                  className="flex min-h-[48px] items-start justify-between gap-2 rounded-xl border border-zinc-200 bg-white px-3 py-3 text-sm font-medium text-zinc-900 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25 sm:items-center sm:gap-3 sm:px-4"
-                >
-                  <span className="min-w-0 flex-1 break-words text-left leading-snug">{label}</span>
-                  <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 self-center text-zinc-400 sm:mt-0" aria-hidden />
-                </Link>
-              </li>
-            ))}
-            <li>
-              <Link
-                href="/resume-builder"
-                className="flex min-h-[48px] items-center justify-between gap-2 rounded-xl border border-zinc-200 bg-zinc-900 px-3 py-3 text-sm font-medium text-white shadow-sm transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 sm:gap-3 sm:px-4"
-              >
-                All guides
-                <ArrowRight className="h-4 w-4 shrink-0 opacity-80" aria-hidden />
-              </Link>
-            </li>
-          </ul>
-        </section>
-
-        <section id="features" className="scroll-mt-24 pt-20 sm:scroll-mt-28 sm:pt-24">
-          <div className="mx-auto mb-10 max-w-2xl text-center sm:mb-14">
-            <h2 className="text-2xl font-semibold tracking-tight text-zinc-900 sm:text-3xl">How it works</h2>
-            <p className="mt-3 text-sm text-zinc-600 sm:text-base">
-              Four steps from upload to an application-ready file.
-            </p>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5">
-            {features.map((feature) => (
-              <div
-                key={feature.title}
-                className="flex flex-col rounded-xl border border-zinc-200 bg-white p-4 shadow-[var(--shadow-card)] transition-shadow hover:shadow-[var(--shadow-card-hover)] min-[400px]:p-5"
-              >
-                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-blue-700">
-                  <feature.icon className="h-5 w-5" strokeWidth={1.75} aria-hidden />
-                </div>
-                <h3 className="text-sm font-semibold text-zinc-900">{feature.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-zinc-600">{feature.description}</p>
-              </div>
-            ))}
+            <Link href="/dashboard" className="btn btn-primary mx-auto mt-6">
+              Start tailoring free
+              <ArrowRight className="h-4 w-4" aria-hidden />
+            </Link>
           </div>
         </section>
 
-        <section id="faq" className="scroll-mt-24 pt-20 sm:scroll-mt-28 sm:pt-24">
-          <div className="mx-auto mb-8 max-w-2xl text-center sm:mb-10">
-            <h2 className="text-2xl font-semibold tracking-tight text-zinc-900 sm:text-3xl">Frequently asked questions</h2>
-          </div>
-          <div className="mx-auto max-w-3xl divide-y divide-zinc-200 rounded-xl border border-zinc-200 bg-white px-3 py-1 shadow-sm sm:px-8">
-            {[
-              {
-                q: "Is I Love Resumes really free?",
-                a: "Yes—create tailored drafts and export Word or PDF at no charge. No credit card.",
-              },
-              {
-                q: "How does AI resume tailoring work?",
-                a: "You upload or paste your resume and add the job description. We suggest stronger wording and relevant keywords; you edit and approve everything before export.",
-              },
-              {
-                q: "Will this help with ATS resume screening?",
-                a: "We focus on clean structure and role-relevant keywords so automated parsers and recruiters can read your resume reliably—results still depend on the employer's system and your qualifications.",
-              },
-              {
-                q: "What formats can I export?",
-                a: "Word (.docx) and PDF—the formats most application portals accept.",
-              },
-              {
-                q: "How do you handle my resume data?",
-                a: "Google Sign-In secures your account. We don't sell your resume data. Some processing uses trusted service providers as described in our Privacy Policy.",
-              },
-              {
-                q: "Does it work for Canadian jobs?",
-                a: "Yes—clear, keyword-aware resumes for Canada and international applications alike.",
-              },
-              {
-                q: "What is I Love Resumes?",
-                a: "I Love Resumes (iloveresumes.ca) is a free online resume builder focused on tailoring. You sign in with Google, upload or paste a resume, add a job description, review AI-assisted wording and keyword ideas, then export Word or PDF. Core drafting and export are free; no credit card is required.",
-              },
-              {
-                q: "Who should use I Love Resumes?",
-                a: "People who already have a resume draft and want to align bullets, skills, and keywords with a specific job posting—especially in Canada—before submitting through employer portals.",
-              },
-              {
-                q: "How is I Love Resumes different from template-only resume sites?",
-                a: "The default workflow is job-driven: you paste the posting so suggestions target that role’s language and requirements, not only visual layout. Guides cover templates and formats, but tailoring to a job description is the core experience.",
-              },
-            ].map((item) => (
-              <div key={item.q} className="py-5 sm:py-6">
-                <h3 className="text-sm font-semibold text-zinc-900">{item.q}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-zinc-600">{item.a}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <footer className="mt-20 border-t border-zinc-200 pt-12 text-center sm:mt-24 sm:pt-14">
-          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm font-medium text-zinc-600">
-            <Link href="/faq" className="min-h-[44px] min-w-[44px] px-2 py-2 hover:text-zinc-900 focus-visible:rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25">
-              FAQ
-            </Link>
-            <Link href="/blog" className="min-h-[44px] min-w-[44px] px-2 py-2 hover:text-zinc-900 focus-visible:rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25">
-              Blog
-            </Link>
-            <Link href="/resume-builder" className="min-h-[44px] min-w-[44px] px-2 py-2 hover:text-zinc-900 focus-visible:rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25">
-              Guides
-            </Link>
-          </div>
-          <SiteLegalLinks className="mt-5" />
-          <SocialLinks />
-          <p className="mt-6 text-xs text-zinc-500 sm:text-sm">
-            © {new Date().getFullYear()} I Love Resumes · Built by Rajan and Aaftab
-          </p>
-        </footer>
+        <PageFooter className="section-gap" />
       </div>
     </div>
   );

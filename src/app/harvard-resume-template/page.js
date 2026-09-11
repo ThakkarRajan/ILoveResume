@@ -1,6 +1,5 @@
 import Link from "next/link";
 import MarketingGuideLayout from "../../components/seo/MarketingGuideLayout";
-import GuideCta from "../../components/seo/GuideCta";
 import { pageMeta } from "../../config/site";
 
 export const metadata = pageMeta({
@@ -35,7 +34,6 @@ export default function HarvardResumeTemplatePage() {
         <Link href="/blog/harvard-resume-template-canada-guide">Harvard resume template for Canada</Link> covers margins,
         headings, and ATS tweaks in depth.
       </p>
-      <GuideCta />
     </MarketingGuideLayout>
   );
 }

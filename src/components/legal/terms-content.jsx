@@ -26,11 +26,11 @@ export default function TermsContent() {
         <p>
           By accessing or using the Services, you confirm that you have read, understood, and agree to be bound by these
           Terms and our{" "}
-          <Link href="/privacy" className="font-medium text-blue-700 underline-offset-2 hover:underline">
+          <Link href="/privacy" className="font-medium text-[var(--accent)] underline-offset-2 hover:underline">
             Privacy Policy
           </Link>{" "}
           and{" "}
-          <Link href="/cookies" className="font-medium text-blue-700 underline-offset-2 hover:underline">
+          <Link href="/cookies" className="font-medium text-[var(--accent)] underline-offset-2 hover:underline">
             Cookie Policy
           </Link>{" "}
           (each incorporated

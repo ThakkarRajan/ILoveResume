@@ -1,6 +1,5 @@
 import Link from "next/link";
 import MarketingGuideLayout from "../../components/seo/MarketingGuideLayout";
-import GuideCta from "../../components/seo/GuideCta";
 import { pageMeta } from "../../config/site";
 
 export const metadata = pageMeta({
@@ -41,7 +40,6 @@ export default function AtsFriendlyResumePage() {
           <Link href="/how-to-tailor-a-resume-to-a-job-description">Tailor to a job description</Link>
         </li>
       </ul>
-      <GuideCta />
     </MarketingGuideLayout>
   );
 }

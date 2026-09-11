@@ -29,6 +29,9 @@ import {
 } from "lucide-react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import SiteLegalLinks from "../../components/legal/SiteLegalLinks";
+import AppPageLayout from "../../components/ui/AppPageLayout";
+import AppPageHeader from "../../components/ui/AppPageHeader";
+import ExportAccessGate, { canExportResume } from "../../components/legal/ExportAccessGate";
 import "../../utils/firebase.js";
 import { toGithubUrl, toLinkedInUrl, toWebsiteUrl } from "../../utils/resumeContactUrls.js";
 
@@ -125,14 +128,10 @@ export default function WordDownloadPage() {
   useEffect(() => {
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      if (!firebaseUser) {
-        router.push("/");
-      } else {
-        setUser(firebaseUser);
-      }
+      setUser(firebaseUser);
     });
     return () => unsubscribe();
-  }, [router]);
+  }, []);
 
   useEffect(() => {
     try {
@@ -609,7 +608,7 @@ export default function WordDownloadPage() {
   };
 
   const handleDownloadWord = async () => {
-    if (!resumeData) return;
+    if (!resumeData || !canExportResume(user)) return;
     setLoading(true);
     setDownloadType("word");
     
@@ -628,7 +627,7 @@ export default function WordDownloadPage() {
   };
 
   const handleDownloadPDF = async () => {
-    if (!resumeData) return;
+    if (!resumeData || !canExportResume(user)) return;
     setLoading(true);
     setDownloadType("pdf");
 
@@ -860,46 +859,39 @@ export default function WordDownloadPage() {
     }
   };
 
-  if (!user) {
-    return (
-      <div className="flex min-h-dvh items-center justify-center bg-zinc-50 text-sm text-zinc-500">
-        Loading…
-      </div>
-    );
-  }
-
   if (!resumeData && !error) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
+      <div className="flex min-h-screen items-center justify-center bg-[var(--background)] px-4">
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center">
-          <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-2 border-zinc-200 border-t-blue-600 sm:mb-5 sm:h-12 sm:w-12" />
-          <p className="text-sm font-medium text-zinc-700 sm:text-base">Preparing download…</p>
+          <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-2 border-[var(--border)] border-t-[var(--accent)] sm:mb-5 sm:h-12 sm:w-12" />
+          <p className="text-sm font-medium text-[var(--foreground)] sm:text-base">Preparing download…</p>
         </motion.div>
       </div>
     );
   }
 
+  const exportUnlocked = canExportResume(user);
+
   return (
-    <div className="relative min-h-screen bg-zinc-50 text-zinc-900">
-      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center p-4 sm:p-6 lg:p-8">
-        <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }} className="mb-8 text-center sm:mb-10">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl border border-zinc-200 bg-white shadow-sm sm:mb-5 sm:h-16 sm:w-16">
-            <Download className="h-7 w-7 text-emerald-700 sm:h-8 sm:w-8" strokeWidth={1.75} />
+    <AppPageLayout>
+      <div className="mx-auto max-w-3xl">
+        <AppPageHeader
+          eyebrow="Export"
+          title="Download your resume"
+          description="Word for edits and ATS-friendly tweaks; PDF when the employer asks for a fixed layout."
+          actions={
+            <button type="button" onClick={() => router.push("/result")} className="btn btn-secondary">
+              <ArrowLeft className="h-4 w-4" strokeWidth={1.75} />
+              Back to editor
+            </button>
+          }
+        />
+
+        {!exportUnlocked ? (
+          <div className="mb-8">
+            <ExportAccessGate idPrefix="word-download" user={user} onUserChange={setUser} />
           </div>
-          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 sm:text-3xl md:text-4xl">Download your resume</h1>
-          <p className="mt-2 text-sm text-zinc-600 sm:text-base">
-            Word for edits and ATS-friendly tweaks; PDF when the employer asks for a fixed layout.
-          </p>
-          <motion.button
-            type="button"
-            whileTap={{ scale: 0.99 }}
-            onClick={() => router.push("/result")}
-            className="mt-5 inline-flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-800 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25 sm:mt-6"
-          >
-            <ArrowLeft className="h-4 w-4" strokeWidth={1.75} />
-            Back to editor
-          </motion.button>
-        </motion.div>
+        ) : null}
 
         {/* Error Display */}
         {error && (
@@ -920,10 +912,16 @@ export default function WordDownloadPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="w-full max-w-4xl rounded-xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-8"
+          className="panel w-full"
         >
+          <div className="panel-body">
+          {!exportUnlocked ? (
+            <p className="mb-6 rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] px-4 py-3 text-sm text-[var(--text-secondary)]">
+              Complete the terms and sign-in step above to unlock Word and PDF downloads.
+            </p>
+          ) : null}
           {/* Download Options */}
-          <div className="grid grid-cols-1 gap-4 sm:gap-6 mb-6 sm:mb-8 md:grid-cols-2">
+          <div className={`grid grid-cols-1 gap-4 sm:gap-6 mb-6 sm:mb-8 md:grid-cols-2 ${exportUnlocked ? "" : "pointer-events-none opacity-50"}`}>
             {/* Word Document */}
             <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.15 }} className="rounded-xl border border-zinc-200 bg-zinc-50/50 p-6">
               <div className="mb-4 flex items-center gap-4">
@@ -955,7 +953,7 @@ export default function WordDownloadPage() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={handleDownloadWord}
-                disabled={loading}
+                disabled={loading || !exportUnlocked}
                 className={`flex w-full items-center justify-center gap-2 rounded-lg py-3 px-6 text-sm font-semibold text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 ${
                   loading && downloadType === "word" ? "cursor-not-allowed bg-zinc-400" : "bg-zinc-900 hover:bg-zinc-800"
                 }`}
@@ -978,7 +976,7 @@ export default function WordDownloadPage() {
             <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.15 }} className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
               <div className="mb-4 flex items-center gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-50">
-                  <FileImage className="h-6 w-6 text-blue-700" strokeWidth={1.75} />
+                  <FileImage className="h-6 w-6 text-[var(--accent)]" strokeWidth={1.75} />
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900">PDF Document</h3>
@@ -1005,7 +1003,7 @@ export default function WordDownloadPage() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={handleDownloadPDF}
-                disabled={loading}
+                disabled={loading || !exportUnlocked}
                 className={`flex w-full items-center justify-center gap-2 rounded-lg py-3 px-6 text-sm font-semibold text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 ${
                   loading && downloadType === "pdf" ? "cursor-not-allowed bg-blue-300" : "bg-blue-600 hover:bg-blue-700"
                 }`}
@@ -1065,7 +1063,7 @@ export default function WordDownloadPage() {
                 <Clock className="w-5 h-5 text-blue-600" />
                 <div>
                   <p className="text-sm font-medium text-blue-900">Fast export</p>
-                  <p className="text-xs text-blue-700">Usually ready in seconds</p>
+                  <p className="text-xs text-[var(--accent)]">Usually ready in seconds</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 rounded-lg border border-zinc-200 bg-zinc-50 p-3">
@@ -1081,8 +1079,9 @@ export default function WordDownloadPage() {
           <div className="mt-8 border-t border-zinc-200 pt-6">
             <SiteLegalLinks />
           </div>
+          </div>
         </motion.div>
       </div>
-    </div>
+    </AppPageLayout>
   );
 }

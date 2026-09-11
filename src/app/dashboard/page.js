@@ -12,7 +12,6 @@ import {
 } from "firebase/storage";
 import { collection, addDoc, Timestamp } from "firebase/firestore";
 import { storage, db } from "../../utils/firebase.js";
-import { Toaster } from "react-hot-toast";
 import { 
   showSuccess, 
   showError, 
@@ -53,14 +52,19 @@ import {
   Home,
   Loader2,
 } from "lucide-react";
-import { getAuth, signInWithCredential, GoogleAuthProvider, onAuthStateChanged } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { wakeBackend, API_BASE, processText } from "../../utils/api.js";
 import { getEmptyResumeDraft } from "../../utils/emptyResumeDraft.js";
 import { unescapeHtml } from "../../utils/safeHtml";
 import SiteLegalLinks from "../../components/legal/SiteLegalLinks";
+import AppPageLayout from "../../components/ui/AppPageLayout";
+import AppPageHeader from "../../components/ui/AppPageHeader";
+import EmptyState from "../../components/ui/EmptyState";
 
 const JOB_DESCRIPTION_MAX_CHARS = 15_000;
 const RESUME_TEXT_MAX_CHARS = 50_000;
+
+const recentResultsKey = (email) => `recentResults_${email?.toLowerCase() || "guest"}`;
 
 export default function Dashboard() {
   const router = useRouter();
@@ -88,22 +92,20 @@ export default function Dashboard() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
+    wakeBackend();
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      if (!firebaseUser) {
-        router.push("/");
-      } else {
-        setUser(firebaseUser);
-        wakeBackend(); // Ensure backend is awake before user submits resume
-      }
+      setUser(firebaseUser);
     });
     return () => unsubscribe();
-  }, [router]);
+  }, []);
 
-  useEffect(() => { 
-    if (user) {
+  useEffect(() => {
+    loadRecentResults();
+    if (user?.email) {
       fetchUploadedResumes();
-      loadRecentResults();
+    } else {
+      setUploadedResumes([]);
     }
   }, [user]);
 
@@ -176,12 +178,13 @@ export default function Dashboard() {
 
       setUploadedResumes(files.filter(Boolean));
     } catch (error) {
-      showError("We couldn't load your uploaded files. Refresh and try again.");
+      showError("Couldn't load your files");
       setUploadedResumes([]);
     }
   };
 
   const handleDelete = async (file) => {
+    if (!user?.email) return;
     try {
       await deleteObject(ref(storage, file.path));
 
@@ -247,12 +250,15 @@ export default function Dashboard() {
     let resumeText = "";
     if (uploadMode === "pdf") {
       if (pdfFile) {
+        fileName = pdfFile.name;
+        if (!user?.email) {
+          return { success: true, fileName };
+        }
         setLoadingPhase("upload");
         setUploadAttempts(1);
         const userEmail = user.email.toLowerCase();
-        fileName = pdfFile.name;
         const storageRef = ref(storage, `resumes/${userEmail}/${fileName}`);
-        const uploadToast = showLoading("Uploading your PDF…");
+        const uploadToast = showLoading("Uploading...");
         let uploadSuccess = false;
         let uploadAttemptsLocal = 0;
         while (!uploadSuccess && uploadAttemptsLocal < 3) {
@@ -311,27 +317,31 @@ export default function Dashboard() {
         return { success: false };
       }
       const firestoreEmail = user?.email?.toLowerCase();
-      try {
-        await addDoc(collection(db, `submissions/${firestoreEmail}/entries`), {
-          jobText,
-          resumeUrl: fileURL,
-          uploadedAt: Timestamp.now(),
-          fileName: fileName,
-        });
-      } catch (firestoreError) {}
+      if (firestoreEmail) {
+        try {
+          await addDoc(collection(db, `submissions/${firestoreEmail}/entries`), {
+            jobText,
+            resumeUrl: fileURL,
+            uploadedAt: Timestamp.now(),
+            fileName: fileName,
+          });
+        } catch (firestoreError) {}
+      }
       return { success: true, fileURL, fileName };
     } else {
       // Text resume
       fileName = `text-resume-${Date.now()}.txt`;
       const email = user?.email?.toLowerCase();
-      try {
-        await addDoc(collection(db, `submissions/${email}/entries`), {
-          jobText,
-          resumeText: textResume,
-          uploadedAt: Timestamp.now(),
-          fileName: fileName,
-        });
-      } catch (firestoreError) {}
+      if (email) {
+        try {
+          await addDoc(collection(db, `submissions/${email}/entries`), {
+            jobText,
+            resumeText: textResume,
+            uploadedAt: Timestamp.now(),
+            fileName: fileName,
+          });
+        } catch (firestoreError) {}
+      }
       return { success: true, fileName };
     }
   };
@@ -342,7 +352,7 @@ export default function Dashboard() {
     if (uploadMode === "pdf") {
       if (pdfFile) {
         setLoadingPhase("extract");
-        const extractToast = showLoading("Reading your PDF…");
+        const extractToast = showLoading("Reading PDF...");
         try {
           if (!navigator.onLine) throw new Error("No internet connection. Please check your network.");
           if (pdfFile.size > 10 * 1024 * 1024) throw new Error("File size too large. Please upload a PDF under 10MB.");
@@ -401,17 +411,17 @@ export default function Dashboard() {
           setProgress(0);
           setLoadingPhase('idle');
           if (extractError.name === 'AbortError') {
-            showError("Request timed out. Please try again.");
+            showError("Timed out");
           } else if (extractError.message.includes('network') || extractError.message.includes('fetch') || extractError.name === 'TypeError') {
             showNetworkRetry();
           } else {
-            showError("Something went wrong. Please try again.");
+            showError("Something broke");
           }
           return { success: false };
         }
       } else if (selectedResume) {
         setLoadingPhase("extract");
-        const extractToast = showLoading("Reading your selected PDF…");
+        const extractToast = showLoading("Reading PDF...");
         try {
           if (!navigator.onLine) throw new Error("No internet connection. Please check your network.");
           const controller = new AbortController();
@@ -434,7 +444,7 @@ export default function Dashboard() {
           }
           const json = await extractRes.json();
           if (!json.text || json.text.trim() === '') {
-            showError("PDF could not be read. Try a different file or ensure it has selectable text.");
+            showError("Couldn't read that PDF");
             dismissToast(extractToast);
             setLoading(false);
             setProgress(0);
@@ -442,7 +452,7 @@ export default function Dashboard() {
             return { success: false };
           }
           if (json.text.trim().length < 100) {
-            showError("The PDF seems too short. Please upload a full resume.");
+            showError("PDF too short");
             dismissToast(extractToast);
             setLoading(false);
             setProgress(0);
@@ -454,7 +464,7 @@ export default function Dashboard() {
           const textLower = json.text.toLowerCase();
           const keywordMatches = resumeKeywords.filter(keyword => textLower.includes(keyword));
           if (keywordMatches.length < 2) {
-            showError("This doesn't look like a resume. Please upload a resume PDF.");
+            showError("Doesn't look like a resume");
             dismissToast(extractToast);
             setLoading(false);
             setProgress(0);
@@ -468,11 +478,11 @@ export default function Dashboard() {
           setProgress(0);
           setLoadingPhase('idle');
           if (extractError.name === 'AbortError') {
-            showError("Request timed out. Please try again.");
+            showError("Timed out");
           } else if (extractError.message.includes('network') || extractError.message.includes('fetch') || extractError.name === 'TypeError') {
             showNetworkRetry();
           } else {
-            showError("Something went wrong. Please try again.");
+            showError("Something broke");
           }
           return { success: false };
         }
@@ -490,7 +500,7 @@ export default function Dashboard() {
     let aiData = null;
     let retryCount = 0;
     const maxRetries = 5;
-    const aiToast = showLoading("Tailoring your resume to this posting…");
+    const aiToast = showLoading("Tailoring...");
     while (retryCount < maxRetries) {
       try {
         const processRes = await processText(resumeText, jobText);
@@ -521,7 +531,7 @@ export default function Dashboard() {
         aiData = await processRes.json();
         if (!aiData?.structured) {
           dismissToast(aiToast);
-          showError("Something went wrong. Please try again.");
+          showError("Something broke");
           setLoading(false);
           setProgress(0);
           setLoadingPhase('idle');
@@ -559,7 +569,7 @@ export default function Dashboard() {
           return { success: false };
         }
         await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
-        showError("Please try again in a moment.");
+        showError("Try again in a sec");
       }
     }
     localStorage.setItem("tailoredResume", JSON.stringify(aiData.structured));
@@ -708,7 +718,7 @@ export default function Dashboard() {
   // Load recent results from localStorage
   const loadRecentResults = () => {
     try {
-      const stored = localStorage.getItem(`recentResults_${user?.email}`);
+      const stored = localStorage.getItem(recentResultsKey(user?.email));
       if (stored) {
         const parsed = JSON.parse(stored);
         setRecentResults(parsed);
@@ -721,9 +731,6 @@ export default function Dashboard() {
   // Save result to recent results (only keep the latest one)
   const saveToRecentResults = (resultData, jobText, fileNameOverride = null) => {
     try {
-      const email = user?.email;
-      if (!email) return;
-
       const newResult = {
         id: Date.now(),
         timestamp: new Date().toISOString(),
@@ -732,8 +739,7 @@ export default function Dashboard() {
         fileName: fileNameOverride || pdfFile?.name || `text-resume-${Date.now()}.txt`
       };
 
-      // Store only the latest result
-      localStorage.setItem(`recentResults_${email}`, JSON.stringify([newResult]));
+      localStorage.setItem(recentResultsKey(user?.email), JSON.stringify([newResult]));
       setRecentResults([newResult]);
     } catch (error) {
       // console.error("Error saving recent result:", error);
@@ -751,21 +757,18 @@ export default function Dashboard() {
       setShowResultSkeleton(true);
       setTimeout(() => router.push("/result"), 400);
     } catch (error) {
-      showError("Couldn't open that draft. Try again.");
+      showError("Couldn't open draft");
     }
   };
 
   // Delete the recent result
   const deleteRecentResult = () => {
     try {
-      const email = user?.email;
-      if (!email) return;
-
-      localStorage.removeItem(`recentResults_${email}`);
+      localStorage.removeItem(recentResultsKey(user?.email));
       setRecentResults([]);
-      showSuccess("Draft removed from this device");
+      showSuccess("Draft deleted");
     } catch (error) {
-      showError("Couldn't remove that draft.");
+      showError("Couldn't delete draft");
     }
   };
 
@@ -784,14 +787,6 @@ export default function Dashboard() {
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#039;");
-
-  if (!user) {
-    return (
-      <div className="flex min-h-dvh items-center justify-center bg-zinc-50 text-sm text-zinc-500">
-        Loading your workspace…
-      </div>
-    );
-  }
 
   if (loading) {
     const phaseLabel =
@@ -825,7 +820,7 @@ export default function Dashboard() {
           </p>
           <div className="mt-6 h-2 w-full overflow-hidden rounded-full bg-zinc-100">
             <motion.div
-              className="h-full rounded-full bg-blue-600"
+              className="h-full rounded-full bg-[var(--accent)]"
               initial={{ width: 0 }}
               animate={{ width: `${progress}%` }}
               transition={{ duration: 0.35, ease: "easeOut" }}
@@ -841,7 +836,7 @@ export default function Dashboard() {
               <span
                 key={step.id}
                 className={`rounded-full border px-2.5 py-1 ${
-                  loadingPhase === step.id ? "border-blue-200 bg-blue-50 text-blue-900" : "border-zinc-200 bg-zinc-50 text-zinc-500"
+                  loadingPhase === step.id ? "border-[var(--accent-subtle)] bg-[var(--accent-muted)] text-[var(--accent-hover)]" : "border-[var(--border)] bg-[var(--surface-inset)] text-[var(--muted)]"
                 }`}
               >
                 {step.label}
@@ -878,34 +873,13 @@ export default function Dashboard() {
     );
   }
 
+  const canSubmit =
+    jobText.trim() &&
+    ((uploadMode === "pdf" && (pdfFile || selectedResume)) || (uploadMode === "text" && textResume.trim()));
+
   return (
-    <div className="relative min-h-screen min-w-0 bg-zinc-50">
-      <Toaster 
-        position="top-center"
-        toastOptions={{
-          duration: 4000,
-          style: {
-            background: '#363636',
-            color: '#fff',
-            borderRadius: '12px',
-          },
-        }}
-      />
-      
-      <motion.button
-        type="button"
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.15, duration: 0.2 }}
-        whileTap={{ scale: 0.97 }}
-        onClick={clearForm}
-        className="group fixed z-40 flex h-14 w-14 items-center justify-center rounded-full border border-zinc-200 bg-white text-zinc-900 shadow-md transition-colors hover:border-zinc-300 hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25 bottom-[max(1.25rem,env(safe-area-inset-bottom))] right-[max(1.25rem,env(safe-area-inset-right))] sm:bottom-[max(2rem,env(safe-area-inset-bottom))] sm:right-[max(2rem,env(safe-area-inset-right))]"
-        title="Clear all fields"
-      >
-        <Plus className="h-6 w-6 transition-transform group-hover:rotate-45" strokeWidth={1.75} />
-      </motion.button>
-      
-      <div className="mx-auto max-w-7xl px-page py-5 sm:py-8">
+    <AppPageLayout className="pb-24 lg:pb-0">
+      <div className="mx-auto max-w-7xl">
         {/* Network Status Warning */}
         {!isOnline && (
           <motion.div
@@ -923,39 +897,36 @@ export default function Dashboard() {
           </motion.div>
         )}
         
-        {/* Header Section */}
-        <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }} className="mb-10 text-center sm:mb-12">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl border border-zinc-200 bg-white shadow-sm sm:mb-5 sm:h-14 sm:w-14">
-            <Home className="h-6 w-6 text-blue-700 sm:h-7 sm:w-7" strokeWidth={1.75} />
-          </div>
-          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 sm:text-3xl md:text-4xl">
-            Welcome back{user?.displayName ? `, ${user.displayName.split(" ")[0]}` : ""}
-          </h1>
-          <p className="mt-2 text-sm text-zinc-600 sm:text-base">
-            Add a job description and your resume to generate a tailored draft—or open the editor with sample sections you can
-            replace in minutes.
-          </p>
-          <div className="mt-6 flex w-full max-w-md flex-col items-stretch justify-center gap-2 min-[420px]:max-w-none min-[420px]:flex-row min-[420px]:items-center min-[420px]:gap-4 sm:mt-8">
-            <button
-              type="button"
-              onClick={openScratchEditor}
-              className="inline-flex min-h-[44px] w-full min-w-0 items-center justify-center gap-2 rounded-lg border border-zinc-200 bg-white px-3 py-2.5 text-sm font-medium text-zinc-800 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25 min-[420px]:w-auto min-[420px]:px-4"
-            >
-              <Edit3 className="h-4 w-4 shrink-0 text-blue-700" strokeWidth={1.75} />
-              <span className="text-center">Start from a sample resume</span>
-            </button>
-            {recentResults.length > 0 && (
-              <button
-                type="button"
-                onClick={() => setShowRecentResults(true)}
-                className="inline-flex min-h-[44px] w-full min-w-0 items-center justify-center gap-2 rounded-lg border border-zinc-200 bg-white px-3 py-2.5 text-sm font-medium text-zinc-800 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25 min-[420px]:w-auto min-[420px]:px-4"
-              >
-                <Clock className="h-4 w-4 shrink-0 text-zinc-500" strokeWidth={1.75} />
-                Recent draft
+        <AppPageHeader
+          eyebrow="Resume tailoring"
+          title={user?.displayName ? `Welcome back, ${user.displayName.split(" ")[0]}` : "Tailor your resume"}
+          description="Paste the job posting, add your resume, then generate a tailored draft you can edit and export."
+          workflowSteps={[
+            { id: "job", label: "Job posting" },
+            { id: "resume", label: "Your resume" },
+            { id: "edit", label: "Edit draft" },
+            { id: "export", label: "Export" },
+          ]}
+          workflowCurrent={0}
+          actions={
+            <>
+              <button type="button" onClick={clearForm} className="btn btn-ghost" title="Clear all fields">
+                <X className="h-4 w-4" />
+                Clear
               </button>
-            )}
-          </div>
-        </motion.div>
+              <button type="button" onClick={openScratchEditor} className="btn btn-secondary">
+                <Edit3 className="h-4 w-4" strokeWidth={1.75} />
+                Sample resume
+              </button>
+              {recentResults.length > 0 && (
+                <button type="button" onClick={() => setShowRecentResults(true)} className="btn btn-secondary">
+                  <Clock className="h-4 w-4" strokeWidth={1.75} />
+                  Recent draft
+                </button>
+              )}
+            </>
+          }
+        />
 
         <div className="grid lg:grid-cols-3 gap-6 sm:gap-8">
           {/* Main Content */}
@@ -965,34 +936,21 @@ export default function Dashboard() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="min-w-0 max-w-full rounded-xl border border-zinc-200 bg-white p-4 shadow-sm sm:p-8"
+              className="panel min-w-0 max-w-full"
             >
-              <div className="mb-4 flex items-start justify-between gap-2 sm:mb-6 sm:gap-3 sm:items-center">
-                <div className="flex min-w-0 flex-1 items-start gap-2.5 sm:items-center sm:gap-3 sm:mr-4">
-                  <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-blue-100 sm:mt-0 sm:h-12 sm:w-12">
-                    <Briefcase className="h-5 w-5 text-blue-600 sm:h-6 sm:w-6" />
-                  </div>
-                  <div className="min-w-0 text-left">
-                    <h2 className="text-xl font-semibold text-gray-900 sm:text-2xl">Job description</h2>
-                    <p className="text-sm text-gray-500 sm:text-base">
-                      Paste the full posting: role overview, requirements, and responsibilities (max{" "}
-                      {JOB_DESCRIPTION_MAX_CHARS.toLocaleString()} characters).
-                    </p>
-                  </div>
+              <div className="panel-header">
+                <div className="min-w-0">
+                  <p className="mb-1 text-xs font-semibold tabular-nums text-[var(--accent)]">Step 1</p>
+                  <h2 className="panel-title">Job description</h2>
+                  <p className="panel-desc">
+                    Paste the full posting—role overview, requirements, responsibilities (max{" "}
+                    {JOB_DESCRIPTION_MAX_CHARS.toLocaleString()} chars).
+                  </p>
                 </div>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={clearForm}
-                  className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-gray-400 transition-colors hover:text-red-500 sm:h-12 sm:w-12"
-                  title="Clear job description field"
-                >
-                  <X className="h-4 w-4 sm:h-5 sm:w-5" />
-                </motion.button>
               </div>
-
+              <div className="panel-body">
         <textarea
-                className="h-40 w-full resize-none rounded-lg border border-zinc-200 p-4 text-base text-zinc-900 transition-colors focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15 sm:h-48 sm:p-5 sm:text-lg"
+                className="input-field input-field-lg h-40 resize-none sm:h-48"
                 placeholder="Paste the job description here—including must-have skills, tools, and responsibilities."
           value={unescapeHtml(jobText)}
           onChange={(e) => setJobText(e.target.value.slice(0, JOB_DESCRIPTION_MAX_CHARS))}
@@ -1009,6 +967,7 @@ export default function Dashboard() {
                   <span>{jobText.length.toLocaleString()} / {JOB_DESCRIPTION_MAX_CHARS.toLocaleString()} characters</span>
                 </motion.div>
               )}
+              </div>
             </motion.div>
 
             {/* Resume Upload Card */}
@@ -1016,28 +975,26 @@ export default function Dashboard() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="min-w-0 max-w-full rounded-xl border border-zinc-200 bg-white p-4 shadow-sm sm:p-8"
+              className="panel min-w-0 max-w-full"
             >
-              <div className="mb-5 flex items-start gap-2.5 sm:mb-6 sm:items-center sm:gap-3">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-green-100">
-                  <Upload className="h-6 w-6 text-green-600" />
-                </div>
-                <div className="min-w-0 text-left">
-                  <h2 className="text-xl font-semibold text-gray-900 sm:text-2xl">Your resume</h2>
-                  <p className="text-sm text-gray-500">Upload a PDF or paste the full text of your resume.</p>
+              <div className="panel-header">
+                <div className="min-w-0">
+                  <p className="mb-1 text-xs font-semibold tabular-nums text-[var(--accent)]">Step 2</p>
+                  <h2 className="panel-title">Your resume</h2>
+                  <p className="panel-desc">Upload a PDF or paste the full text of your resume.</p>
                 </div>
               </div>
-
+              <div className="panel-body">
               {/* Upload Mode Toggle */}
               <div className="mb-6">
-                <div className="flex flex-col gap-1 rounded-xl bg-gray-100 p-1 sm:flex-row">
+                <div className="flex flex-col gap-1 rounded-lg bg-zinc-100 p-1 sm:flex-row">
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => switchUploadMode("pdf")}
                     className={`flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200 sm:py-2 ${
                       uploadMode === "pdf"
-                        ? "bg-white text-blue-700 shadow-sm ring-1 ring-zinc-200/80"
+                        ? "bg-white text-[var(--accent)] shadow-sm ring-1 ring-[var(--border)]/80"
                         : "text-zinc-600 hover:text-zinc-900"
                     }`}
                   >
@@ -1050,7 +1007,7 @@ export default function Dashboard() {
                     onClick={() => switchUploadMode("text")}
                     className={`flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200 sm:py-2 ${
                       uploadMode === "text"
-                        ? "bg-white text-blue-700 shadow-sm ring-1 ring-zinc-200/80"
+                        ? "bg-white text-[var(--accent)] shadow-sm ring-1 ring-[var(--border)]/80"
                         : "text-zinc-600 hover:text-zinc-900"
                     }`}
                   >
@@ -1073,7 +1030,7 @@ export default function Dashboard() {
                     <div
                       className={`relative border-2 border-dashed rounded-2xl p-4 text-center transition-all duration-200 sm:p-8 ${
                         dragActive 
-                          ? "border-blue-500 bg-blue-50/60"
+                          ? "border-[var(--accent)] bg-[var(--accent-muted)]/60"
                           : "border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50"
                       }`}
                       onDragEnter={handleDrag}
@@ -1138,7 +1095,7 @@ export default function Dashboard() {
         </div>
 
                     <textarea
-                      className="h-64 w-full resize-none rounded-lg border border-zinc-200 p-5 text-base text-zinc-900 transition-colors focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15 sm:text-lg"
+                      className="input-field input-field-lg h-64 resize-none sm:text-lg"
                       placeholder="Paste your full resume—experience, skills, education, and links. Clear section headings help us map your content accurately."
                       value={unescapeHtml(textResume)}
                       onChange={(e) => setTextResume(e.target.value.slice(0, RESUME_TEXT_MAX_CHARS))}
@@ -1158,36 +1115,34 @@ export default function Dashboard() {
                   </motion.div>
                 )}
               </AnimatePresence>
+              </div>
             </motion.div>
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-8">
+          <div className="space-y-6">
             {/* Previous Resumes Card */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 }}
-              className="min-w-0 max-w-full rounded-xl border border-zinc-200 bg-white p-4 shadow-sm sm:p-6"
+              className="panel min-w-0 max-w-full"
             >
-              <div className="mb-5 flex items-start gap-2.5 sm:mb-6 sm:items-center sm:gap-3">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-orange-100">
-                  <FileText className="h-6 w-6 text-orange-600" />
-                </div>
-                <div className="min-w-0 text-left">
-                    <h2 className="text-xl font-semibold text-gray-900">Your uploads</h2>
-                    <p className="text-gray-500">{uploadedResumes.length} files</p>
-                    <p className="text-sm text-gray-500">Select a file to reuse for the next tailored version.</p>
+              <div className="panel-header">
+                <div className="min-w-0">
+                  <h2 className="panel-title">Saved uploads</h2>
+                  <p className="panel-desc">
+                    {uploadedResumes.length} file{uploadedResumes.length === 1 ? "" : "s"} — select to reuse
+                  </p>
                 </div>
               </div>
-
+              <div className="panel-body">
               {uploadedResumes.length === 0 ? (
-                <div className="text-center py-8">
-                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <FileText className="w-8 h-8 text-gray-400" />
-                  </div>
-                  <p className="text-gray-500">No PDFs uploaded yet</p>
-                </div>
+                <EmptyState
+                  icon={FileText}
+                  title="No uploads yet"
+                  description="Upload a PDF above and it will appear here for reuse."
+                />
               ) : (
                 <div className="space-y-3">
                   {uploadedResumes.map((resume) => (
@@ -1198,7 +1153,7 @@ export default function Dashboard() {
                       whileHover={{ scale: 1.02 }}
                       className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 ${
                         selectedResume?.path === resume.path
-                          ? "border-blue-500 bg-blue-50/50 shadow-sm"
+                          ? "border-[var(--accent)] bg-[var(--accent-muted)]/50 shadow-sm"
                           : "border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50"
                       }`}
                       onClick={() => {
@@ -1226,7 +1181,7 @@ export default function Dashboard() {
                               e.stopPropagation();
                               window.open(resume.url, '_blank');
                             }}
-                            className="inline-flex h-11 w-11 items-center justify-center rounded-md text-gray-400 transition-colors hover:text-blue-500"
+                            className="inline-flex h-11 w-11 items-center justify-center rounded-md text-[var(--muted)] transition-colors hover:text-[var(--accent)]"
                             title="Download"
                           >
                             <Download className="h-4 w-4" />
@@ -1249,57 +1204,54 @@ export default function Dashboard() {
                   ))}
                 </div>
               )}
+              </div>
             </motion.div>
 
-            {/* Submit Button */}
+            {/* Submit — desktop sidebar */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
+              className="hidden lg:block"
             >
-              <div className="mt-4">
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+              <button
+                type="button"
                 onClick={handleSubmit}
-                disabled={
-                  !jobText.trim() ||
-                  (uploadMode === "pdf" && !pdfFile && !selectedResume) ||
-                  (uploadMode === "text" && !textResume.trim())
-                }
-                className="w-full rounded-lg bg-zinc-900 py-4 text-base font-semibold text-white shadow-sm transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 focus-visible:ring-offset-2 sm:py-4 sm:text-lg"
+                disabled={!canSubmit}
+                className="btn btn-primary w-full py-3.5 text-base"
               >
-                <div className="flex items-center justify-center space-x-3">
-                  <Sparkles className="w-6 h-6" />
-                  <span>Tailor my resume</span>
-                  <ArrowRight className="w-5 h-5" />
-                </div>
-              </motion.button>
-              </div>
-              
-              {(!jobText.trim() || (uploadMode === "pdf" && !pdfFile && !selectedResume) || (uploadMode === "text" && !textResume.trim())) && (
-          <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-xl"
-                >
-                  <div className="flex items-start gap-2 sm:items-center">
-                    <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-amber-600 sm:mt-0" />
-                    <p className="min-w-0 text-sm font-medium text-amber-800">
-                      {!jobText.trim()
-                        ? "Add a job description to continue"
-                        : uploadMode === "pdf"
-                          ? "Upload or select a PDF to continue"
-                          : "Paste your resume text to continue"}
-                    </p>
-                  </div>
-                </motion.div>
+                <Sparkles className="h-5 w-5" />
+                Tailor my resume
+                <ArrowRight className="h-5 w-5" />
+              </button>
+              {!canSubmit && (
+                <p className="mt-3 flex items-start gap-2 text-sm text-amber-800">
+                  <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+                  {!jobText.trim()
+                    ? "Add a job description to continue"
+                    : uploadMode === "pdf"
+                      ? "Upload or select a PDF to continue"
+                      : "Paste your resume text to continue"}
+                </p>
               )}
             </motion.div>
           </div>
         </div>
 
-        <div className="mt-12 border-t border-zinc-200 pt-10 pb-6">
+        {/* Mobile sticky CTA */}
+        <div className="sticky-cta-bar lg:hidden">
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={!canSubmit}
+            className="btn btn-primary w-full"
+          >
+            <Sparkles className="h-4 w-4" />
+            Tailor my resume
+          </button>
+        </div>
+
+        <div className="mt-8 border-t border-zinc-200 pt-6 pb-6">
           <SiteLegalLinks />
         </div>
       </div>
@@ -1318,7 +1270,7 @@ export default function Dashboard() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.98, opacity: 0 }}
               transition={{ duration: 0.15 }}
-              className="w-full max-w-md rounded-xl border border-zinc-200 bg-white p-6 shadow-xl"
+              className="modal-panel w-full max-w-md rounded-xl border border-zinc-200 bg-white p-5 shadow-xl sm:p-6"
               aria-busy={isDeletingResume}
             >
               <div className="text-center">
@@ -1375,12 +1327,12 @@ export default function Dashboard() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.98, opacity: 0 }}
               transition={{ duration: 0.15 }}
-              className="relative w-full max-w-md overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-xl sm:max-w-lg"
+              className="relative flex w-full max-h-[min(90dvh,100%)] max-w-md flex-col overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-xl sm:max-w-lg"
             >
               <div className="flex items-start justify-between gap-3 border-b border-zinc-200 bg-zinc-50/80 px-5 py-4 sm:px-6">
                 <div className="flex min-w-0 items-center gap-3">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-zinc-200 bg-white">
-                    <Clock className="h-5 w-5 text-blue-700" strokeWidth={1.75} />
+                    <Clock className="h-5 w-5 text-[var(--accent)]" strokeWidth={1.75} />
                   </div>
                   <div className="min-w-0">
                     <h3 className="text-base font-semibold text-zinc-900 sm:text-lg">Recent drafts</h3>
@@ -1398,7 +1350,7 @@ export default function Dashboard() {
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <div className="px-5 py-6 sm:px-6">
+              <div className="min-h-0 flex-1 overflow-y-auto px-5 py-6 sm:px-6">
                 {recentResults.length === 0 ? (
                   <div className="py-6 text-center">
                     <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-zinc-100">
@@ -1439,7 +1391,7 @@ export default function Dashboard() {
                         <button
                           type="button"
                           onClick={loadRecentResult}
-                          className="mt-4 w-full rounded-lg bg-zinc-900 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30"
+                          className="btn btn-primary mt-4 w-full"
                         >
                           Open in editor
                         </button>
@@ -1464,6 +1416,6 @@ export default function Dashboard() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </AppPageLayout>
   );
 }

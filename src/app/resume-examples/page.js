@@ -1,6 +1,5 @@
 import Link from "next/link";
 import MarketingGuideLayout from "../../components/seo/MarketingGuideLayout";
-import GuideCta from "../../components/seo/GuideCta";
 import { pageMeta } from "../../config/site";
 
 export const metadata = pageMeta({
@@ -41,7 +40,6 @@ export default function ResumeExamplesPage() {
           <Link href="/blog/best-skills-to-put-on-resume-canada">Skills for your resume</Link> (blog)
         </li>
       </ul>
-      <GuideCta />
     </MarketingGuideLayout>
   );
 }

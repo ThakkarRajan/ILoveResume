@@ -35,7 +35,7 @@ export default function PdfUploader({ onExtract }) {
       }
       onExtract(data.text || "No selectable text found in this PDF. Try a text-based export or paste your resume as text.");
     } catch (error) {
-      showError("Something went wrong. Please try again.");
+      showError("Something broke");
     } finally {
       setLoading(false);
     }

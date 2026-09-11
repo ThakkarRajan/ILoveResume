@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Toaster } from "react-hot-toast";
 import { 
   showSuccess, 
   showError, 
@@ -40,13 +39,9 @@ import {
   Code,
   Save,
   Download,
-  Plus,
   X,
   CheckCircle,
   AlertCircle,
-  Sparkles,
-  Edit3,
-  Trash2,
   ArrowLeft,
   Star
 } from "lucide-react";
@@ -54,6 +49,12 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import "../../utils/firebase.js";
 import { unescapeHtml } from "../../utils/safeHtml";
 import SiteLegalLinks from "../../components/legal/SiteLegalLinks";
+import ExportAccessGate, { canExportResume } from "../../components/legal/ExportAccessGate";
+import ExperienceSectionEditor from "../../components/editor/ExperienceSectionEditor";
+import SkillsSectionEditor from "../../components/editor/SkillsSectionEditor";
+import EducationSectionEditor from "../../components/editor/EducationSectionEditor";
+import ProjectsSectionEditor from "../../components/editor/ProjectsSectionEditor";
+import CertificatesSectionEditor from "../../components/editor/CertificatesSectionEditor";
 
 // Utility to escape HTML special characters (display only, not inputs)
 const escapeHtml = (unsafe) =>
@@ -64,110 +65,14 @@ const escapeHtml = (unsafe) =>
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
 
-// Highlights Editor Component
-const HighlightsEditor = ({ highlights = [], onChange, placeholder = "Add a bullet: action, scope, outcome…" }) => {
-  const [inputValue, setInputValue] = useState("");
-  
-  // Ensure highlights is always an array
-  const safeHighlights = Array.isArray(highlights) ? highlights : [];
-
-  const handleAddKeyDown = (e) => {
-    if (e.key !== "Enter" || e.shiftKey) return;
-    e.preventDefault();
-    if (!inputValue.trim()) {
-      showHighlightError();
-      return;
-    }
-    const newHighlights = [...safeHighlights, inputValue.trim()];
-    onChange(newHighlights);
-    setInputValue("");
-    const isCertificate = /certific/i.test(placeholder);
-    showHighlightAdded(isCertificate);
-  };
-
-  const handleRemoveHighlight = (index) => {
-    const newHighlights = safeHighlights.filter((_, i) => i !== index);
-    onChange(newHighlights);
-  };
-
-  const handleEditHighlight = (index, newValue) => {
-    const newHighlights = [...safeHighlights];
-    newHighlights[index] = newValue;
-    onChange(newHighlights);
-  };
-
-  const rowsForText = (text, { min = 4, max = 24 } = {}) =>
-    Math.min(max, Math.max(min, (String(text || "").split("\n").length || 1) + 2));
-
-  return (
-    <div className="w-full min-w-0 space-y-3">
-      <div className="w-full min-w-0">
-        <textarea
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          onKeyDown={handleAddKeyDown}
-          rows={rowsForText(inputValue, { min: 3, max: 16 })}
-          placeholder={placeholder}
-          className="min-h-[4.5rem] w-full resize-y rounded-lg border border-zinc-200 bg-white px-3 py-2.5 text-sm leading-relaxed text-zinc-900 placeholder:text-zinc-400 transition-colors focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15 sm:text-[0.9375rem]"
-        />
-        <p className="mt-1.5 text-xs text-zinc-500">
-          <span className="font-medium text-zinc-600">Enter</span> saves a bullet.{" "}
-          <span className="font-medium text-zinc-600">Shift+Enter</span> starts a new line in the same bullet.
-        </p>
-      </div>
-
-      <div className="w-full min-w-0 space-y-3">
-        {safeHighlights.map((highlight, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="flex w-full min-w-0 items-start gap-3 group"
-          >
-            <div className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-blue-600" aria-hidden />
-            <div className="min-w-0 flex-1">
-              <textarea
-                value={unescapeHtml(highlight)}
-                onChange={(e) => handleEditHighlight(index, e.target.value)}
-                rows={rowsForText(highlight)}
-                className="min-h-[6rem] w-full resize-y rounded-lg border border-zinc-200 bg-white px-3 py-2.5 text-sm leading-relaxed text-zinc-900 transition-colors focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15 sm:text-[0.9375rem]"
-                placeholder="Edit bullet…"
-                spellCheck
-              />
-            </div>
-            <motion.button
-              type="button"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => handleRemoveHighlight(index)}
-              className="mt-1 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-red-600 transition-colors hover:bg-red-50 hover:text-red-700"
-              title="Remove bullet"
-            >
-              <X className="h-4 w-4" />
-            </motion.button>
-          </motion.div>
-        ))}
-      </div>
-
-      {/* Empty state */}
-      {safeHighlights.length === 0 && (
-        <div className="text-center py-4 text-gray-500 text-sm">
-          No bullets yet. Type above, then press Enter to add one (Shift+Enter for a line break before you add).
-        </div>
-      )}
-    </div>
-  );
-};
-
 function ResultLoadingScreen({ title, subtitle, icon: Icon = FileText }) {
   return (
-    <div className="flex min-h-dvh items-center justify-center bg-gradient-to-b from-zinc-50 to-zinc-100/90 px-4 py-12">
+    <div className="flex min-h-dvh items-center justify-center bg-[var(--background)] px-page py-8">
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-        className="w-full max-w-md rounded-2xl border border-zinc-200/90 bg-white/95 p-8 text-center shadow-lg shadow-zinc-300/40 backdrop-blur-sm sm:p-10"
+        className="card-elevated w-full max-w-md p-8 text-center sm:p-10"
       >
         <Image
           src="/logo.png"
@@ -179,12 +84,12 @@ function ResultLoadingScreen({ title, subtitle, icon: Icon = FileText }) {
         />
         <div className="relative mx-auto mt-8 h-[4.5rem] w-[4.5rem]">
           <div
-            className="absolute inset-0 rounded-full border-[3px] border-zinc-100 border-t-blue-600 animate-spin"
+            className="absolute inset-0 rounded-full border-[3px] border-[var(--border)] border-t-[var(--accent)] animate-spin"
             style={{ animationDuration: "0.9s" }}
             aria-hidden
           />
           <div className="absolute inset-0 flex items-center justify-center">
-            <Icon className="h-7 w-7 text-blue-600" strokeWidth={1.65} aria-hidden />
+            <Icon className="h-7 w-7 text-[var(--accent)]" strokeWidth={1.65} aria-hidden />
           </div>
         </div>
         <h2 className="mt-8 text-lg font-semibold tracking-tight text-zinc-900 sm:text-xl">{title}</h2>
@@ -212,20 +117,16 @@ export default function ResultPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [autoSaveStatus, setAutoSaveStatus] = useState("saved"); // "saving", "saved", "error"
   const [showDownloadSkeleton, setShowDownloadSkeleton] = useState(false);
+  const [showExportGate, setShowExportGate] = useState(false);
 
   useEffect(() => {
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      if (!firebaseUser) {
-        router.push("/");
-      } else {
-        setUser(firebaseUser);
-      }
+      setUser(firebaseUser);
     });
     return () => unsubscribe();
-  }, [router]);
+  }, []);
 
-  // Ensure list fields (education, experience, projects) are always arrays
   const normalizeList = (val) => {
     if (!val) return [];
     if (Array.isArray(val)) return val;
@@ -233,7 +134,6 @@ export default function ResultPage() {
     return [];
   };
 
-  // Map backend alternate keys (degree, institution, etc.) to our schema
   const normalizeEducationEntry = (edu) => {
     if (!edu || typeof edu !== "object") return { program: "", school: "", location: "", start: "", end: "", highlights: ["", ""] };
     const program = (edu.program || edu.degree || edu.area || edu.studyType || "").trim();
@@ -245,9 +145,8 @@ export default function ResultPage() {
     return { program, school, location, start, end, highlights };
   };
 
-  // Load resumeData from localStorage after user is authenticated
+  // Load resumeData from localStorage
   useEffect(() => {
-    if (!user) return;
     const stored = localStorage.getItem("tailoredResume");
     if (!stored) {
       setError("We couldn't find a resume draft. Returning you to the dashboard…");
@@ -276,21 +175,11 @@ export default function ResultPage() {
       setError("We couldn't read this draft. Returning you to the dashboard…");
       setTimeout(() => router.push("/dashboard"), 3000);
     }
-  }, [user, router]);
+  }, [router]);
 
-  // Only after all hooks:
-  if (!user) {
-    return (
-      <ResultLoadingScreen
-        title="Signing you in"
-        subtitle="Securing your session—this only takes a moment."
-        icon={User}
-      />
-    );
-  }
   if (error) {
     return (
-      <div className="flex min-h-dvh items-center justify-center bg-gradient-to-b from-zinc-50 to-zinc-100/90 px-4 py-12">
+      <div className="flex min-h-dvh items-center justify-center bg-[var(--background)] px-page py-8">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -426,10 +315,10 @@ export default function ResultPage() {
     if (errorSections.size > 0) {
       const sectionOrder = ["Experience", "Education", "Projects"];
       const firstErrorSection = sectionOrder.find((s) => errorSections.has(s));
-      if (firstErrorSection) {
-        setActiveSection(firstErrorSection.toLowerCase());
-      }
       const sectionIdMap = { Experience: "experience", Education: "education", Projects: "projects" };
+      if (firstErrorSection) {
+        setActiveSection(sectionIdMap[firstErrorSection]);
+      }
       const details = Array.from(errorSections).map((section) => {
         const prefix = sectionIdMap[section] ? `${sectionIdMap[section]}_` : "";
         const fields = Object.keys(errors)
@@ -442,20 +331,7 @@ export default function ResultPage() {
         const unique = [...new Set(fields)];
         return unique.length > 0 ? `${section} (${unique.join(", ")} required)` : section;
       });
-      showError(
-        `Please complete: ${details.join(" · ")}`,
-        {
-          style: {
-            borderRadius: "10px",
-            background: "#fee2e2",
-            color: "#b91c1c",
-            fontWeight: "bold",
-            fontSize: "16px",
-          },
-          duration: 5000,
-          position: "top-center",
-        }
-      );
+      showError(`Missing: ${details.join(", ")}`, { duration: 5000 });
       return false;
     }
 
@@ -612,6 +488,11 @@ export default function ResultPage() {
     const valid = validateResume();
     if (!valid) return;
 
+    if (!canExportResume(user)) {
+      setShowExportGate(true);
+      return;
+    }
+
     setIsDownloading(true);
     setShowDownloadSkeleton(true);
     try {
@@ -652,221 +533,119 @@ export default function ResultPage() {
     { id: "experience", label: "Experience", icon: Briefcase },
     { id: "education", label: "Education", icon: GraduationCap },
     { id: "projects", label: "Projects", icon: Code },
-    { id: "certificates", label: "Certificates", icon: Award }
+    { id: "certificates", label: "Certificates", icon: Award },
   ];
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-zinc-50">
-
-      <Toaster 
-        position="top-center"
-        toastOptions={{
-          duration: 4000,
-          style: {
-            background: '#363636',
-            color: '#fff',
-            borderRadius: '12px',
-          },
-        }}
-      />
-
-      <div className="relative z-10 mx-auto max-w-7xl px-page py-6 sm:py-8">
-        <motion.div
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2 }}
-          className="mb-10 text-center"
-        >
-          <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-xl border border-zinc-200 bg-white shadow-sm">
-            <Edit3 className="h-7 w-7 text-blue-700" strokeWidth={1.75} />
-          </div>
-          <h1 className="text-balance px-0.5 text-xl font-semibold leading-tight tracking-tight text-zinc-900 min-[400px]:text-2xl sm:px-0 sm:text-3xl md:text-4xl">
-            Resume editor
-          </h1>
-          <p className="mt-2 text-pretty px-0.5 text-sm text-zinc-600 sm:px-0 md:text-base">
-            Refine your tailored draft before export—whether AI suggested it or you started from the sample resume.
-          </p>
-          
-          {/* Auto-save Status */}
-          <div className="flex items-center justify-center gap-2 mt-4">
-            {autoSaveStatus === "saving" && (
-              <div className="flex items-center gap-2 text-blue-600">
-                <div className="w-3 h-3 border-2 border-blue-300 border-t-blue-600 rounded-full animate-spin"></div>
-                <span className="text-sm font-medium">Saving draft…</span>
-              </div>
-            )}
-            {autoSaveStatus === "saved" && (
-              <div className="flex items-center gap-2 text-green-600">
-                <CheckCircle className="w-4 h-4" />
-                <span className="text-sm font-medium">Draft saved</span>
-              </div>
-            )}
-            {autoSaveStatus === "error" && (
-              <div className="flex items-center gap-2 text-red-600">
-                <AlertCircle className="w-4 h-4" />
-                <span className="text-sm font-medium">Couldn&apos;t save draft</span>
-              </div>
-            )}
-          </div>
-          
-          {/* Back Button */}
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => router.push("/dashboard")}
-            className="mt-6 inline-flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-4 py-2.5 text-sm font-medium text-zinc-800 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to dashboard
-          </motion.button>
-        </motion.div>
-
-        {error && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-red-50 border border-red-200 rounded-2xl p-6 mb-8"
-          >
-            <div className="flex items-center gap-3">
-              <AlertCircle className="w-6 h-6 text-red-600" />
-              <p className="text-red-800 font-medium">{error}</p>
-            </div>
-          </motion.div>
-        )}
-
-        {!error && resumeData && (
-          <div className="grid gap-8 lg:grid-cols-[minmax(0,220px)_1fr]">
-            {/* Sidebar Navigation */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
-              className="min-w-0"
-            >
-              <div className="sticky top-20 z-10 rounded-xl border border-zinc-200 bg-white p-3 shadow-sm min-[400px]:p-5 sm:top-24 lg:top-8">
-                <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">Sections</h3>
-                <div className="space-y-1">
-                  {sections.map((section) => {
-                    const Icon = section.icon;
-                    return (
-                      <motion.button
-                        key={section.id}
-                        type="button"
-                        whileTap={{ scale: 0.99 }}
-                        onClick={() => setActiveSection(section.id)}
-                        className={`flex min-h-[44px] w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition-colors ${
-                          activeSection === section.id
-                            ? "bg-zinc-900 font-medium text-white shadow-sm"
-                            : "text-zinc-700 hover:bg-zinc-100"
-                        }`}
-                      >
-                        <Icon className="h-4 w-4 shrink-0 opacity-90" strokeWidth={1.75} />
-                        <span>{section.label}</span>
-                      </motion.button>
-                    );
-                  })}
-                </div>
-
-                <div className="mt-8 space-y-2 border-t border-zinc-100 pt-6">
-                  <motion.button
+    <div className="relative min-h-dvh overflow-x-hidden bg-[var(--background)]">
+      <div className="relative z-10 mx-auto min-w-0 max-w-7xl px-page py-3 pb-[max(1rem,env(safe-area-inset-bottom))] sm:py-4 lg:py-5">
+        <div className="editor-workspace">
+          <div className="editor-sticky-stack">
+            <div className="panel min-w-0 max-w-full">
+              <div className="editor-toolbar-body">
+                <div className="flex min-w-0 items-center gap-3">
+                  <button
                     type="button"
-                    whileTap={{ scale: isSaving || isDownloading ? 1 : 0.99 }}
+                    onClick={() => router.push("/dashboard")}
+                    className="btn btn-ghost px-2"
+                    aria-label="Back to dashboard"
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                  </button>
+                  <div className="min-w-0">
+                    <h1 className="truncate text-sm font-semibold text-zinc-900 sm:text-base">Resume editor</h1>
+                    <p className="text-xs text-zinc-500">Edit your tailored draft before export</p>
+                  </div>
+                </div>
+                <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
+                  {autoSaveStatus === "saving" && <span className="badge badge-info">Saving…</span>}
+                  {autoSaveStatus === "saved" && <span className="badge badge-success">Saved</span>}
+                  {autoSaveStatus === "error" && <span className="badge badge-error">Save failed</span>}
+                  <button
+                    type="button"
                     onClick={handleSave}
                     disabled={isSaving || isDownloading}
-                    className={`flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-semibold shadow-sm transition-colors ${
-                      isSaving
-                        ? "cursor-not-allowed bg-emerald-600/80 text-white"
-                        : isDownloading
-                          ? "cursor-not-allowed bg-emerald-600/50 text-white"
-                          : "bg-emerald-600 text-white hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600/30"
-                    }`}
+                    className="btn btn-secondary flex-1 px-3 sm:flex-none"
                   >
-                    {isSaving ? (
-                      <>
-                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        Saving…
-                      </>
-                    ) : (
-                      <>
-                        <Save className="w-5 h-5" />
-                        Save draft
-                      </>
-                    )}
-                  </motion.button>
-
-                  <motion.button
+                    <Save className="h-4 w-4" />
+                    {isSaving ? "Saving…" : "Save"}
+                  </button>
+                  <button
                     type="button"
-                    whileTap={{ scale: isDownloading || isSaving ? 1 : 0.99 }}
                     onClick={handleDownload}
                     disabled={isDownloading || isSaving}
-                    className={`flex w-full items-center justify-center gap-2 rounded-lg border border-zinc-200 bg-white px-4 py-3 text-sm font-semibold text-zinc-900 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25 disabled:cursor-not-allowed disabled:opacity-50 ${
-                      isDownloading ? "border-blue-200 bg-blue-50/50" : ""
-                    }`}
+                    className="btn btn-primary flex-1 px-3 sm:flex-none"
                   >
-                    {isDownloading ? (
-                      <>
-                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        Preparing…
-                      </>
-                    ) : (
-                      <>
-                        <Download className="w-5 h-5" />
-                        Download
-                      </>
-                    )}
-                  </motion.button>
+                    <Download className="h-4 w-4" />
+                    {isDownloading ? "Preparing…" : "Export"}
+                  </button>
                 </div>
               </div>
-            </motion.div>
+            </div>
 
-            {/* Main Content */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="min-w-0"
-            >
-              <div className="min-w-0 max-w-full rounded-xl border border-zinc-200 bg-white p-4 shadow-sm sm:p-8">
+            <div className="panel min-w-0 max-w-full">
+              <div className="editor-tabs-body">
+                <div className="section-tabs editor-section-tabs" role="tablist" aria-label="Resume sections">
+                {sections.map((section) => {
+                  const Icon = section.icon;
+                  return (
+                    <button
+                      key={section.id}
+                      type="button"
+                      role="tab"
+                      aria-selected={activeSection === section.id}
+                      onClick={() => setActiveSection(section.id)}
+                      className={`section-tab ${activeSection === section.id ? "section-tab-active" : ""}`}
+                    >
+                      <Icon className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden />
+                      {section.label}
+                    </button>
+                  );
+                })}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="min-w-0 pt-10"
+          >
+            <div className="panel min-w-0 max-w-full">
+              <div className="editor-panel-body ">
                 <AnimatePresence mode="wait">
-                  {/* Personal Info Section */}
                   {activeSection === "personal" && (
                     <motion.div
                       key="personal"
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -20 }}
-                      className="space-y-6"
+                      className="editor-section-content"
                     >
-                      <div className="flex items-center gap-3 mb-6">
-                        <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-blue-50">
-                          <User className="h-6 w-6 text-blue-700" strokeWidth={1.75} />
-                        </div>
-                        <div>
-                          <h2 className="text-2xl font-semibold text-gray-900">Profile & contact</h2>
-                          <p className="text-gray-500">Name, email, and links used in your exports</p>
-                        </div>
+                      <div className="editor-section-header">
+                        <h2 className="editor-section-title">Profile & contact</h2>
+                        <p className="editor-section-desc">Name, email, and links used in your exports</p>
                       </div>
 
-                      <div
-                        className="flex gap-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900"
-                        role="status"
-                      >
+                      <div className="editor-callout" role="status">
                         <CheckCircle className="h-5 w-5 shrink-0 text-emerald-600" strokeWidth={2} aria-hidden />
-                        <p className="leading-relaxed text-emerald-900">
+                        <p>
                           Double-check your name, email, phone, GitHub, and LinkedIn—Word and PDF exports use this
                           information exactly as you enter it. Prefer full profile URLs where possible.
                         </p>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="form-label">
                             Full Name
               </label>
               <input
                 value={unescapeHtml(resumeData.name || "")}
                 onChange={(e) => handleChange("name", null, e.target.value)}
-                                                         className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15 transition-all duration-200 text-gray-900 placeholder-gray-500"
+                                                         className="input-field"
                              placeholder="Full name as it should appear on your resume"
                           />
                         </div>
@@ -881,7 +660,7 @@ export default function ResultPage() {
                                 : `Add your ${key}`;
                           return (
                   <div key={key}>
-                              <label className="block text-sm font-medium text-gray-700 mb-2 capitalize">
+                              <label className="form-label capitalize">
                       {key}
                     </label>
                               <div className="relative">
@@ -889,7 +668,7 @@ export default function ResultPage() {
                     <input
                       value={unescapeHtml(val)}
                                   onChange={(e) => handleChange("contact", key, e.target.value)}
-                                                                     className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15 transition-all duration-200 text-gray-900 placeholder-gray-500"
+                                                                     className="input-field input-field-icon"
                                    placeholder={placeholder}
                     />
                   </div>
@@ -900,522 +679,208 @@ export default function ResultPage() {
                     </motion.div>
                   )}
 
-                  {/* Summary Section */}
                   {activeSection === "summary" && (
                     <motion.div
                       key="summary"
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -20 }}
-                      className="space-y-6"
+                      className="editor-section-content"
                     >
-                      <div className="flex items-center gap-3 mb-6">
-                        <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center">
-                          <FileText className="w-6 h-6 text-blue-600" />
-                        </div>
-                        <div>
-                          <h2 className="text-2xl font-semibold text-gray-900">Professional summary</h2>
-                          <p className="text-gray-500">Role, years of experience, top skills, and the impact you want next</p>
-                        </div>
-              </div>
+                      <div className="editor-section-header">
+                        <h2 className="editor-section-title">Professional summary</h2>
+                        <p className="editor-section-desc">Role, years of experience, top skills, and the impact you want next</p>
+                      </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="form-label">
                           Summary
                         </label>
               <textarea
                 value={unescapeHtml(resumeData.tailored_summary || "")}
                           onChange={(e) => handleChange("tailored_summary", null, e.target.value)}
-                                                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15 transition-all duration-200 resize-none text-gray-900 placeholder-gray-500"
-                           rows={6}
+                                                     className="input-field resize-y"
+                           rows={2}
                            placeholder="Tight summary: who you are, what you ship best, and what you're targeting next…"
               />
                       </div>
                     </motion.div>
                   )}
 
-                  {/* Skills Section */}
                   {activeSection === "skills" && (
                     <motion.div
                       key="skills"
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -20 }}
-                      className="space-y-6"
                     >
-                      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between mb-6">
-                        <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 bg-yellow-100 rounded-2xl flex items-center justify-center">
-                            <Star className="w-6 h-6 text-yellow-600" />
-                          </div>
-                          <div>
-                            <h2 className="text-2xl font-semibold text-gray-900">Skills & Expertise</h2>
-                            <p className="text-gray-500">
-                              Add category names (e.g. Technical, Languages), then list skills separated by commas.
-                            </p>
-                          </div>
-                        </div>
-                        <motion.button
-                          type="button"
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={addSkillCategory}
-                          className="inline-flex shrink-0 items-center gap-2 self-start rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30"
-                        >
-                          <Plus className="w-4 h-4" />
-                          Add category
-                        </motion.button>
-                      </div>
-
-                      <div className="space-y-4">
-                        {Object.entries(resumeData.tailored_skills || {}).length === 0 && (
-                          <p className="rounded-lg border border-dashed border-zinc-200 bg-zinc-50 px-4 py-6 text-center text-sm text-zinc-500">
-                            No skill categories yet. Use &quot;Add category&quot; to create one.
-                          </p>
-                        )}
-                        {Object.entries(resumeData.tailored_skills || {}).map(([category, skills]) => (
-                          <div
-                            key={category}
-                            className="relative rounded-xl border border-gray-200 bg-gray-50 p-4 sm:p-5"
-                          >
-                            <motion.button
-                              type="button"
-                              whileHover={{ scale: 1.08 }}
-                              whileTap={{ scale: 0.92 }}
-                              onClick={() => removeSkillCategory(category)}
-                              className="absolute right-3 top-3 rounded-md p-2 text-red-600 transition-colors hover:bg-red-50 hover:text-red-700"
-                              title="Remove this category"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </motion.button>
-
-                            <div className="pr-10">
-                              <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                                Category name
-                              </label>
-                              <input
-                                key={category}
-                                defaultValue={category}
-                                onBlur={(e) => {
-                                  const next = e.target.value.trim();
-                                  if (!next) {
-                                    e.target.value = category;
-                                    showError("Add a category name.");
-                                    return;
-                                  }
-                                  if (next === category) return;
-                                  const skillsObj = resumeData.tailored_skills || {};
-                                  if (skillsObj[next]) {
-                                    showError("You already have a category with that name.");
-                                    e.target.value = category;
-                                    return;
-                                  }
-                                  renameSkillCategory(category, next);
-                                }}
-                                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15 transition-all duration-200 text-gray-900 placeholder-gray-500"
-                                placeholder="e.g. Technical, Tools, Languages"
-                              />
-                            </div>
-
-                            <div className="mt-4">
-                              <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                                Skills in this category (comma-separated)
-                              </label>
-                              <input
-                                value={unescapeHtml((Array.isArray(skills) ? skills : []).join(", "))}
-                                onChange={(e) => handleChange("tailored_skills", category, e.target.value)}
-                                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15 transition-all duration-200 text-gray-900 placeholder-gray-500"
-                                placeholder="TypeScript, React, Node.js…"
-                              />
-                            </div>
-                          </div>
-                        ))}
-                      </div>
+                      <SkillsSectionEditor
+                        skills={resumeData.tailored_skills || {}}
+                        onAddCategory={addSkillCategory}
+                        onRemoveCategory={removeSkillCategory}
+                        onRenameCategory={renameSkillCategory}
+                        onChangeSkills={(category, value) => handleChange("tailored_skills", category, value)}
+                      />
                     </motion.div>
                   )}
 
-                  {/* Experience Section */}
                   {activeSection === "experience" && (
                     <motion.div
                       key="experience"
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -20 }}
-                      className="space-y-6"
                     >
-                      <div className="flex items-center justify-between mb-6">
-                        <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center">
-                            <Briefcase className="w-6 h-6 text-green-600" />
-                          </div>
-                          <div>
-                            <h2 className="text-2xl font-semibold text-gray-900">Work experience</h2>
-                            <p className="text-gray-500">Roles, impact, and outcomes recruiters scan first</p>
-                          </div>
-                        </div>
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                      onClick={() => {
-                        setResumeData((prev) => ({
-                          ...prev,
-                          tailored_experience: [
+                      <ExperienceSectionEditor
+                        experiences={resumeData.tailored_experience || []}
+                        fieldErrors={fieldErrors}
+                        onAdd={() => {
+                          setResumeData((prev) => {
+                            const updated = {
+                              ...prev,
+                              tailored_experience: [
                                 ...(Array.isArray(prev.tailored_experience) ? prev.tailored_experience : []),
-                            {
-                              company: "",
-                              title: "",
-                              location: "",
-                              start: "",
-                              end: "",
-                              highlights: ["", "", "", ""],
-                            },
-                          ],
-                        }));
-                        showExperienceAdded();
-                      }}
-                          className="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30"
-                    >
-                          <Plus className="w-4 h-4" />
-                        Add role
-                        </motion.button>
-                  </div>
-
-                      <div className="space-y-6">
-                        {Array.isArray(resumeData.tailored_experience) &&
-                          resumeData.tailored_experience.map((exp, idx) => (
-                            <motion.div
-                      key={idx}
-                              initial={{ opacity: 0, y: 20 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              className="relative bg-gray-50 rounded-2xl p-6 border border-gray-200"
-                    >
-                              <motion.button
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.9 }}
-                        onClick={() => {
+                                {
+                                  company: "",
+                                  title: "",
+                                  location: "",
+                                  start: "",
+                                  end: "",
+                                  highlights: ["", "", "", ""],
+                                },
+                              ],
+                            };
+                            persistTailoredResume(updated);
+                            return updated;
+                          });
+                          showExperienceAdded();
+                        }}
+                        onRemove={(idx) => {
                           setResumeData((prev) => {
                             const updated = [...prev.tailored_experience];
                             updated.splice(idx, 1);
-                            return { ...prev, tailored_experience: updated };
+                            const next = { ...prev, tailored_experience: updated };
+                            persistTailoredResume(next);
+                            return next;
                           });
                           showExperienceDeleted();
                         }}
-                                className="absolute -top-2 -right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 shadow-lg transition-all duration-200"
-                                title="Remove role"
-                      >
-                                <Trash2 className="w-4 h-4" />
-                              </motion.button>
-
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                      {Object.entries(exp).map(([key, val]) => (
-                        <div key={key} className={key === "highlights" ? "md:col-span-2" : ""}>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2 capitalize">
-                            {key}
-                          </label>
-                          {key === "highlights" ? (
-                            <HighlightsEditor
-                              highlights={val}
-                              onChange={(newHighlights) =>
-                                handleChange(
-                                  "tailored_experience",
-                                  key,
-                                  newHighlights,
-                                  idx
-                                )
-                              }
-                              placeholder="Add a win: action, scope, measurable outcome…"
-                            />
-                          ) : (
-                            <input
-                              value={unescapeHtml(val)}
-                              onChange={(e) =>
-                                          handleChange("tailored_experience", key, e.target.value, idx)
-                              }
-                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15 transition-all duration-200 text-gray-900 placeholder-gray-500"
-                                        placeholder={`Enter ${key}`}
-                            />
-                          )}
-                          {fieldErrors[`experience_${key}_${idx}`] && (
-                            <p className="text-red-500 text-xs mt-1">
-                              {fieldErrors[`experience_${key}_${idx}`]}
-                            </p>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                            </motion.div>
-                  ))}
-                      </div>
+                        onChange={(idx, key, value) => handleChange("tailored_experience", key, value, idx)}
+                      />
                     </motion.div>
-              )}
+                  )}
 
-                  {/* Education Section */}
                   {activeSection === "education" && (
                     <motion.div
                       key="education"
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -20 }}
-                      className="space-y-6"
                     >
-                      <div className="flex items-center justify-between mb-6">
-                        <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 bg-indigo-100 rounded-2xl flex items-center justify-center">
-                            <GraduationCap className="w-6 h-6 text-indigo-600" />
-                          </div>
-                          <div>
-                            <h2 className="text-2xl font-semibold text-gray-900">Education</h2>
-                            <p className="text-gray-500">Add your educational background</p>
-                          </div>
-                        </div>
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                  onClick={() => {
-                    setResumeData((prev) => ({
-                      ...prev,
-                      education: [
+                      <EducationSectionEditor
+                        education={resumeData.education || []}
+                        fieldErrors={fieldErrors}
+                        onAdd={() => {
+                          setResumeData((prev) => {
+                            const updated = {
+                              ...prev,
+                              education: [
                                 ...(Array.isArray(prev.education) ? prev.education : []),
-                        {
-                          program: "",
-                          school: "",
-                          location: "",
-                          start: "",
-                          end: "",
+                                {
+                                  program: "",
+                                  school: "",
+                                  location: "",
+                                  start: "",
+                                  end: "",
                                   highlights: ["", ""],
-                        },
-                      ],
-                    }));
-                    showEducationAdded();
-                  }}
-                          className="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30"
-                >
-                          <Plus className="w-4 h-4" />
-                          Add Education
-                        </motion.button>
-              </div>
-
-                      <div className="space-y-6">
-              {Array.isArray(resumeData.education) &&
-                resumeData.education.map((edu, idx) => (
-                            <motion.div
-                    key={idx}
-                              initial={{ opacity: 0, y: 20 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              className="relative bg-gray-50 rounded-2xl p-6 border border-gray-200"
-                  >
-                              <motion.button
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.9 }}
-                      onClick={() => {
-                        setResumeData((prev) => {
-                          const updated = [...prev.education];
-                          updated.splice(idx, 1);
-                          return { ...prev, education: updated };
-                        });
-                        showEducationDeleted();
-                      }}
-                                className="absolute -top-2 -right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 shadow-lg transition-all duration-200"
-                                title="Remove education"
-                    >
-                                <Trash2 className="w-4 h-4" />
-                              </motion.button>
-
-                                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {Object.entries(edu).map(([key, val]) => (
-                                  <div key={key} className={key === "highlights" ? "md:col-span-2" : ""}>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2 capitalize">
-                          {key}
-                        </label>
-                                    {key === "highlights" ? (
-                                      <HighlightsEditor
-                                        highlights={val}
-                                        onChange={(newHighlights) =>
-                                          handleInputChange(
-                                            "education",
-                                            idx,
-                                            key,
-                                            newHighlights
-                                          )
-                                        }
-                                        placeholder="Coursework, honors, or leadership (one bullet per line)…"
-                                      />
-                                    ) : (
-                                      <input
-                                        value={unescapeHtml(val)}
-                                        onChange={(e) =>
-                                          handleInputChange("education", idx, key, e.target.value)
-                                        }
-                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15 transition-all duration-200 text-gray-900 placeholder-gray-500"
-                                        placeholder={`Enter ${key}`}
-                        />
-                                    )}
-                        {fieldErrors[`education_${key}_${idx}`] && (
-                          <p className="text-red-500 text-xs mt-1">
-                            {fieldErrors[`education_${key}_${idx}`]}
-                          </p>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                            </motion.div>
-                          ))}
-                      </div>
+                                },
+                              ],
+                            };
+                            persistTailoredResume(updated);
+                            return updated;
+                          });
+                          showEducationAdded();
+                        }}
+                        onRemove={(idx) => {
+                          setResumeData((prev) => {
+                            const updated = [...prev.education];
+                            updated.splice(idx, 1);
+                            const next = { ...prev, education: updated };
+                            persistTailoredResume(next);
+                            return next;
+                          });
+                          showEducationDeleted();
+                        }}
+                        onChange={(idx, key, value) => handleInputChange("education", idx, key, value)}
+                      />
                     </motion.div>
-              )}
+                  )}
 
-                  {/* Projects Section */}
                   {activeSection === "projects" && (
                     <motion.div
                       key="projects"
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -20 }}
-                      className="space-y-6"
                     >
-                      <div className="flex items-center justify-between mb-6">
-                        <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center">
-                            <Code className="w-6 h-6 text-orange-600" />
-                          </div>
-                          <div>
-                            <h2 className="text-2xl font-semibold text-gray-900">Projects</h2>
-                            <p className="text-gray-500">Showcase your projects and achievements</p>
-                          </div>
-                        </div>
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                      onClick={() => {
-                        setResumeData((prev) => ({
-                          ...prev,
-                          projects: [
+                      <ProjectsSectionEditor
+                        projects={resumeData.projects || []}
+                        fieldErrors={fieldErrors}
+                        onAdd={() => {
+                          setResumeData((prev) => {
+                            const updated = {
+                              ...prev,
+                              projects: [
                                 ...(Array.isArray(prev.projects) ? prev.projects : []),
-                            {
-                              title: "",
-                              tech: [],
-                              highlights: ["", ""],
-                            },
-                          ],
-                        }));
-                        showProjectAdded();
-                      }}
-                          className="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30"
-                    >
-                          <Plus className="w-4 h-4" />
-                          Add Project
-                        </motion.button>
-                  </div>
-
-                      <div className="space-y-6">
-                        {Array.isArray(resumeData.projects) &&
-                          resumeData.projects.map((proj, idx) => (
-                            <motion.div
-                      key={idx}
-                              initial={{ opacity: 0, y: 20 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              className="relative bg-gray-50 rounded-2xl p-6 border border-gray-200"
-                    >
-                              <motion.button
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.9 }}
-                        onClick={() => {
+                                { title: "", tech: [], highlights: ["", ""] },
+                              ],
+                            };
+                            persistTailoredResume(updated);
+                            return updated;
+                          });
+                          showProjectAdded();
+                        }}
+                        onRemove={(idx) => {
                           setResumeData((prev) => {
                             const updated = [...prev.projects];
                             updated.splice(idx, 1);
-                            return { ...prev, projects: updated };
+                            const next = { ...prev, projects: updated };
+                            persistTailoredResume(next);
+                            return next;
                           });
                           showProjectDeleted();
                         }}
-                                className="absolute -top-2 -right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 shadow-lg transition-all duration-200"
-                                title="Remove project"
-                      >
-                                <Trash2 className="w-4 h-4" />
-                              </motion.button>
-
-                              <div className="space-y-4">
-                      {Object.entries(proj).map(([key, val]) => (
-                        <div key={key}>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2 capitalize">
-                            {key}
-                          </label>
-                          {key === "highlights" ? (
-                                      <HighlightsEditor
-                                        highlights={val}
-                                        onChange={(newHighlights) =>
-                                          handleChange(
-                                            "projects",
-                                            key,
-                                            newHighlights,
-                                            idx
-                                          )
-                                        }
-                                        placeholder="Problem, what you built, result (one bullet per line)…"
-                                      />
-                                    ) : (
-                            <input
-                              value={unescapeHtml(val)}
-                              onChange={(e) =>
-                                          handleChange("projects", key, e.target.value, idx)
-                              }
-                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/15 transition-all duration-200 text-gray-900 placeholder-gray-500"
-                                        placeholder={`Enter ${key}`}
-                            />
-                          )}
-                                    {fieldErrors[`project_${key}_${idx}`] && (
-                              <p className="text-red-500 text-xs mt-1">
-                                        {fieldErrors[`project_${key}_${idx}`]}
-                              </p>
-                            )}
-                        </div>
-                      ))}
-                    </div>
-                            </motion.div>
-                  ))}
-                      </div>
+                        onChange={(idx, key, value) => {
+                          const nextValue =
+                            key === "tech" && typeof value === "string"
+                              ? value.split(",").map((s) => s.trim()).filter(Boolean)
+                              : value;
+                          handleChange("projects", key, nextValue, idx);
+                        }}
+                      />
                     </motion.div>
-              )}
+                  )}
 
-                  {/* Certificates Section */}
                   {activeSection === "certificates" && (
                     <motion.div
                       key="certificates"
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -20 }}
-                      className="space-y-6"
                     >
-                      <div className="flex items-center gap-3 mb-6">
-                        <div className="w-12 h-12 bg-yellow-100 rounded-2xl flex items-center justify-center">
-                          <Award className="w-6 h-6 text-yellow-600" />
-                        </div>
-                        <div>
-                          <h2 className="text-2xl font-semibold text-gray-900">Certificates</h2>
-                          <p className="text-gray-500">List your professional certifications</p>
-                        </div>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Certificates
-                        </label>
-                        <HighlightsEditor
-                          highlights={resumeData.tailored_certificates || []}
-                          onChange={(newCertificates) =>
-                            handleChange("tailored_certificates", null, newCertificates)
-                          }
-                          placeholder="Add each certification (name and issuer, one per line)…"
-                        />
-                      </div>
+                      <CertificatesSectionEditor
+                        certificates={resumeData.tailored_certificates || []}
+                        onChange={(value) => handleChange("tailored_certificates", null, value)}
+                      />
                     </motion.div>
                   )}
                 </AnimatePresence>
+              </div>
             </div>
-            </motion.div>
-          </div>
-        )}
+          </motion.div>
+        </div>
 
-        <div className="mt-12 border-t border-zinc-200 pt-10 pb-6">
+        <div className="mt-6 border-t border-zinc-200 pt-5 pb-4">
           <SiteLegalLinks />
         </div>
       </div>
@@ -1434,7 +899,7 @@ export default function ResultPage() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.98, opacity: 0 }}
               transition={{ duration: 0.15 }}
-              className="mx-4 w-full max-w-md rounded-xl border border-zinc-200 bg-white p-8 text-center shadow-xl"
+              className="modal-panel mx-4 w-full max-w-md rounded-xl border border-zinc-200 bg-white p-6 text-center shadow-xl sm:p-8"
             >
               <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50">
                 <CheckCircle className="h-7 w-7 text-emerald-600" strokeWidth={1.75} />
@@ -1452,6 +917,47 @@ export default function ResultPage() {
             </motion.div>
           </motion.div>
       )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showExportGate && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/40 p-4 backdrop-blur-[2px]"
+            onClick={() => setShowExportGate(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.98, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.98, opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              className="modal-panel w-full max-w-lg rounded-xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <ExportAccessGate
+                idPrefix="result-export"
+                user={user}
+                onUserChange={setUser}
+                title="Before you export"
+                description="Accept our terms and sign in to download Word or PDF."
+                onReady={() => {
+                  setShowExportGate(false);
+                  localStorage.setItem("tailoredResume", JSON.stringify(resumeData));
+                  router.push("/word-download");
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowExportGate(false)}
+                className="btn btn-ghost mt-3 w-full"
+              >
+                Cancel
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
       </AnimatePresence>
     </div>
   );
