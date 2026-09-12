@@ -3,20 +3,20 @@ import MarketingGuideLayout from "../../components/seo/MarketingGuideLayout";
 import { pageMeta } from "../../config/site";
 
 export const metadata = pageMeta({
-  title: "Free resume builder for Canada — Word, PDF, ATS-friendly",
+  title: "Resume norms for Canada — Word, PDF, ATS-friendly",
   description:
-    "How a free Canadian resume builder should work: clean exports, no photo for most roles, spelling employers expect, and tailoring to each posting. Links to templates and ATS tips.",
+    "How resumes typically work for Canadian applications: clean exports, no photo for most private-sector roles, local spelling conventions, and tailoring to each posting. Links to templates and ATS tips.",
   path: "/resume-builder-canada",
 });
 
 export default function ResumeBuilderCanadaPage() {
   return (
-    <MarketingGuideLayout path="/resume-builder-canada" breadcrumbLabel="Resume builder Canada">
-      <h1>Free resume builder for Canada</h1>
+    <MarketingGuideLayout path="/resume-builder-canada" breadcrumbLabel="Resume norms for Canada">
+      <h1>Resume norms for Canada</h1>
       <p>
         Canadian employers usually expect a concise resume (often one page early-career), clear dates, and no photo on
         typical corporate postings. The hard part is not picking a font—it is mirroring the job description without
-        inventing experience.
+        inventing experience. These notes are for applicants targeting roles in Canada; other markets may differ.
       </p>
       <h2>What “free” should still include</h2>
       <p>

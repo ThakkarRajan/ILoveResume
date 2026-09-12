@@ -12,8 +12,8 @@ export default function MarketingShell({
 }) {
   return (
     <div className={`page-canvas min-w-0 overflow-x-clip ${className}`}>
-      <div className={`app-container min-w-0 section-y ${narrow ? "max-w-3xl" : ""}`}>
-        {children}
+      <div className={`app-container min-w-0 ${narrow ? "max-w-3xl" : ""}`}>
+        <div className="section-y pb-0">{children}</div>
         {showFooter ? <PageFooter className={footerClassName} /> : null}
       </div>
     </div>

@@ -32,13 +32,13 @@ export default function AiResumeBuilderPage() {
       <h2>Read next</h2>
       <ul>
         <li>
-          <Link href="/blog/ai-resume-builder-canada-pros-cons">AI resume tools in Canada</Link> (blog)
-        </li>
-        <li>
           <Link href="/how-to-tailor-a-resume-to-a-job-description">Tailor to a job description</Link>
         </li>
         <li>
-          <Link href="/resume-builder-canada">Resume builder for Canada</Link>
+          <Link href="/ats-friendly-resume">ATS-friendly resume</Link>
+        </li>
+        <li>
+          <Link href="/blog/ai-resume-builder-canada-pros-cons">AI resume tools in Canada</Link> (blog, market-specific)
         </li>
       </ul>
     </MarketingGuideLayout>

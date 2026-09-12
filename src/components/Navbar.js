@@ -4,35 +4,27 @@ import "../utils/firebase.js";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import {
-  User,
-  LogOut,
-  Home,
-  MessageSquare,
-  ChevronDown,
-  FileText,
-  Menu,
-  X,
-  LayoutDashboard,
-  BookOpen,
-} from "lucide-react";
+import { useState, useRef, useEffect, useId } from "react";
+import { User, LogOut, ChevronDown } from "lucide-react";
 import { getAuth, onAuthStateChanged, signOut as firebaseSignOut } from "firebase/auth";
 import PublicNav from "./ui/PublicNav";
 
-const navItem = "nav-link";
+const authLinks = [
+  { href: "/dashboard", label: "Tailor" },
+  { href: "/myprofile", label: "Activity" },
+  { href: "/resume-builder", label: "Guides" },
+  { href: "/contact", label: "Help" },
+];
 
-const navItemMobile = "nav-link min-h-[48px] rounded-lg text-zinc-800";
+const mobileExtra = [
+  { href: "/blog", label: "Blog" },
+  { href: "/", label: "Home" },
+];
 
-function navClass(pathname, href) {
-  const active =
-    href === "/dashboard"
-      ? pathname === "/dashboard"
-      : href === "/myprofile"
-        ? pathname === "/myprofile"
-        : pathname === href || pathname.startsWith(`${href}/`);
-  return `${navItem}${active ? " nav-link-active" : ""}`;
+function isActive(pathname, href) {
+  if (href === "/dashboard") return pathname === "/dashboard";
+  if (href === "/myprofile") return pathname === "/myprofile";
+  return pathname === href || pathname.startsWith(`${href}/`);
 }
 
 export default function Navbar() {
@@ -41,263 +33,238 @@ export default function Navbar() {
   const [showMenu, setShowMenu] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showMobileNav, setShowMobileNav] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const menuRef = useRef();
+  const closeRef = useRef(null);
+  const menuId = useId();
 
   useEffect(() => {
     const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      setUser(firebaseUser);
-    });
-    return () => unsubscribe();
+    return onAuthStateChanged(auth, setUser);
   }, []);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (menuRef.current && !menuRef.current.contains(e.target)) {
-        setShowMenu(false);
-      }
+      if (menuRef.current && !menuRef.current.contains(e.target)) setShowMenu(false);
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 8);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    setShowMobileNav(false);
+    setShowMenu(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!showMobileNav) return undefined;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e) => {
+      if (e.key === "Escape") setShowMobileNav(false);
+    };
+    window.addEventListener("keydown", onKey);
+    closeRef.current?.focus();
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [showMobileNav]);
 
   const handleLogout = () => {
     firebaseSignOut(getAuth());
     window.location.href = "/";
   };
 
-  const shellClass = `w-full sticky top-0 z-50 border-b transition-shadow duration-200 ${
-    isScrolled ? "border-[var(--border)] bg-white/95 shadow-sm" : "border-[var(--border)]/80 bg-white/90 backdrop-blur-md supports-[backdrop-filter]:bg-white/80"
-  }`;
+  if (!user) {
+    return <PublicNav />;
+  }
 
-  if (user) {
-    return (
-      <>
-        <motion.nav initial={{ y: -8, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.2 }} className={shellClass}>
-          <div className="app-container flex min-w-0 items-center justify-between gap-2 py-3 sm:gap-3 lg:py-3.5">
-            <Link href="/dashboard" className="flex min-w-0 shrink-0 items-center gap-2 sm:gap-3 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/30 focus-visible:ring-offset-2">
-              <Image
-                src="/logo.png"
-                alt="I Love Resumes"
-                width={1017}
-                height={850}
-                className="h-9 w-auto rounded-md object-contain sm:h-10"
-              />
-              <Image
-                src="/Iloveresumelogotext.png"
-                alt="I Love Resumes"
-                width={506}
-                height={74}
-                sizes="(max-width: 768px) 11rem, 13rem"
-                quality={60}
-                className="hidden h-8 w-auto max-w-[11rem] object-contain sm:block md:max-w-[13rem]"
-              />
-            </Link>
+  const shellClass = [
+    "site-header",
+    "site-header-static",
+    "site-header-sticky",
+    scrolled || showMobileNav ? "site-header-solid" : "site-header-transparent",
+  ].join(" ");
 
-            <div className="hidden items-center gap-0.5 md:flex">
-              <Link href="/dashboard" className={navClass(pathname, "/dashboard")}>
-                Tailor
-              </Link>
-              <Link href="/myprofile" className={navClass(pathname, "/myprofile")}>
-                Activity
-              </Link>
-              <Link href="/resume-builder" className={navClass(pathname, "/resume-builder")}>
-                Guides
-              </Link>
-              <Link href="/contact" className={navClass(pathname, "/contact")}>
-                Help
-              </Link>
-            </div>
+  return (
+    <>
+      <header className={shellClass}>
+        <div className="site-header-inner app-container">
+          <Link href="/dashboard" className="site-brand" aria-label="I Love Resumes dashboard">
+            <Image
+              src="/logo.png"
+              alt=""
+              width={1017}
+              height={850}
+              sizes="28px"
+              className="site-brand-mark"
+              priority
+            />
+            <span className="site-brand-name">I Love Resumes</span>
+          </Link>
 
-            <div className="relative flex shrink-0 items-center gap-2" ref={menuRef}>
+          <nav className="site-nav-desktop" aria-label="Main">
+            <ul className="site-nav-list">
+              {authLinks.map(({ href, label }) => (
+                <li key={href}>
+                  <Link
+                    href={href}
+                    className={`site-nav-link${isActive(pathname, href) ? " is-active" : ""}`}
+                    aria-current={isActive(pathname, href) ? "page" : undefined}
+                  >
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+
+            <div className="relative" ref={menuRef}>
               <button
                 type="button"
-                onClick={() => setShowMobileNav(!showMobileNav)}
-                className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md text-[var(--text-secondary)] hover:bg-[var(--surface-inset)] md:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/30"
-                aria-label="Menu"
-              >
-                {showMobileNav ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-              </button>
-              <button
-                type="button"
+                className="site-account-btn"
+                aria-expanded={showMenu}
+                aria-haspopup="menu"
                 onClick={() => setShowMenu((p) => !p)}
-                className="flex min-h-[44px] max-w-[9.5rem] items-center gap-1.5 rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] px-2 py-2 text-sm font-medium text-[var(--foreground)] shadow-sm transition-colors hover:border-[var(--border-strong)] hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/30 focus-visible:ring-offset-2 sm:max-w-[200px] sm:gap-2 sm:px-3.5"
               >
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white ring-1 ring-zinc-200">
+                <span className="site-account-avatar">
                   {user?.photoURL ? (
-                    <Image src={user.photoURL} alt="" width={32} height={32} className="h-full w-full object-cover" />
+                    <Image src={user.photoURL} alt="" width={28} height={28} className="h-full w-full object-cover" />
                   ) : (
-                    <User className="h-4 w-4 text-zinc-500" />
+                    <User className="h-3.5 w-3.5 text-[var(--muted)]" strokeWidth={1.75} />
                   )}
-                </div>
-                <span className="hidden min-w-0 flex-1 truncate sm:inline">{user?.displayName?.split(" ")[0] || "Account"}</span>
+                </span>
+                <span className="site-account-name">{user?.displayName?.split(" ")[0] || "Account"}</span>
                 <ChevronDown
-                  className={`hidden h-4 w-4 shrink-0 text-zinc-500 transition-transform sm:block ${showMenu ? "rotate-180" : ""}`}
+                  className={`h-3.5 w-3.5 text-[var(--muted)] transition-transform duration-200 ${showMenu ? "rotate-180" : ""}`}
                   aria-hidden
                 />
               </button>
 
-              <AnimatePresence>
-                {showMenu && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -6 }}
-                    transition={{ duration: 0.15 }}
-                    className="absolute right-0 top-full z-50 mt-2 w-64 overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-lg sm:w-72"
-                  >
-                    <div className="border-b border-zinc-100 bg-zinc-50/80 px-4 py-3">
-                      <div className="flex items-center gap-3">
-                        {user?.photoURL ? (
-                          <Image src={user.photoURL} alt="" width={40} height={40} className="rounded-lg" />
-                        ) : (
-                          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-zinc-200">
-                            <User className="h-5 w-5 text-zinc-600" />
-                          </div>
-                        )}
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate font-semibold text-zinc-900">{user?.displayName}</p>
-                          <p className="truncate text-xs text-zinc-500">{user?.email}</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="p-1.5">
-                      <Link href="/dashboard" onClick={() => setShowMenu(false)} className={`${navItem} w-full gap-3`}>
-                        <LayoutDashboard className="h-4 w-4 text-zinc-500" />
-                        Tailor
-                      </Link>
-                      <Link href="/myprofile" onClick={() => setShowMenu(false)} className={`${navItem} w-full gap-3`}>
-                        <User className="h-4 w-4 text-zinc-500" />
-                        Activity
-                      </Link>
-                      <Link href="/resume-builder" onClick={() => setShowMenu(false)} className={`${navItem} w-full gap-3`}>
-                        <BookOpen className="h-4 w-4 text-zinc-500" />
-                        Guides
-                      </Link>
-                      <Link href="/blog" onClick={() => setShowMenu(false)} className={`${navItem} w-full gap-3`}>
-                        <FileText className="h-4 w-4 text-zinc-500" />
-                        Blog
-                      </Link>
-                      <Link href="/contact" onClick={() => setShowMenu(false)} className={`${navItem} w-full gap-3`}>
-                        <MessageSquare className="h-4 w-4 text-zinc-500" />
-                        Contact
-                      </Link>
-                      <Link href="/" onClick={() => setShowMenu(false)} className={`${navItem} mt-1 w-full gap-3 border-t border-zinc-100 pt-2`}>
-                        <Home className="h-4 w-4 text-zinc-500" />
-                        Home
-                      </Link>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setShowMenu(false);
-                          setShowModal(true);
-                        }}
-                        className="mt-0.5 flex min-h-[44px] w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600/20"
-                      >
-                        <LogOut className="h-4 w-4" />
-                        Sign out
-                      </button>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          </div>
-        </motion.nav>
-
-        <AnimatePresence>
-          {showMobileNav && (
-            <>
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setShowMobileNav(false)}
-                className="fixed inset-0 z-40 bg-zinc-900/40 md:hidden"
-              />
-              <motion.div
-                initial={{ x: "100%" }}
-                animate={{ x: 0 }}
-                exit={{ x: "100%" }}
-                transition={{ duration: 0.2 }}
-                className="fixed bottom-0 right-0 top-0 z-50 w-[min(18rem,100vw-2rem)] overflow-y-auto border-l border-zinc-200 bg-white shadow-xl md:hidden"
-              >
-                <div className="flex flex-col gap-0.5 p-4 pt-20">
-                  <Link href="/dashboard" onClick={() => setShowMobileNav(false)} className={navItemMobile}>
-                    Tailor
-                  </Link>
-                  <Link href="/myprofile" onClick={() => setShowMobileNav(false)} className={navItemMobile}>
-                    Activity
-                  </Link>
-                  <Link href="/resume-builder" onClick={() => setShowMobileNav(false)} className={navItemMobile}>
-                    Guides
-                  </Link>
-                  <Link href="/blog" onClick={() => setShowMobileNav(false)} className={navItemMobile}>
+              {showMenu ? (
+                <div className="site-account-menu" role="menu">
+                  <div className="site-account-menu-head">
+                    <p className="truncate text-sm font-semibold text-[var(--foreground)]">{user?.displayName}</p>
+                    <p className="truncate text-xs text-[var(--muted)]">{user?.email}</p>
+                  </div>
+                  <Link href="/blog" role="menuitem" className="site-account-item" onClick={() => setShowMenu(false)}>
                     Blog
                   </Link>
-                  <Link href="/contact" onClick={() => setShowMobileNav(false)} className={navItemMobile}>
-                    Contact
-                  </Link>
-                  <Link href="/" onClick={() => setShowMobileNav(false)} className={`${navItemMobile} mt-2 border-t border-zinc-100 pt-3`}>
+                  <Link href="/" role="menuitem" className="site-account-item" onClick={() => setShowMenu(false)}>
                     Home
                   </Link>
-                </div>
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
-
-        <AnimatePresence>
-          {showModal && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[60] flex items-center justify-center bg-zinc-900/50 p-4 backdrop-blur-[2px]"
-            >
-              <motion.div
-                initial={{ scale: 0.98, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.98, opacity: 0 }}
-                transition={{ duration: 0.15 }}
-                className="w-full max-w-sm rounded-xl border border-zinc-200 bg-white p-6 shadow-xl"
-              >
-                <h2 className="text-lg font-semibold text-zinc-900">Sign out?</h2>
-                <p className="mt-2 text-sm text-zinc-600">
-                  You&apos;ll need to sign in again to open your drafts and exports.
-                </p>
-                <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:gap-3">
                   <button
                     type="button"
-                    onClick={() => setShowModal(false)}
-                    className="flex min-h-[44px] flex-1 items-center justify-center rounded-lg border border-zinc-300 bg-white py-2.5 text-sm font-medium text-zinc-800 transition-colors hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25"
+                    role="menuitem"
+                    className="site-account-item site-account-item-danger"
+                    onClick={() => {
+                      setShowMenu(false);
+                      setShowModal(true);
+                    }}
                   >
-                    Cancel
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleLogout}
-                    className="flex min-h-[44px] flex-1 items-center justify-center rounded-lg bg-red-600 py-2.5 text-sm font-medium text-white transition-colors hover:bg-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600/40"
-                  >
+                    <LogOut className="h-4 w-4" strokeWidth={1.75} />
                     Sign out
                   </button>
                 </div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </>
-    );
-  }
+              ) : null}
+            </div>
+          </nav>
 
-  return <PublicNav />;
+          <div className="site-nav-mobile-bar">
+            <button
+              type="button"
+              className="site-menu-toggle"
+              aria-expanded={showMobileNav}
+              aria-controls={menuId}
+              aria-label={showMobileNav ? "Close menu" : "Open menu"}
+              onClick={() => setShowMobileNav((v) => !v)}
+            >
+              <span className={`site-menu-icon${showMobileNav ? " is-open" : ""}`} aria-hidden>
+                <i />
+                <i />
+              </span>
+            </button>
+          </div>
+        </div>
+
+        <div
+          id={menuId}
+          className={`site-mobile-panel${showMobileNav ? " is-open" : ""}`}
+          hidden={!showMobileNav}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Site menu"
+        >
+          <div className="site-mobile-panel-inner">
+            <button ref={closeRef} type="button" className="sr-only" onClick={() => setShowMobileNav(false)}>
+              Close menu
+            </button>
+            <nav aria-label="Mobile">
+              <ul className="site-mobile-list">
+                {[...authLinks, ...mobileExtra].map(({ href, label }) => (
+                  <li key={href}>
+                    <Link
+                      href={href}
+                      className={`site-mobile-link${isActive(pathname, href) ? " is-active" : ""}`}
+                      aria-current={isActive(pathname, href) ? "page" : undefined}
+                      onClick={() => setShowMobileNav(false)}
+                    >
+                      {label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+            <button
+              type="button"
+              className="site-mobile-cta site-mobile-cta-danger"
+              onClick={() => {
+                setShowMobileNav(false);
+                setShowModal(true);
+              }}
+            >
+              Sign out
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {showModal ? (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-zinc-900/50 p-4">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="signout-title"
+            className="w-full max-w-sm rounded-xl border border-[var(--border)] bg-white p-6 shadow-xl"
+          >
+            <h2 id="signout-title" className="text-lg font-semibold text-[var(--foreground)]">
+              Sign out?
+            </h2>
+            <p className="mt-2 text-sm text-[var(--text-secondary)]">
+              You&apos;ll need to sign in again to open your drafts and exports.
+            </p>
+            <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:gap-3">
+              <button type="button" onClick={() => setShowModal(false)} className="btn btn-secondary flex-1">
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="flex min-h-[2.75rem] flex-1 items-center justify-center rounded-[var(--radius-lg)] bg-red-600 px-4 text-sm font-semibold text-white hover:bg-red-700"
+              >
+                Sign out
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </>
+  );
 }

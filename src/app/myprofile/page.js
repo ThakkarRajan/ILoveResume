@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../utils/firebase";
-import { API_BASE, processText } from "../../utils/api.js";
+import { processText, extractFromUrl } from "../../utils/api.js";
 import { showError } from "../../utils/toast.js";
 import { getFriendlyError } from "../../utils/errorMessages.js";
 import { motion, AnimatePresence } from "framer-motion";
@@ -116,13 +116,7 @@ export default function MyProfilePage() {
         return;
       }
 
-      const extractRes = await fetch(`${API_BASE}/extract-from-url`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url: submission.resumeUrl }),
-        }
-      );
+      const extractRes = await extractFromUrl(submission.resumeUrl);
       const extractData = await extractRes.json();
       if (!extractRes.ok) {
         showError(getFriendlyError(extractData?.error, "extract"));

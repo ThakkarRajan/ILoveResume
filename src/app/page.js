@@ -55,10 +55,10 @@ const homeFaqSchema = {
     },
     {
       "@type": "Question",
-      name: "Does it work for Canadian jobs?",
+      name: "Does this work for different job markets?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Yes—clear, keyword-aware resumes for Canada and international applications alike.",
+        text: "Yes. The workflow focuses on the job description, clear sections, and relevant keywords. Resume norms can vary by country and industry—follow expectations for the market where you are applying.",
       },
     },
     {
@@ -74,7 +74,7 @@ const homeFaqSchema = {
       name: "Who should use I Love Resumes?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "People who already have a resume draft and want to align bullets, skills, and keywords with a specific job posting—especially in Canada—before submitting through employer portals.",
+        text: "People who already have a resume draft and want to align bullets, skills, and keywords with a specific job posting before submitting through employer portals.",
       },
     },
     {

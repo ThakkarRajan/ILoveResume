@@ -1,10 +1,173 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useRef } from "react";
+import { motion, useInView, useReducedMotion } from "framer-motion";
 import { Plus, Trash2 } from "lucide-react";
 import { unescapeHtml } from "../../utils/safeHtml";
 import EditorSectionHeader from "./EditorSectionHeader";
+import EditorFieldLabel from "./EditorFieldLabel";
 import HighlightsEditor from "./HighlightsEditor";
+import ScrollReveal from "../motion/ScrollReveal";
+import { motionEase, motionTransitions } from "../motion/motionConfig";
+
+function TimelineLine({ isLast, active }) {
+  const reduceMotion = useReducedMotion();
+  if (isLast) return null;
+
+  return (
+    <span className="exp-timeline-line" aria-hidden>
+      <motion.span
+        className="exp-timeline-line-fill"
+        initial={false}
+        animate={{ scaleY: reduceMotion || active ? 1 : 0.12 }}
+        transition={{ duration: 0.55, ease: motionEase }}
+      />
+    </span>
+  );
+}
+
+function ExperienceTimelineItem({
+  exp,
+  idx,
+  isLast,
+  fieldErrors,
+  onChange,
+  onRemove,
+}) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { amount: 0.3, margin: "-8% 0px" });
+  const reduceMotion = useReducedMotion();
+
+  return (
+    <motion.li
+      ref={ref}
+      className={`exp-timeline-item${inView && !reduceMotion ? " exp-timeline-item-active" : ""}`}
+      initial={reduceMotion ? false : { opacity: 0, y: 12 }}
+      whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2, margin: "-40px 0px" }}
+      transition={{ ...motionTransitions.stagger, delay: idx * 0.06 }}
+    >
+      <div className="exp-timeline-rail" aria-hidden>
+        <motion.span
+          className="exp-timeline-dot"
+          initial={false}
+          animate={{
+            scale: inView && !reduceMotion ? 1.08 : 1,
+            backgroundColor: inView && !reduceMotion ? "var(--accent)" : "var(--surface)",
+          }}
+          transition={{ duration: 0.35, ease: motionEase }}
+        />
+        <TimelineLine isLast={isLast} active={inView} />
+      </div>
+
+      <div className="exp-timeline-body">
+        <div className="exp-timeline-top">
+          <div className="min-w-0 flex-1 space-y-2">
+            <div className="exp-role-heading">
+              <span className="exp-company-mark" aria-hidden>
+                {(exp.company || exp.title || "R").trim().charAt(0).toUpperCase() || "R"}
+              </span>
+              <div className="min-w-0 flex-1">
+                <EditorFieldLabel required>Job title</EditorFieldLabel>
+                <input
+                  value={unescapeHtml(exp.title || "")}
+                  onChange={(e) => onChange(idx, "title", e.target.value)}
+                  className="input-field editor-title-input"
+                  placeholder="Senior Software Engineer"
+                  aria-required="true"
+                />
+                {fieldErrors[`experience_title_${idx}`] ? (
+                  <p className="editor-field-error">{fieldErrors[`experience_title_${idx}`]}</p>
+                ) : null}
+              </div>
+            </div>
+            <div className="exp-meta-grid">
+              <div>
+                <EditorFieldLabel required>Company</EditorFieldLabel>
+                <input
+                  value={unescapeHtml(exp.company || "")}
+                  onChange={(e) => onChange(idx, "company", e.target.value)}
+                  className="input-field"
+                  placeholder="Company name"
+                  aria-required="true"
+                />
+                {fieldErrors[`experience_company_${idx}`] ? (
+                  <p className="editor-field-error">{fieldErrors[`experience_company_${idx}`]}</p>
+                ) : null}
+              </div>
+              <div>
+                <EditorFieldLabel required>Location</EditorFieldLabel>
+                <input
+                  value={unescapeHtml(exp.location || "")}
+                  onChange={(e) => onChange(idx, "location", e.target.value)}
+                  className="input-field"
+                  placeholder="City, State / Province / Region or Remote"
+                  aria-required="true"
+                />
+                {fieldErrors[`experience_location_${idx}`] ? (
+                  <p className="editor-field-error">{fieldErrors[`experience_location_${idx}`]}</p>
+                ) : null}
+              </div>
+            </div>
+          </div>
+
+          <motion.div
+            className="exp-date-stack"
+            initial={false}
+            animate={{ opacity: inView || reduceMotion ? 1 : 0.55 }}
+            transition={{ duration: 0.4, ease: motionEase }}
+          >
+            <div>
+              <EditorFieldLabel required>Start</EditorFieldLabel>
+              <input
+                value={unescapeHtml(exp.start || "")}
+                onChange={(e) => onChange(idx, "start", e.target.value)}
+                className="input-field"
+                placeholder="Jan 2022"
+                aria-required="true"
+              />
+              {fieldErrors[`experience_start_${idx}`] ? (
+                <p className="editor-field-error">{fieldErrors[`experience_start_${idx}`]}</p>
+              ) : null}
+            </div>
+            <div>
+              <EditorFieldLabel required>End</EditorFieldLabel>
+              <input
+                value={unescapeHtml(exp.end || "")}
+                onChange={(e) => onChange(idx, "end", e.target.value)}
+                className="input-field"
+                placeholder="Present"
+                aria-required="true"
+              />
+              {fieldErrors[`experience_end_${idx}`] ? (
+                <p className="editor-field-error">{fieldErrors[`experience_end_${idx}`]}</p>
+              ) : null}
+            </div>
+          </motion.div>
+        </div>
+
+        <div className="exp-highlights-block">
+          <EditorFieldLabel required>Achievements & responsibilities</EditorFieldLabel>
+          <HighlightsEditor
+            highlights={exp.highlights}
+            onChange={(value) => onChange(idx, "highlights", value)}
+            placeholder="Add a win: action, scope, measurable outcome…"
+          />
+          {fieldErrors[`experience_highlights_${idx}`] ? (
+            <p className="editor-field-error">{fieldErrors[`experience_highlights_${idx}`]}</p>
+          ) : null}
+        </div>
+
+        <div className="exp-item-actions">
+          <button type="button" onClick={() => onRemove(idx)} className="btn btn-ghost text-red-600 hover:bg-red-50">
+            <Trash2 className="h-4 w-4" />
+            Remove role
+          </button>
+        </div>
+      </div>
+    </motion.li>
+  );
+}
 
 export default function ExperienceSectionEditor({
   experiences = [],
@@ -15,125 +178,34 @@ export default function ExperienceSectionEditor({
 }) {
   return (
     <div className="editor-section-content">
-      <EditorSectionHeader
-        label="Career"
-        title="Work experience"
-        description="Roles, impact, and outcomes recruiters scan first."
-        action={
-          <button type="button" onClick={onAdd} className="btn btn-primary shrink-0 self-start">
-            <Plus className="h-4 w-4" />
-            Add role
-          </button>
-        }
-      />
+      <ScrollReveal y={10}>
+        <EditorSectionHeader
+          label="Career"
+          title="Work experience"
+          description="Roles, impact, and outcomes recruiters scan first."
+          action={
+            <button type="button" onClick={onAdd} className="btn btn-primary shrink-0 self-start">
+              <Plus className="h-4 w-4" />
+              Add role
+            </button>
+          }
+        />
+      </ScrollReveal>
 
       {experiences.length === 0 ? (
         <p className="editor-empty-hint">No roles yet. Add your most recent position to start the timeline.</p>
       ) : (
         <ol className="exp-timeline">
           {experiences.map((exp, idx) => (
-            <motion.li
+            <ExperienceTimelineItem
               key={idx}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="exp-timeline-item"
-            >
-              <div className="exp-timeline-rail" aria-hidden>
-                <span className="exp-timeline-dot" />
-                {idx < experiences.length - 1 ? <span className="exp-timeline-line" /> : null}
-              </div>
-
-              <div className="exp-timeline-body">
-                <div className="exp-timeline-top">
-                  <div className="min-w-0 flex-1 space-y-2">
-                    <div>
-                      <label className="editor-field-label">Job title</label>
-                      <input
-                        value={unescapeHtml(exp.title || "")}
-                        onChange={(e) => onChange(idx, "title", e.target.value)}
-                        className="input-field editor-title-input"
-                        placeholder="Senior Software Engineer"
-                      />
-                      {fieldErrors[`experience_title_${idx}`] ? (
-                        <p className="editor-field-error">{fieldErrors[`experience_title_${idx}`]}</p>
-                      ) : null}
-                    </div>
-                    <div className="exp-meta-grid">
-                      <div>
-                        <label className="editor-field-label">Company</label>
-                        <input
-                          value={unescapeHtml(exp.company || "")}
-                          onChange={(e) => onChange(idx, "company", e.target.value)}
-                          className="input-field"
-                          placeholder="Company name"
-                        />
-                        {fieldErrors[`experience_company_${idx}`] ? (
-                          <p className="editor-field-error">{fieldErrors[`experience_company_${idx}`]}</p>
-                        ) : null}
-                      </div>
-                      <div>
-                        <label className="editor-field-label">Location</label>
-                        <input
-                          value={unescapeHtml(exp.location || "")}
-                          onChange={(e) => onChange(idx, "location", e.target.value)}
-                          className="input-field"
-                          placeholder="City, Province or Remote"
-                        />
-                        {fieldErrors[`experience_location_${idx}`] ? (
-                          <p className="editor-field-error">{fieldErrors[`experience_location_${idx}`]}</p>
-                        ) : null}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="exp-date-stack">
-                    <div>
-                      <label className="editor-field-label">Start</label>
-                      <input
-                        value={unescapeHtml(exp.start || "")}
-                        onChange={(e) => onChange(idx, "start", e.target.value)}
-                        className="input-field"
-                        placeholder="Jan 2022"
-                      />
-                      {fieldErrors[`experience_start_${idx}`] ? (
-                        <p className="editor-field-error">{fieldErrors[`experience_start_${idx}`]}</p>
-                      ) : null}
-                    </div>
-                    <div>
-                      <label className="editor-field-label">End</label>
-                      <input
-                        value={unescapeHtml(exp.end || "")}
-                        onChange={(e) => onChange(idx, "end", e.target.value)}
-                        className="input-field"
-                        placeholder="Present"
-                      />
-                      {fieldErrors[`experience_end_${idx}`] ? (
-                        <p className="editor-field-error">{fieldErrors[`experience_end_${idx}`]}</p>
-                      ) : null}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="exp-highlights-block">
-                  <label className="editor-field-label">Achievements & responsibilities</label>
-                  <HighlightsEditor
-                    highlights={exp.highlights}
-                    onChange={(value) => onChange(idx, "highlights", value)}
-                    placeholder="Add a win: action, scope, measurable outcome…"
-                  />
-                  {fieldErrors[`experience_highlights_${idx}`] ? (
-                    <p className="editor-field-error">{fieldErrors[`experience_highlights_${idx}`]}</p>
-                  ) : null}
-                </div>
-
-                <div className="exp-item-actions">
-                  <button type="button" onClick={() => onRemove(idx)} className="btn btn-ghost text-red-600 hover:bg-red-50">
-                    <Trash2 className="h-4 w-4" />
-                    Remove role
-                  </button>
-                </div>
-              </div>
-            </motion.li>
+              exp={exp}
+              idx={idx}
+              isLast={idx === experiences.length - 1}
+              fieldErrors={fieldErrors}
+              onChange={onChange}
+              onRemove={onRemove}
+            />
           ))}
         </ol>
       )}

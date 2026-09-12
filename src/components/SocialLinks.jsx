@@ -18,14 +18,14 @@ export default function SocialLinks() {
   if (links.length === 0) return null;
 
   return (
-    <div className="flex flex-wrap items-center justify-center gap-4 mt-2">
+    <div className="site-footer__social">
       {links.map((item) => (
         <a
           key={item.key}
           href={item.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex min-h-[44px] min-w-[44px] items-center justify-center text-sm font-medium text-zinc-500 transition-colors hover:text-zinc-900 focus-visible:rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25"
+          className="site-footer__link site-footer__link--compact"
           aria-label={`Follow us on ${item.label}`}
         >
           {item.label}

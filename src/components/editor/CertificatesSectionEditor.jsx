@@ -5,6 +5,8 @@ import { Award, Plus, Trash2 } from "lucide-react";
 import { unescapeHtml } from "../../utils/safeHtml";
 import EditorSectionHeader from "./EditorSectionHeader";
 import { showHighlightAdded, showHighlightError } from "../../utils/toast";
+import ScrollReveal from "../motion/ScrollReveal";
+import { motionDistance } from "../motion/motionConfig";
 
 export default function CertificatesSectionEditor({ certificates = [], onChange }) {
   const [draft, setDraft] = useState("");
@@ -23,11 +25,13 @@ export default function CertificatesSectionEditor({ certificates = [], onChange 
 
   return (
     <div className="editor-section-content">
-      <EditorSectionHeader
-        label="Credentials"
-        title="Certificates"
-        description="Compact list—name, issuer, and date on one line each."
-      />
+      <ScrollReveal y={motionDistance.subtle}>
+        <EditorSectionHeader
+          label="Credentials"
+          title="Certificates"
+          description="Compact list—name, issuer, and date on one line each."
+        />
+      </ScrollReveal>
 
       <div className="cert-composer">
         <label className="editor-field-label" htmlFor="cert-draft">
@@ -59,7 +63,7 @@ export default function CertificatesSectionEditor({ certificates = [], onChange 
       ) : (
         <ul className="cert-list">
           {items.map((cert, idx) => (
-            <li key={idx} className="cert-row">
+            <ScrollReveal key={idx} as="li" className="cert-row" delay={idx * 0.03} y={6} amount={0.1}>
               <Award className="cert-row-icon" strokeWidth={1.75} aria-hidden />
               <input
                 value={unescapeHtml(cert)}
@@ -79,7 +83,7 @@ export default function CertificatesSectionEditor({ certificates = [], onChange 
               >
                 <Trash2 className="h-4 w-4" />
               </button>
-            </li>
+            </ScrollReveal>
           ))}
         </ul>
       )}

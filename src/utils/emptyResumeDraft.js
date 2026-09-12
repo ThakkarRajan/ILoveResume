@@ -1,6 +1,7 @@
 /**
  * Starter resume for the /result editor (same shape as AI `structured`).
  * Includes example lines so users see tone, length, and bullet style—replace with your own content.
+ * Sample locations are intentionally varied so the product does not assume one country.
  */
 export function getEmptyResumeDraft() {
   return {
@@ -8,7 +9,7 @@ export function getEmptyResumeDraft() {
     contact: {
       email: "jordan.lee@email.com",
       phone: "+1 (555) 010-2030",
-      location: "Toronto, ON",
+      location: "Austin, TX",
       website: "portfolio.example.com",
       github: "jordanlee",
       linkedin: "jordan-lee-profile",
@@ -26,7 +27,7 @@ export function getEmptyResumeDraft() {
       {
         company: "Your company (replace)",
         title: "Senior Software Engineer",
-        location: "Remote · Canada",
+        location: "Remote",
         start: "Jan 2022",
         end: "Present",
         highlights: [
@@ -39,7 +40,7 @@ export function getEmptyResumeDraft() {
       {
         company: "Previous Company Inc.",
         title: "Software Engineer",
-        location: "Vancouver, BC",
+        location: "London, UK",
         start: "Jun 2019",
         end: "Dec 2021",
         highlights: [
@@ -52,7 +53,7 @@ export function getEmptyResumeDraft() {
       {
         program: "B.Sc. Computer Science",
         school: "Your University (edit)",
-        location: "Canada",
+        location: "Sydney, Australia",
         start: "2015",
         end: "2019",
         highlights: ["Dean's List (example — optional)", "Capstone: team project with industry partner"],

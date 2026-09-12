@@ -1,29 +1,35 @@
-// Central API config and helpers
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE ||
-  "https://jobdraftai-backend-production.up.railway.app";
+import { getAuth } from "firebase/auth";
+import "../utils/firebase.js";
 
 /**
- * Fire-and-forget call to wake/health-check the backend.
- * Railway and similar hosts can sleep services after inactivity.
- * Calling this on login ensures the backend is warmed up before the user
- * uploads a resume or triggers AI processing.
- * Tries /health first; falls back to / if needed. Does not block UI.
+ * Client calls same-origin Next.js proxies (never the Railway host directly).
+ * Proxies require a Firebase ID token.
  */
+async function authHeaders(extra = {}) {
+  const user = getAuth().currentUser;
+  if (!user) {
+    throw new Error("Sign in required");
+  }
+  const token = await user.getIdToken();
+  return {
+    ...extra,
+    Authorization: `Bearer ${token}`,
+  };
+}
+
+/** Warm backend via authenticated-optional wake proxy. */
 export function wakeBackend() {
-  fetch(`${API_BASE}/health`, { method: "GET" })
-    .catch(() => fetch(`${API_BASE}/`, { method: "GET" }))
-    .catch(() => {});
+  fetch("/api/wake", { method: "POST" }).catch(() => {});
 }
 
 /**
- * Call /process-text with resume_text and job_description (backend schema).
- * Returns the fetch Response; caller should check res.ok and await res.json().
+ * Call /api/process-text (proxied). Returns fetch Response.
  */
-export function processText(resumeText, jobDescription) {
-  return fetch(`${API_BASE}/process-text`, {
+export async function processText(resumeText, jobDescription) {
+  const headers = await authHeaders({ "Content-Type": "application/json" });
+  return fetch("/api/process-text", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers,
     body: JSON.stringify({
       resume_text: resumeText,
       job_description: jobDescription,
@@ -31,4 +37,33 @@ export function processText(resumeText, jobDescription) {
   });
 }
 
-export { API_BASE };
+/**
+ * Upload PDF for text extraction via /api/extract.
+ */
+export async function extractPdf(file, { signal } = {}) {
+  const headers = await authHeaders();
+  const formData = new FormData();
+  formData.append("file", file);
+  return fetch("/api/extract", {
+    method: "POST",
+    headers,
+    body: formData,
+    signal,
+  });
+}
+
+/**
+ * Extract PDF text from a Firebase Storage download URL via /api/extract-from-url.
+ */
+export async function extractFromUrl(url, { signal } = {}) {
+  const headers = await authHeaders({ "Content-Type": "application/json" });
+  return fetch("/api/extract-from-url", {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ url }),
+    signal,
+  });
+}
+
+/** @deprecated Prefer same-origin /api/* helpers. Kept empty export for any leftover imports. */
+export const API_BASE = "";

@@ -5,7 +5,7 @@ import { pageMeta } from "../../config/site";
 export const metadata = pageMeta({
   title: "Google Docs resume template — collaboration without ATS surprises",
   description:
-    "Build a Google Docs resume that exports cleanly for Canadian employers: styles, headings, tables to avoid, and PDF checks. Links to ATS and tailoring guides.",
+    "Build a Google Docs resume that exports cleanly: styles, headings, tables to avoid, and PDF checks. Links to ATS and tailoring guides.",
   path: "/google-docs-resume-template",
 });
 
@@ -31,8 +31,8 @@ export default function GoogleDocsResumeTemplatePage() {
       </p>
       <h2>Blog walkthrough</h2>
       <p>
-        <Link href="/blog/google-docs-resume-template-canada">Google Docs resume templates for Canada</Link> goes deeper on
-        collaboration and export hygiene.
+        <Link href="/blog/google-docs-resume-template-canada">Google Docs resume template tips</Link> goes deeper on
+        collaboration and export hygiene (written with Canadian applications in mind).
       </p>
     </MarketingGuideLayout>
   );

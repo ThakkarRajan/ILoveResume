@@ -168,7 +168,7 @@ export default async function BlogPostPage({ params }) {
               </li>
               <li>
                 <Link href="/resume-builder-canada" className="font-medium underline-offset-2 hover:underline">
-                  Resume builder for Canada
+                  Resume norms for Canada
                 </Link>
               </li>
               <li>
