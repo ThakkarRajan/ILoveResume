@@ -8,6 +8,7 @@ import { useState, useRef, useEffect, useId } from "react";
 import { User, LogOut, ChevronDown } from "lucide-react";
 import { getAuth, onAuthStateChanged, signOut as firebaseSignOut } from "firebase/auth";
 import PublicNav from "./ui/PublicNav";
+import SiteBrand from "./ui/SiteBrand";
 
 const authLinks = [
   { href: "/dashboard", label: "Tailor" },
@@ -98,18 +99,7 @@ export default function Navbar() {
     <>
       <header className={shellClass}>
         <div className="site-header-inner app-container">
-          <Link href="/dashboard" className="site-brand" aria-label="I Love Resumes dashboard">
-            <Image
-              src="/logo.png"
-              alt=""
-              width={1017}
-              height={850}
-              sizes="28px"
-              className="site-brand-mark"
-              priority
-            />
-            <span className="site-brand-name">I Love Resumes</span>
-          </Link>
+          <SiteBrand href="/dashboard" label="I Love Resumes dashboard" priority />
 
           <nav className="site-nav-desktop" aria-label="Main">
             <ul className="site-nav-list">

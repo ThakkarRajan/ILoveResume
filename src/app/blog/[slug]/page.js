@@ -135,9 +135,7 @@ export default async function BlogPostPage({ params }) {
               {post.title}
             </h1>
 
-            <div className="mx-auto mt-5 max-w-md">
-              <BlogSquiggle className="h-3 w-full text-blue-400" gradientId={`blog-sq-${post.slug}`} />
-            </div>
+          
 
             <BlogCasualAside slug={post.slug} category={post.category} />
 

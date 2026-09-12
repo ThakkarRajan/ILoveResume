@@ -6,12 +6,12 @@ export default function BlogPostHero({ slug, alt }) {
 
   return (
     <figure className="mb-8">
-      <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-zinc-200/80 bg-zinc-100 shadow-[var(--shadow-card)] ring-1 ring-black/[0.03]">
+      <div className="relative mx-auto aspect-[2/1] w-full max-w-2xl overflow-hidden rounded-xl border border-zinc-200/80 bg-zinc-100 shadow-[var(--shadow-card)] ring-1 ring-black/[0.03] sm:rounded-2xl">
         <Image
           src={cover.src}
           alt={alt}
           fill
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 720px"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 42rem, 672px"
           className="object-cover"
           priority
         />

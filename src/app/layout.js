@@ -44,7 +44,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           }}
         />
       </head>
-      <body className={`${jakarta.className} min-h-dvh min-w-0 overflow-x-clip antialiased bg-[var(--background)] text-[var(--foreground)]`}>
+      <body
+        className={`${jakarta.className} min-h-dvh min-w-0 overflow-x-clip antialiased bg-[var(--background)] text-[var(--foreground)]`}
+        suppressHydrationWarning
+      >
         <a href="#main-content" className="skip-link">Skip to content</a>
         <noscript>
           <iframe

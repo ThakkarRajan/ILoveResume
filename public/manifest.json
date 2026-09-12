@@ -4,8 +4,8 @@
   "description": "Transform your resume with AI-powered insights. Get personalized suggestions, optimize structure, and align keywords with job descriptions.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f8fafc",
-  "theme_color": "#3B82F6",
+  "background_color": "#f4f6f8",
+  "theme_color": "#0d9488",
   "orientation": "portrait-primary",
   "icons": [
     {

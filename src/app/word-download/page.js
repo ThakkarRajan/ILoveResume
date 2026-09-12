@@ -16,16 +16,14 @@ import {
   TabStopPosition,
 } from "docx";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Download, 
-  FileText, 
-  FileImage, 
-  CheckCircle, 
-  AlertCircle, 
+import {
+  Download,
+  FileText,
+  FileImage,
+  CheckCircle,
+  AlertCircle,
   ArrowLeft,
   Eye,
-  Clock,
-  Zap
 } from "lucide-react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import SiteLegalLinks from "../../components/legal/SiteLegalLinks";
@@ -996,24 +994,25 @@ export default function WordDownloadPage() {
 
   if (!resumeData && !error) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[var(--background)] px-4">
+      <div className="flex min-h-dvh items-center justify-center bg-[var(--background)] px-4">
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center">
-          <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-2 border-[var(--border)] border-t-[var(--accent)] sm:mb-5 sm:h-12 sm:w-12" />
-          <p className="text-sm font-medium text-[var(--foreground)] sm:text-base">Preparing download…</p>
+          <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-2 border-[var(--border)] border-t-[var(--accent)]" />
+          <p className="text-sm font-medium text-[var(--foreground)]">Preparing download…</p>
         </motion.div>
       </div>
     );
   }
 
   const exportUnlocked = canExportResume(user);
+  const resumeName = (resumeData?.name || "").trim() || "Your resume";
 
   return (
-    <AppPageLayout>
-      <div className="mx-auto max-w-3xl">
+    <AppPageLayout className="page-canvas-grid">
+      <div className="mx-auto max-w-5xl">
         <AppPageHeader
           eyebrow="Export"
           title="Download your resume"
-          description="Word for edits and ATS-friendly tweaks; PDF when the employer asks for a fixed layout."
+          description="Pick a format. Word for edits; PDF when they want a fixed file."
           actions={
             <button type="button" onClick={() => router.push("/result")} className="btn btn-secondary">
               <ArrowLeft className="h-4 w-4" strokeWidth={1.75} />
@@ -1022,200 +1021,191 @@ export default function WordDownloadPage() {
           }
         />
 
+        {error ? (
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-4 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3"
+            role="alert"
+          >
+            <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-600" strokeWidth={1.75} />
+            <p className="text-sm font-medium text-red-800">{error}</p>
+          </motion.div>
+        ) : null}
+
         {!exportUnlocked ? (
-          <div className="mb-8">
-            <ExportAccessGate idPrefix="word-download" user={user} onUserChange={setUser} />
+          <div className="mb-4">
+            <ExportAccessGate
+              idPrefix="word-download"
+              user={user}
+              onUserChange={setUser}
+              title="Before you download"
+              description="Accept terms and sign in to unlock Word and PDF."
+            />
           </div>
         ) : null}
 
-        {/* Error Display */}
-        {error && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="mb-8 max-w-md rounded-lg border border-red-200 bg-red-50 p-4"
-          >
-            <div className="flex items-center gap-3">
-              <AlertCircle className="w-5 h-5 text-red-600" />
-              <p className="text-red-800 font-medium">{error}</p>
-            </div>
-          </motion.div>
-        )}
-
-        {/* Main Content */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="panel w-full"
-        >
-          <div className="panel-body">
-          {!exportUnlocked ? (
-            <p className="mb-6 rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] px-4 py-3 text-sm text-[var(--text-secondary)]">
-              Complete the terms and sign-in step above to unlock Word and PDF downloads.
-            </p>
-          ) : null}
-          {/* Download Options */}
-          <div className={`grid grid-cols-1 gap-4 sm:gap-6 mb-6 sm:mb-8 md:grid-cols-2 ${exportUnlocked ? "" : "pointer-events-none opacity-50"}`}>
-            {/* Word Document */}
-            <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.15 }} className="rounded-xl border border-zinc-200 bg-zinc-50/50 p-6">
-              <div className="mb-4 flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-white ring-1 ring-zinc-200">
-                  <FileText className="h-6 w-6 text-zinc-700" strokeWidth={1.75} />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900">Word Document</h3>
-                  <p className="text-gray-600 text-sm">Editable format</p>
-                </div>
-              </div>
-              
-              <div className="space-y-3 mb-6">
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <CheckCircle className="w-4 h-4 text-green-500" />
-                  <span>Fully editable in Word</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <CheckCircle className="w-4 h-4 text-green-500" />
-                  <span>Clean, recruiter-ready layout</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <CheckCircle className="w-4 h-4 text-green-500" />
-                  <span>ATS-friendly</span>
-                </div>
-              </div>
-
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={handleDownloadWord}
-                disabled={loading || !exportUnlocked}
-                className={`flex w-full items-center justify-center gap-2 rounded-lg py-3 px-6 text-sm font-semibold text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 ${
-                  loading && downloadType === "word" ? "cursor-not-allowed bg-zinc-400" : "bg-zinc-900 hover:bg-zinc-800"
-                }`}
-              >
-                {loading && downloadType === "word" ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                    <span>Generating…</span>
-                  </>
-                ) : (
-                  <>
-                    <Download className="w-5 h-5" />
-                    <span>Download Word</span>
-                  </>
-                )}
-              </motion.button>
-            </motion.div>
-
-            {/* PDF Document */}
-            <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.15 }} className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
-              <div className="mb-4 flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-50">
-                  <FileImage className="h-6 w-6 text-[var(--accent)]" strokeWidth={1.75} />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900">PDF Document</h3>
-                  <p className="text-gray-600 text-sm">Print-ready format</p>
-                </div>
-              </div>
-              
-              <div className="space-y-3 mb-6">
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <CheckCircle className="w-4 h-4 text-green-500" />
-                  <span>Print-ready</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <CheckCircle className="w-4 h-4 text-green-500" />
-                  <span>Consistent formatting</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <CheckCircle className="w-4 h-4 text-green-500" />
-                  <span>Universal compatibility</span>
-                </div>
-              </div>
-
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={handleDownloadPDF}
-                disabled={loading || !exportUnlocked}
-                className={`flex w-full items-center justify-center gap-2 rounded-lg py-3 px-6 text-sm font-semibold text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 ${
-                  loading && downloadType === "pdf" ? "cursor-not-allowed bg-blue-300" : "bg-blue-600 hover:bg-blue-700"
-                }`}
-              >
-                {loading && downloadType === "pdf" ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                    <span>Generating…</span>
-                  </>
-                ) : (
-                  <>
-                    <Download className="w-5 h-5" />
-                    <span>Download PDF</span>
-                  </>
-                )}
-              </motion.button>
-            </motion.div>
-          </div>
-
-          {/* PDF Preview */}
-          {pdfUrl && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="border-t border-gray-200 pt-6"
-            >
-              <div className="flex items-center gap-3 mb-4">
-                <Eye className="w-5 h-5 text-gray-600" />
-                <h3 className="text-lg font-semibold text-gray-900">PDF Preview</h3>
-              </div>
-              <div className="bg-gray-100 rounded-xl overflow-hidden shadow-lg">
-                <iframe
-                  src={pdfUrl}
-                  title="PDF Preview"
-                  className="w-full h-96 border-0"
-                />
-              </div>
-            </motion.div>
-          )}
-
-          {/* Features */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-5">
+          {/* Stage — context */}
+          <motion.aside
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="mt-8 pt-6 border-t border-gray-200"
+            transition={{ duration: 0.2 }}
+            className="panel min-w-0 lg:col-span-5"
           >
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="flex items-center gap-3 p-3 bg-green-50 rounded-xl">
-                <Zap className="w-5 h-5 text-green-600" />
-                <div>
-                  <p className="text-sm font-medium text-green-900">Posting-aligned</p>
-                  <p className="text-xs text-green-700">Tailored to your job description</p>
-                </div>
+            <div className="panel-body flex h-full flex-col gap-4">
+              <div>
+                <p className="eyebrow mb-1">Ready to export</p>
+                <h2 className="text-xl font-semibold tracking-tight text-[var(--foreground)] sm:text-2xl">
+                  {resumeName}
+                </h2>
+                <p className="mt-2 text-sm leading-relaxed text-[var(--text-secondary)]">
+                  File uses the latest edits from the editor. Prefer Word for ATS tweaks; use PDF when the posting asks for it.
+                </p>
               </div>
-              <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-xl">
-                <Clock className="w-5 h-5 text-blue-600" />
-                <div>
-                  <p className="text-sm font-medium text-blue-900">Fast export</p>
-                  <p className="text-xs text-[var(--accent)]">Usually ready in seconds</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 rounded-lg border border-zinc-200 bg-zinc-50 p-3">
-                <CheckCircle className="h-5 w-5 text-zinc-600" strokeWidth={1.75} />
-                <div>
-                  <p className="text-sm font-medium text-zinc-900">Standard formats</p>
-                  <p className="text-xs text-zinc-600">.docx and PDF</p>
-                </div>
-              </div>
-            </div>
-          </motion.div>
 
-          <div className="mt-8 border-t border-zinc-200 pt-6">
-            <SiteLegalLinks />
-          </div>
-          </div>
-        </motion.div>
+              <ul className="mt-auto space-y-2.5 border-t border-[var(--border)] pt-4 text-sm text-[var(--text-secondary)]">
+                <li className="flex items-start gap-2.5">
+                  <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-[var(--accent)]" strokeWidth={2} />
+                  <span>Layout stays clean and recruiter-readable</span>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-[var(--accent)]" strokeWidth={2} />
+                  <span>Usually ready in a few seconds</span>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-[var(--accent)]" strokeWidth={2} />
+                  <span>Standard .docx and PDF</span>
+                </li>
+              </ul>
+            </div>
+          </motion.aside>
+
+          {/* Actions */}
+          <motion.section
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2, delay: 0.05 }}
+            className="panel min-w-0 lg:col-span-7"
+          >
+            <div className="panel-body space-y-3">
+              <div className="flex items-baseline justify-between gap-3">
+                <h3 className="text-sm font-semibold text-[var(--foreground)]">Choose format</h3>
+                {!exportUnlocked ? (
+                  <span className="badge badge-info">Locked</span>
+                ) : (
+                  <span className="badge badge-success">Unlocked</span>
+                )}
+              </div>
+
+              {!exportUnlocked ? (
+                <p className="rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2.5 text-sm text-[var(--text-secondary)]">
+                  Complete terms + sign-in above to enable downloads.
+                </p>
+              ) : null}
+
+              <div className={`space-y-3 ${exportUnlocked ? "" : "pointer-events-none opacity-50"}`}>
+                {/* Word — primary */}
+                <div className="rounded-xl border border-[var(--border-strong)] bg-[var(--surface)] p-4 sm:p-5">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex min-w-0 items-start gap-3">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-muted)] ring-1 ring-[var(--accent-subtle)]">
+                        <FileText className="h-5 w-5 text-[var(--accent-hover)]" strokeWidth={1.75} />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <h4 className="text-base font-semibold text-[var(--foreground)]">Word (.docx)</h4>
+                          <span className="rounded-md bg-[var(--accent-muted)] px-1.5 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wide text-[var(--accent-hover)]">
+                            Recommended
+                          </span>
+                        </div>
+                        <p className="mt-0.5 text-sm text-[var(--text-secondary)]">
+                          Editable · ATS-friendly · best for most applications
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleDownloadWord}
+                      disabled={loading || !exportUnlocked}
+                      className="btn btn-primary w-full shrink-0 sm:w-auto"
+                    >
+                      {loading && downloadType === "word" ? (
+                        <>
+                          <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/25 border-t-white" />
+                          Generating…
+                        </>
+                      ) : (
+                        <>
+                          <Download className="h-4 w-4" strokeWidth={1.75} />
+                          Download Word
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {/* PDF — secondary */}
+                <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] p-4 sm:p-5">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex min-w-0 items-start gap-3">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-white ring-1 ring-[var(--border)]">
+                        <FileImage className="h-5 w-5 text-[var(--foreground)]" strokeWidth={1.75} />
+                      </div>
+                      <div className="min-w-0">
+                        <h4 className="text-base font-semibold text-[var(--foreground)]">PDF</h4>
+                        <p className="mt-0.5 text-sm text-[var(--text-secondary)]">
+                          Print-ready · fixed layout · when the employer asks
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleDownloadPDF}
+                      disabled={loading || !exportUnlocked}
+                      className="btn btn-secondary w-full shrink-0 sm:w-auto"
+                    >
+                      {loading && downloadType === "pdf" ? (
+                        <>
+                          <span className="h-4 w-4 animate-spin rounded-full border-2 border-zinc-300 border-t-zinc-700" />
+                          Generating…
+                        </>
+                      ) : (
+                        <>
+                          <Download className="h-4 w-4" strokeWidth={1.75} />
+                          Download PDF
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <AnimatePresence>
+                {pdfUrl ? (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 4 }}
+                    className="border-t border-[var(--border)] pt-4"
+                  >
+                    <div className="mb-3 flex items-center gap-2">
+                      <Eye className="h-4 w-4 text-[var(--muted)]" strokeWidth={1.75} />
+                      <h4 className="text-sm font-semibold text-[var(--foreground)]">PDF preview</h4>
+                    </div>
+                    <div className="overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface-inset)]">
+                      <iframe src={pdfUrl} title="PDF Preview" className="h-80 w-full border-0 sm:h-96" />
+                    </div>
+                  </motion.div>
+                ) : null}
+              </AnimatePresence>
+            </div>
+          </motion.section>
+        </div>
+
+        <div className="mt-5 border-t border-[var(--border)] pt-3 pb-2">
+          <SiteLegalLinks />
+        </div>
       </div>
     </AppPageLayout>
   );

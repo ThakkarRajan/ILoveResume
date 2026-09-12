@@ -495,79 +495,77 @@ export default function ResultPage() {
 
   return (
     <div className="relative min-h-dvh overflow-x-hidden bg-[var(--background)] page-canvas-grid">
-      <div className="relative z-10 mx-auto min-w-0 max-w-7xl px-page py-3 pb-[max(1rem,env(safe-area-inset-bottom))] sm:py-4 lg:py-5">
+      <div className="relative z-10 mx-auto min-w-0 max-w-7xl px-page py-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:py-3">
         <div className="editor-workspace">
-          <div className="editor-sticky-stack">
+          <div className="editor-sticky-stack editor-sticky-stack--flush">
             <div className="panel min-w-0 max-w-full">
-              <div className="editor-toolbar-body">
-                <div className="flex min-w-0 items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={() => router.push("/dashboard")}
-                    className="btn btn-ghost px-2"
-                    aria-label="Back to dashboard"
-                  >
-                    <ArrowLeft className="h-4 w-4" />
-                  </button>
-                  <div className="min-w-0">
-                    <h1 className="truncate text-sm font-semibold text-zinc-900 sm:text-base">Resume editor</h1>
-                    <p className="text-xs text-zinc-500">Edit your tailored draft before export</p>
+              <div className="editor-chrome">
+                <div className="flex min-w-0 flex-wrap items-center justify-between gap-2 sm:gap-3">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => router.push("/dashboard")}
+                      className="btn btn-ghost px-2"
+                      aria-label="Back to dashboard"
+                    >
+                      <ArrowLeft className="h-4 w-4" />
+                    </button>
+                    <div className="min-w-0">
+                      <h1 className="truncate text-sm font-semibold text-zinc-900 sm:text-base">Resume editor</h1>
+                      <p className="text-xs text-zinc-500">Edit your tailored draft before export</p>
+                    </div>
+                  </div>
+                  <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
+                    {autoSaveStatus === "saving" && <span className="badge badge-info">Saving…</span>}
+                    {autoSaveStatus === "saved" && <span className="badge badge-success">Saved</span>}
+                    {autoSaveStatus === "error" && <span className="badge badge-error">Save failed</span>}
+                    <button
+                      type="button"
+                      onClick={handleSave}
+                      disabled={isSaving || isDownloading}
+                      className="btn btn-secondary flex-1 px-3 sm:flex-none"
+                    >
+                      <Save className="h-4 w-4" />
+                      {isSaving ? "Saving…" : "Save"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleDownload}
+                      disabled={isDownloading || isSaving}
+                      className="btn btn-primary flex-1 px-3 sm:flex-none"
+                    >
+                      <Download className="h-4 w-4" />
+                      {isDownloading ? "Preparing…" : "Export"}
+                    </button>
                   </div>
                 </div>
-                <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
-                  {autoSaveStatus === "saving" && <span className="badge badge-info">Saving…</span>}
-                  {autoSaveStatus === "saved" && <span className="badge badge-success">Saved</span>}
-                  {autoSaveStatus === "error" && <span className="badge badge-error">Save failed</span>}
-                  <button
-                    type="button"
-                    onClick={handleSave}
-                    disabled={isSaving || isDownloading}
-                    className="btn btn-secondary flex-1 px-3 sm:flex-none"
-                  >
-                    <Save className="h-4 w-4" />
-                    {isSaving ? "Saving…" : "Save"}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleDownload}
-                    disabled={isDownloading || isSaving}
-                    className="btn btn-primary flex-1 px-3 sm:flex-none"
-                  >
-                    <Download className="h-4 w-4" />
-                    {isDownloading ? "Preparing…" : "Export"}
-                  </button>
-                </div>
-              </div>
-            </div>
 
-            <div className="panel min-w-0 max-w-full">
-              <div className="editor-tabs-body">
                 <div className="section-tabs editor-section-tabs" role="tablist" aria-label="Resume sections">
-                {sectionNav.map((section) => {
-                  const Icon = section.icon;
-                  return (
-                    <button
-                      key={section.id}
-                      id={`tab-${section.id}`}
-                      type="button"
-                      role="tab"
-                      aria-selected={activeSection === section.id}
-                      aria-controls={`section-${section.id}`}
-                      tabIndex={activeSection === section.id ? 0 : -1}
-                      onClick={() => handleSectionNav(section.id)}
-                      className={`section-tab ${activeSection === section.id ? "section-tab-active" : ""}`}
-                    >
-                      <Icon className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden />
-                      {section.label}
-                    </button>
-                  );
-                })}
+                  {sectionNav.map((section) => {
+                    const Icon = section.icon;
+                    return (
+                      <button
+                        key={section.id}
+                        id={`tab-${section.id}`}
+                        type="button"
+                        role="tab"
+                        aria-selected={activeSection === section.id}
+                        aria-controls={`section-${section.id}`}
+                        tabIndex={activeSection === section.id ? 0 : -1}
+                        onClick={() => handleSectionNav(section.id)}
+                        className={`section-tab ${activeSection === section.id ? "section-tab-active" : ""}`}
+                      >
+                        <Icon className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden />
+                        {section.label}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="editor-scroll-canvas min-w-0 pt-8">
+          <div className="editor-scroll-canvas min-w-0">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeSection}
@@ -855,7 +853,7 @@ export default function ResultPage() {
           </div>
         </div>
 
-        <div className="mt-6 border-t border-zinc-200 pt-5 pb-4">
+        <div className="mt-4 border-t border-zinc-200 pt-3 pb-2">
           <SiteLegalLinks />
         </div>
       </div>

@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
+import SiteBrand from "./SiteBrand";
 
 const baseLinks = [
   { href: "/resume-builder", label: "Guides" },
@@ -59,20 +59,7 @@ export default function PublicNav({ fixed = false, extraLinks = [] }) {
   return (
     <header className={shellClass}>
       <div className="site-header-inner app-container">
-        <Link href="/" className="site-brand" aria-label="I Love Resumes home">
-          <Image
-            src="/logo.png"
-            alt=""
-            width={1017}
-            height={850}
-            sizes="28px"
-            className="site-brand-mark"
-            priority
-          />
-          <span className="site-brand-name">
-            I Love Resumes
-          </span>
-        </Link>
+        <SiteBrand href="/" label="I Love Resumes home" priority />
 
         <nav className="site-nav-desktop" aria-label="Main">
           <ul className="site-nav-list">

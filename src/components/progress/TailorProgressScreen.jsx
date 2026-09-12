@@ -236,14 +236,19 @@ export default function TailorProgressScreen({
           <Image
             src="/logo.png"
             alt=""
-            width={1017}
-            height={850}
+            width={512}
+            height={454}
             className="tailor-progress-logo"
             priority
           />
-          <p className="tailor-progress-brand-name" translate="no">
-            I Love Resumes
-          </p>
+          <Image
+            src="/logo-text.png"
+            alt="I Love Resumes"
+            width={900}
+            height={95}
+            className="tailor-progress-wordmark"
+            priority
+          />
         </div>
 
         <PhaseStage phase={phase} reduceMotion={reduceMotion} />
@@ -371,14 +376,19 @@ export function ResultProgressScreen({ title, subtitle }) {
           <Image
             src="/logo.png"
             alt=""
-            width={1017}
-            height={850}
+            width={512}
+            height={454}
             className="tailor-progress-logo"
             priority
           />
-          <p className="tailor-progress-brand-name" translate="no">
-            I Love Resumes
-          </p>
+          <Image
+            src="/logo-text.png"
+            alt="I Love Resumes"
+            width={900}
+            height={95}
+            className="tailor-progress-wordmark"
+            priority
+          />
         </div>
         <PhaseStage phase="ai" reduceMotion={reduceMotion} />
         <div className="tailor-progress-copy">

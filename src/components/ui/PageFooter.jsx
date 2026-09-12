@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import SocialLinks from "../SocialLinks";
 
 const exploreLinks = [
@@ -27,9 +28,24 @@ export default function PageFooter({ className = "" }) {
     <footer className={`site-footer ${className}`.trim()}>
       <div className="site-footer__grid">
         <div className="site-footer__brand">
-          <p className="site-footer__brand-name" translate="no">
-            I Love Resumes
-          </p>
+          <Link href="/" className="site-footer__brand-lockup" aria-label="I Love Resumes home">
+            <Image
+              src="/logo.png"
+              alt=""
+              width={512}
+              height={454}
+              sizes="36px"
+              className="site-footer__brand-mark"
+            />
+            <Image
+              src="/logo-text.png"
+              alt=""
+              width={900}
+              height={95}
+              sizes="160px"
+              className="site-footer__brand-wordmark"
+            />
+          </Link>
           <p className="site-footer__brand-desc">
             Free resume tailoring for job seekers. Align your draft to each posting, then export Word or PDF.
           </p>

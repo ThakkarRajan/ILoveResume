@@ -418,6 +418,12 @@ body {
   gap: var(--editor-space-md);
 }
 
+/* Result editor has no site nav — stick flush so content stays visible on small screens */
+.editor-sticky-stack--flush {
+  top: max(0px, env(safe-area-inset-top, 0px));
+  background: var(--background);
+}
+
 @media (min-width: 640px) {
   .editor-sticky-stack {
     gap: var(--editor-space-sm);
@@ -429,10 +435,22 @@ body {
   padding: var(--editor-space-md);
 }
 
+.editor-chrome {
+  display: flex;
+  flex-direction: column;
+  gap: var(--editor-space-sm);
+  padding: var(--editor-space-md);
+}
+
 @media (min-width: 640px) {
   .editor-toolbar-body,
   .editor-tabs-body {
     padding: 0.875rem 1rem;
+  }
+
+  .editor-chrome {
+    gap: 0.625rem;
+    padding: 0.75rem 1rem;
   }
 }
 
@@ -440,6 +458,11 @@ body {
   .editor-toolbar-body,
   .editor-tabs-body {
     padding: 1rem 1.125rem;
+  }
+
+  .editor-chrome {
+    gap: 0.75rem;
+    padding: 0.875rem 1.125rem;
   }
 }
 
@@ -450,13 +473,13 @@ body {
 
 @media (min-width: 640px) {
   .editor-panel-body {
-    padding: 0.875rem 1rem;
+    padding: 0.75rem 1rem;
   }
 }
 
 @media (min-width: 1024px) {
   .editor-panel-body {
-    padding: 1rem 1.125rem;
+    padding: 0.875rem 1.125rem;
   }
 }
 
@@ -936,6 +959,19 @@ body {
   flex-direction: column;
   gap: var(--editor-space-md);
   min-width: 0;
+  padding-top: 0;
+}
+
+@media (min-width: 640px) {
+  .editor-workspace {
+    gap: var(--editor-space-sm);
+  }
+}
+
+@media (min-width: 1024px) {
+  .editor-workspace {
+    gap: 0.625rem;
+  }
 }
 
 .editor-scroll-section {
@@ -999,18 +1035,6 @@ body {
   .home-hero-backdrop {
     will-change: auto;
     opacity: 0.35;
-  }
-}
-
-@media (min-width: 640px) {
-  .editor-workspace {
-    gap: var(--editor-space-md);
-  }
-}
-
-@media (min-width: 1024px) {
-  .editor-workspace {
-    gap: 0.875rem;
   }
 }
 
@@ -1115,17 +1139,16 @@ body {
 }
 
 .site-brand-mark {
-  height: 1.75rem;
+  height: 1.85rem;
   width: auto;
-  border-radius: 0.35rem;
   object-fit: contain;
 }
 
-.site-brand-name {
-  font-size: 0.875rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  line-height: 1;
+.site-brand-wordmark {
+  height: 1.05rem;
+  width: auto;
+  max-width: min(48vw, 10.5rem);
+  object-fit: contain;
 }
 
 .site-nav-desktop {
@@ -1621,6 +1644,7 @@ textarea.input-field {
   gap: 0.375rem;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
   scrollbar-width: none;
 }
 
@@ -1630,6 +1654,34 @@ textarea.input-field {
 
 .section-tabs::-webkit-scrollbar {
   display: none;
+}
+
+/* Show thin scrollbar on small screens so users know more tabs exist */
+@media (max-width: 767px) {
+  .editor-section-tabs.section-tabs {
+    padding-bottom: 0.5rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent) var(--surface-inset);
+  }
+
+  .editor-section-tabs.section-tabs::-webkit-scrollbar {
+    display: block;
+    height: 4px;
+  }
+
+  .editor-section-tabs.section-tabs::-webkit-scrollbar-track {
+    background: var(--surface-inset);
+    border-radius: 999px;
+  }
+
+  .editor-section-tabs.section-tabs::-webkit-scrollbar-thumb {
+    background: var(--accent);
+    border-radius: 999px;
+  }
+
+  .editor-section-tabs.section-tabs::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-hover);
+  }
 }
 
 .section-tab {
@@ -2433,6 +2485,26 @@ textarea.input-field {
     align-items: start;
     gap: 1.5rem 2.5rem;
   }
+}
+
+.site-footer__brand-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  text-decoration: none;
+}
+
+.site-footer__brand-mark {
+  height: 2rem;
+  width: auto;
+  object-fit: contain;
+}
+
+.site-footer__brand-wordmark {
+  height: 1.05rem;
+  width: auto;
+  max-width: 11rem;
+  object-fit: contain;
 }
 
 .site-footer__brand-name {
@@ -3497,9 +3569,13 @@ textarea.input-field {
   height: 2.75rem;
   width: auto;
   max-width: 3rem;
-  border-radius: 0.75rem;
-  border: 1px solid var(--border);
-  background: white;
+  object-fit: contain;
+}
+
+.tailor-progress-wordmark {
+  height: 0.95rem;
+  width: auto;
+  max-width: 10rem;
   object-fit: contain;
 }
 
