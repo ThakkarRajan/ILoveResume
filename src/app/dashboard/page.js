@@ -59,6 +59,7 @@ import {
   getReusableResumeUpload,
 } from "../../utils/resumeUploadCache.js";
 import { getEmptyResumeDraft } from "../../utils/emptyResumeDraft.js";
+import { getSavedUploadsView } from "../../utils/savedUploadsView.js";
 import { unescapeHtml } from "../../utils/safeHtml";
 import SiteLegalLinks from "../../components/legal/SiteLegalLinks";
 import AppPageLayout from "../../components/ui/AppPageLayout";
@@ -97,6 +98,7 @@ export default function Dashboard() {
   const [loadingPhase, setLoadingPhase] = useState('idle'); // 'idle' | 'upload' | 'extract' | 'ai'
   const [uploadAttempts, setUploadAttempts] = useState(0);
   const [user, setUser] = useState(null);
+  const [showAllUploads, setShowAllUploads] = useState(false);
 
   useEffect(() => {
     wakeBackend();
@@ -915,6 +917,8 @@ export default function Dashboard() {
     jobText.trim() &&
     ((uploadMode === "pdf" && (pdfFile || selectedResume)) || (uploadMode === "text" && textResume.trim()));
 
+  const uploadsView = getSavedUploadsView(uploadedResumes, showAllUploads);
+
   return (
     <AppPageLayout className="pb-24 lg:pb-0">
       <div className="mx-auto max-w-7xl">
@@ -936,16 +940,7 @@ export default function Dashboard() {
         )}
         
         <AppPageHeader
-          eyebrow="Resume tailoring"
           title={user?.displayName ? `Welcome back, ${user.displayName.split(" ")[0]}` : "Tailor your resume"}
-          description="Paste the job posting, add your resume, then generate a tailored draft you can edit and export."
-          workflowSteps={[
-            { id: "job", label: "Job posting" },
-            { id: "resume", label: "Your resume" },
-            { id: "edit", label: "Edit draft" },
-            { id: "export", label: "Export" },
-          ]}
-          workflowCurrent={0}
           actions={
             <>
               <button type="button" onClick={clearForm} className="btn btn-ghost" title="Clear all fields">
@@ -1183,7 +1178,7 @@ export default function Dashboard() {
                 />
               ) : (
                 <div className="space-y-3">
-                  {uploadedResumes.map((resume) => (
+                  {uploadsView.visible.map((resume) => (
                     <motion.div
                       key={resume.path}
                       initial={{ opacity: 0, scale: 0.95 }}
@@ -1241,6 +1236,17 @@ export default function Dashboard() {
                       </div>
                     </motion.div>
                   ))}
+                  {uploadsView.needsToggle ? (
+                    <button
+                      type="button"
+                      className="mt-3 text-sm font-medium text-[var(--accent)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25"
+                      onClick={() => setShowAllUploads((v) => !v)}
+                    >
+                      {showAllUploads
+                        ? "Show less"
+                        : `See more (${uploadsView.hiddenCount} more)`}
+                    </button>
+                  ) : null}
                 </div>
               )}
               </div>

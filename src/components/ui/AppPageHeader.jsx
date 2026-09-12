@@ -11,9 +11,15 @@ export default function AppPageHeader({
   workflowSteps,
   workflowCurrent = 0,
 }) {
+  const hasWorkflow = Boolean(workflowSteps?.length);
+  const compact = !hasWorkflow && !description;
+  const headerSpacing = compact
+    ? "mb-4 border-b border-[var(--border)] pb-3 sm:mb-5"
+    : "mb-5 border-b border-[var(--border)] pb-4 sm:mb-6";
+
   return (
-    <header className="mb-5 border-b border-[var(--border)] pb-4 sm:mb-6">
-      {workflowSteps?.length ? (
+    <header className={headerSpacing}>
+      {hasWorkflow ? (
         <WorkflowStepper steps={workflowSteps} current={workflowCurrent} className="mb-3" />
       ) : null}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">

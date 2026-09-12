@@ -36,8 +36,8 @@ Machine-readable URL index: [sitemap.xml](https://iloveresumes.ca/sitemap.xml). 
 - [Blog index](https://iloveresumes.ca/blog): Full list of articles (ATS, formats, skills, immigration, tech, healthcare, and more).
 - [How to optimize your resume for ATS (2026)](https://iloveresumes.ca/blog/how-to-optimize-resume-for-ats-2026): ATS optimization checklist.
 - [Canadian resume format guide](https://iloveresumes.ca/blog/canadian-resume-format-guide): Canadian conventions and sections.
-- [AI resume tools in Canada](https://iloveresumes.ca/blog/ai-resume-builder-canada-pros-cons): Pros, cons, and sensible workflows.
-- [Free resume builder and download](https://iloveresumes.ca/blog/free-resume-builder-download-canada): Exports, privacy, and what to verify.
+- [AI resume tools: pros, cons & workflow](https://iloveresumes.ca/blog/ai-resume-builder-canada-pros-cons): Pros, cons, and sensible workflows for job seekers.
+- [Free resume builder and download](https://iloveresumes.ca/blog/free-resume-builder-download-canada): Exports, privacy, and what to verify before you apply.
 - [Best resume format (2026)](https://iloveresumes.ca/blog/best-resume-format-2026): Format trends and recruiter expectations.
 - [Resume keywords that get interviews](https://iloveresumes.ca/blog/resume-keywords-that-get-interviews): Keyword sourcing from job descriptions.
 
@@ -53,4 +53,4 @@ Machine-readable URL index: [sitemap.xml](https://iloveresumes.ca/sitemap.xml). 
 ## Optional
 
 - [GitHub — iloveresumes](https://github.com/iloveresumes): Project presence for technical audiences.
-- [X (Twitter) @iloveresumes](https://twitter.com/iloveresumes): Announcements and tips when social context helps.
+- [X (Twitter) @iloveresumes_ca](https://x.com/iloveresumes_ca): Announcements and tips when social context helps.

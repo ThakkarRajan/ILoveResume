@@ -1,18 +1,18 @@
 export const postContent = {
   "harvard-resume-template-canada-guide": {
     content: `
-      <p>If you have been searching for a <strong>Harvard resume template</strong>, you are usually looking for a tight, one-page layout with clear section headings and strong bullets—not a literal university endorsement. In Canada, the same principles work well, but you still need local conventions and ATS-friendly structure.</p>
+      <p>If you have been searching for a <strong>Harvard resume template</strong>, you are usually looking for a tight, one-page layout with clear section headings and strong bullets—not a literal university endorsement. The same principles work well for most employers, as long as you keep ATS-friendly structure and local norms in mind.</p>
 
       <h2>What “Harvard style” usually means</h2>
-      <p>Most downloadable Harvard-style layouts emphasize simplicity: one column, reverse-chronological experience, minimal ornamentation, and crisp typography. That is good news for Canadian hiring, where photos and personal details do not belong on a typical resume.</p>
+      <p>Most downloadable Harvard-style layouts emphasize simplicity: one column, reverse-chronological experience, minimal ornamentation, and crisp typography. That is good news for modern hiring, where photos and personal details often do not belong on a typical resume or CV in many markets.</p>
 
-      <h2>Canadian tweaks you should still make</h2>
-      <p>Even with a classic template, align with Canadian expectations: no headshot, no marital status, and Canadian spelling when you are applying locally (for example, “centre” instead of “center” where appropriate). Our <a href="/blog/canadian-resume-format-guide">Canadian resume format guide</a> walks through the full picture.</p>
+      <h2>Local norms still matter</h2>
+      <p>Even with a classic template, align with the country you are targeting: skip headshots and marital status where those are not expected, and match spelling to the posting. Resume norms vary by country—if you are applying in Canada, our <a href="/blog/canadian-resume-format-guide">Canadian resume format guide</a> walks through the full picture.</p>
 
       <h2>ATS parsing: the part templates ignore</h2>
       <p>Some attractive templates hide headings in text boxes, use multi-column sections, or rely on icons for contact info. Applicant tracking systems may miss that content. If you want a deeper technical checklist, read <a href="/blog/how-to-optimize-resume-for-ats-2026">how to optimize your resume for ATS in 2026</a>.</p>
 
-      <h2>One page vs two pages in Canada</h2>
+      <h2>One page vs two pages</h2>
       <p>Harvard-style resumes are often one page. That is still a strong default for early-career and many mid-career applicants. If you have a decade of directly relevant impact, a second page can be justified—just keep every line tied to the target role.</p>
 
       <h2>When Google Docs or Word is enough</h2>
@@ -26,8 +26,8 @@ export const postContent = {
     content: `
       <p>A <strong>free resume builder and download</strong> sounds simple: answer questions, pick a layout, export a PDF. In practice, the quality of your export—and whether recruiters’ software can read it—depends on details many tools gloss over.</p>
 
-      <h2>PDF vs Word in Canada</h2>
-      <p>Most Canadian employers accept PDF. Some union, government, or legacy systems still prefer Word. A good builder offers both, with text that stays selectable (not a flat image scan). If you are unsure, save PDF as your default and keep an editable Word copy for exceptions.</p>
+      <h2>PDF vs Word for job applications</h2>
+      <p>Most employers accept PDF. Some government, union, or legacy systems still prefer Word. A good builder offers both, with text that stays selectable (not a flat image scan). If you are unsure, save PDF as your default and keep an editable Word copy for exceptions.</p>
 
       <h2>What “free” should include (and what to watch for)</h2>
       <p>Reasonable expectations for a free tier include real exports, readable fonts, and honest privacy terms. Be cautious if watermarks appear only after you have invested an hour of data entry, or if sharing settings are unclear—your employment history is sensitive.</p>
@@ -47,7 +47,7 @@ export const postContent = {
   },
   "resume-templates-canada-pick-right-one": {
     content: `
-      <p>Choosing among hundreds of <strong>resume templates</strong> is overwhelming—especially when you are also juggling job boards like <strong>Indeed Canada</strong> and tight application deadlines. Start by separating “looks good in Canva” from “reads well in recruiting software.”</p>
+      <p>Choosing among hundreds of <strong>resume templates</strong> is overwhelming—especially when you are also juggling job boards like <strong>Indeed</strong> and tight application deadlines. Start by separating “looks good in Canva” from “reads well in recruiting software.”</p>
 
       <h2>Pick structure before decoration</h2>
       <p>Reverse-chronological work history, plain headings (“Experience”, “Education”, “Skills”), and standard fonts are still the safest baseline for corporate roles. If you need a refresher on section order, see <a href="/blog/best-resume-format-2026">best resume format for 2026</a>.</p>
@@ -55,8 +55,8 @@ export const postContent = {
       <h2>ATS pitfalls hidden in trendy layouts</h2>
       <p>Sidebars, icons, tiny text, and dense tables can scramble parsing. If you love a bold design, use it for networking PDFs or portfolios—not always for the first upload into an ATS. Technical detail lives in <a href="/blog/how-to-optimize-resume-for-ats-2026">ATS optimization tips</a>.</p>
 
-      <h2>Canadian norms still win over “flashy”</h2>
-      <p>Canadian hiring teams generally favour clarity over spectacle. Skip photos and personal data, keep language professional, and match spelling to the audience. For a norms checklist, bookmark <a href="/blog/canadian-resume-format-guide">Canadian resume format</a>.</p>
+      <h2>Clarity still wins over “flashy”</h2>
+      <p>Hiring teams generally favour clarity over spectacle. Skip photos and personal data where those are not expected, keep language professional, and match spelling to the audience. Resume norms vary by country—for a Canada-specific checklist, bookmark <a href="/blog/canadian-resume-format-guide">Canadian resume format</a>.</p>
 
       <h2>Templates vs examples</h2>
       <p>A template is a skeleton; an example is a finished story. Borrow phrasing patterns, not sentences. If you want help translating inspiration into your own achievements, read <a href="/blog/resume-examples-canada-by-role">resume examples that help</a> next.</p>
@@ -70,10 +70,10 @@ export const postContent = {
   },
   "ai-resume-builder-canada-pros-cons": {
     content: `
-      <p><strong>Resume AI</strong> tools can feel magical: instant bullets, keyword suggestions, and a faster first draft. In Canada’s competitive markets—think Toronto tech, Vancouver biotech, or national remote roles—the differentiator is still judgment: facts, specificity, and a human voice.</p>
+      <p><strong>Resume AI</strong> tools can feel magical: instant bullets, keyword suggestions, and a faster first draft. In competitive markets—tech hubs, healthcare systems, or national remote roles—the differentiator is still judgment: facts, specificity, and a human voice.</p>
 
       <h2>What AI does well</h2>
-      <p>Good systems help you break writer’s block, reorder sections, propose stronger verbs, and highlight gaps between your resume and a job description. They are especially useful if English or French is your second language and you want cleaner phrasing—just keep the content truthful.</p>
+      <p>Good systems help you break writer’s block, reorder sections, propose stronger verbs, and highlight gaps between your resume and a job description. They are especially useful if you are writing in a second language and want cleaner phrasing—just keep the content truthful.</p>
 
       <h2>Where AI resumes go wrong</h2>
       <p>Generic claims (“results-driven leader”), invented metrics, and bloated skill lists are easy to spot. Recruiters compare similar AI-shaped resumes all week. Your goal is to combine machine speed with personal proof: numbers you can explain, tools you have used in production, and outcomes you can defend in an interview.</p>
@@ -84,8 +84,8 @@ export const postContent = {
       <h2>Keywords without stuffing</h2>
       <p>Mirror important terms from the posting where they naturally fit—especially in your summary, recent roles, and skills. For a balanced approach, pair AI edits with <a href="/blog/resume-keywords-that-get-interviews">resume keywords that get interviews</a>.</p>
 
-      <h2>Indeed Canada and other boards</h2>
-      <p>When you apply through <strong>Indeed Canada</strong> or similar platforms, you may still upload a tailored PDF. Do not assume one generic file is enough for every “Easy Apply” button—keep a targeted version for roles you care about most.</p>
+      <h2>Job boards and Easy Apply</h2>
+      <p>When you apply through <strong>Indeed</strong> or similar platforms, you may still upload a tailored PDF. Do not assume one generic file is enough for every “Easy Apply” button—keep a targeted version for roles you care about most.</p>
 
       <h2>Use I Love Resumes as an editor, not a replacement for you</h2>
       <p>Our <a href="/">free AI resume builder</a> is built to suggest improvements while you stay in control of what ships.</p>
@@ -93,7 +93,7 @@ export const postContent = {
   },
   "resume-builder-canada-how-to-compare-options": {
     content: `
-      <p>Searching for a <strong>resume builder</strong> usually means you want speed: fewer blank-page moments, faster exports, and less fiddling in Word. Before you pick a tool, define what “done” looks like for your search in Canada.</p>
+      <p>Searching for a <strong>resume builder</strong> usually means you want speed: fewer blank-page moments, faster exports, and less fiddling in Word. Before you pick a tool, define what “done” looks like for your job search.</p>
 
       <h2>Start with your target employers</h2>
       <p>Government, academia, startups, and retail all have different tolerance for creative layout. If you are applying broadly, default to conservative structure, then add personality in your summary and bullets—not in neon graphics.</p>
@@ -102,7 +102,7 @@ export const postContent = {
       <p>Open your downloaded PDF and check: selectable text, correct fonts, no clipped lines, and sensible page breaks. If the file looks broken on your screen, assume a recruiter’s inbox will look worse.</p>
 
       <h2>Indeed resume builder vs standalone tools</h2>
-      <p>The <strong>Indeed resume builder</strong> is convenient when you already live on <strong>Indeed Canada</strong>, but you may still want a standalone master resume for email referrals, company career pages, and recruiters. For trade-offs, see <a href="/blog/indeed-resume-builder-canada-alternatives">Indeed resume builder in Canada</a>.</p>
+      <p>The <strong>Indeed resume builder</strong> is convenient when you already live on Indeed, but you may still want a standalone master resume for email referrals, company career pages, and recruiters. For trade-offs, see <a href="/blog/indeed-resume-builder-canada-alternatives">Indeed resume builder alternatives</a>.</p>
 
       <h2>LaTeX and Overleaf for special cases</h2>
       <p>If you are in research or heavy STEM, you might maintain an <a href="/blog/overleaf-latex-resume-canada">Overleaf resume</a> for academic CVs while keeping a simplified corporate PDF for industry applications.</p>
@@ -110,19 +110,19 @@ export const postContent = {
       <h2>Free vs paid features that actually matter</h2>
       <p>Paywalls are fair—just know what you need. Priority features are usually unlimited exports, version history, and strong privacy controls. Fancy animations rarely help you get hired.</p>
 
-      <h2>Try a Canadian-friendly AI workflow</h2>
+      <h2>Try an AI-assisted workflow</h2>
       <p>When you are ready to iterate quickly, use our <a href="/">resume builder</a> with AI suggestions, then export when your bullets match the posting.</p>
     `,
   },
   "resume-examples-canada-by-role": {
     content: `
-      <p><strong>Resume examples</strong> are useful because they show rhythm: how bullets start with verbs, how metrics appear early, and how summaries stay short. In Canada, examples still need local conventions—especially if you are new to the market.</p>
+      <p><strong>Resume examples</strong> are useful because they show rhythm: how bullets start with verbs, how metrics appear early, and how summaries stay short. Examples still need local conventions—especially if you are new to a market or switching countries.</p>
 
       <h2>What to copy from an example</h2>
       <p>Borrow structure, not wording. Look for section order, bullet length, and how skills tie back to outcomes. If you are switching industries, examples also show how to frame transferable work—similar themes appear in <a href="/blog/resume-for-career-change">resume tips for career changers</a>.</p>
 
       <h2>What not to copy</h2>
-      <p>Avoid pasted job descriptions, fake certifications, or metrics you cannot explain. Canadian employers reference-check. If a bullet sounds too good to be true, interviewers will probe.</p>
+      <p>Avoid pasted job descriptions, fake certifications, or metrics you cannot explain. Employers reference-check. If a bullet sounds too good to be true, interviewers will probe.</p>
 
       <h2>Examples vs samples vs templates</h2>
       <p>Examples are finished resumes; samples are often partial snippets; templates are layouts. Confused? Read <a href="/blog/resume-samples-canada-how-to-use-them">resume samples vs templates</a> for a simple breakdown.</p>
@@ -144,8 +144,8 @@ export const postContent = {
       <h2>Use samples to calibrate density</h2>
       <p>Compare how many bullets each role has, how tight the summary is, and whether older jobs shrink as they move down the page. If your document feels bloated, trim before you add design flourishes.</p>
 
-      <h2>Localize for Canada</h2>
-      <p>US samples sometimes include photos or “expected salary” prompts—neither is a standard Canadian resume convention. Keep your baseline aligned with <a href="/blog/canadian-resume-format-guide">Canadian resume format</a>.</p>
+      <h2>Adapt samples to your market</h2>
+      <p>Samples from another country sometimes include photos or “expected salary” prompts—neither is standard in many markets. Resume norms vary by country; if you are targeting Canada, keep your baseline aligned with <a href="/blog/canadian-resume-format-guide">Canadian resume format</a>.</p>
 
       <h2>Samples will not fix a mismatch</h2>
       <p>If the posting asks for project leadership and your sample resume obsesses over individual contributor tasks, you still lose. Samples cannot replace tailoring; follow <a href="/blog/how-to-tailor-resume-to-job">how to tailor your resume</a> for a repeatable workflow.</p>
@@ -162,10 +162,10 @@ export const postContent = {
   },
   "best-skills-to-put-on-resume-canada": {
     content: `
-      <p>The best <strong>skills for a resume</strong> are not the longest list—they are the most relevant, credible, and easy to verify. Canadian recruiters often skim a skills block in seconds, then jump to your recent experience to see proof.</p>
+      <p>The best <strong>skills for a resume</strong> are not the longest list—they are the most relevant, credible, and easy to verify. Recruiters often skim a skills block in seconds, then jump to your recent experience to see proof.</p>
 
       <h2>Split hard skills and soft skills on purpose</h2>
-      <p>Hard skills might include SQL, bookkeeping, WHMIS training, or equipment certifications. Soft skills might include stakeholder communication, coaching, or conflict resolution—ideally demonstrated in bullets, not only in a keyword cloud.</p>
+      <p>Hard skills might include SQL, bookkeeping, safety training, or equipment certifications. Soft skills might include stakeholder communication, coaching, or conflict resolution—ideally demonstrated in bullets, not only in a keyword cloud.</p>
 
       <h2>Mirror the posting without stuffing</h2>
       <p>If the job mentions specific tools, include them when you genuinely have depth. Synonyms help humans, but ATS may look for exact phrases—find balance by reading <a href="/blog/resume-keywords-that-get-interviews">resume keywords that work</a>.</p>
@@ -176,8 +176,8 @@ export const postContent = {
       <h2>Connect skills to outcomes</h2>
       <p>Instead of “Excel” alone, tie it to what you built: models, dashboards, or reporting cadences. Our broader guide on <a href="/blog/skills-section-resume">what to include in your skills section</a> expands this idea.</p>
 
-      <h2>Do not forget bilingual requirements</h2>
-      <p>For some federal or customer-facing roles, language matters. List English/French accurately. If you are unsure how to phrase proficiency, keep it simple and truthful.</p>
+      <h2>Do not forget language requirements</h2>
+      <p>For some government or customer-facing roles, language matters. List languages accurately. If you are unsure how to phrase proficiency, keep it simple and truthful.</p>
 
       <h2>Let AI suggest—then you verify</h2>
       <p>Use our <a href="/">resume AI assistant</a> to propose skill phrasing tied to a job description, then delete anything you cannot defend in an interview.</p>
@@ -185,7 +185,7 @@ export const postContent = {
   },
   "google-docs-resume-template-canada": {
     content: `
-      <p>A <strong>Google Docs resume</strong> workflow is common in Canada because sharing is easy and comments are convenient—especially for newcomers working with mentors or employment counsellors. The risk is formatting that looks fine on screen but breaks on export.</p>
+      <p>A <strong>Google Docs resume</strong> workflow is popular because sharing is easy and comments are convenient—especially when mentors, career coaches, or collaborators leave feedback. The risk is formatting that looks fine on screen but breaks on export.</p>
 
       <h2>Use styles, not manual spacing hacks</h2>
       <p>Apply Heading 2 for section titles and Normal text for bullets. Random extra line breaks and tab stops tend to explode when you convert to PDF or open in another viewer.</p>
@@ -196,8 +196,8 @@ export const postContent = {
       <h2>Export settings that save embarrassment</h2>
       <p>Download as PDF and reopen it to verify fonts, page breaks, and hyperlinks (email, LinkedIn, portfolio). Broken links are a silent rejection trigger for busy hiring managers.</p>
 
-      <h2>Canadian spelling in shared drafts</h2>
-      <p>Docs defaults can lean American English. If you are applying domestically, consider Canadian spelling for key words and consistent date formats. Cross-check norms in <a href="/blog/canadian-resume-format-guide">Canadian resume format</a>.</p>
+      <h2>Spelling and date consistency in shared drafts</h2>
+      <p>Docs defaults can lean American English. Pick a spelling convention that matches your target market and stay consistent. Resume norms vary by country—cross-check Canada-specific expectations in <a href="/blog/canadian-resume-format-guide">Canadian resume format</a> if that is your market.</p>
 
       <h2>When to graduate from Docs to a builder</h2>
       <p>If tailoring is taking hours, a builder can speed iteration. Compare approaches in <a href="/blog/free-resume-builder-download-canada">free resume builder and download</a> guidance.</p>
@@ -208,7 +208,7 @@ export const postContent = {
   },
   "overleaf-latex-resume-canada": {
     content: `
-      <p><strong>Overleaf resume</strong> templates produce crisp PDFs that look excellent in academic circles. If you are applying to Canadian industry roles, the question is not “Is LaTeX pretty?”—it is whether recruiting software can reliably parse your sections.</p>
+      <p><strong>Overleaf resume</strong> templates produce crisp PDFs that look excellent in academic circles. If you are applying to industry roles, the question is not “Is LaTeX pretty?”—it is whether recruiting software can reliably parse your sections.</p>
 
       <h2>When Overleaf is a strong choice</h2>
       <p>Research, graduate school, quantitative finance, and some engineering paths still reward a polished LaTeX CV. For faculty-track or lab positions, longer CVs may be normal—different from a two-page industry resume.</p>
@@ -222,8 +222,8 @@ export const postContent = {
       <h2>Keep a Word-friendly backup</h2>
       <p>Some recruiters request Word. Maintaining two exports sounds annoying, but it prevents you from missing opportunities over file format.</p>
 
-      <h2>Pair LaTeX precision with Canadian content norms</h2>
-      <p>Great typography cannot replace local conventions. Review photos, personal data, and spelling expectations in <a href="/blog/canadian-resume-format-guide">Canadian resume format</a>.</p>
+      <h2>Pair LaTeX precision with local content norms</h2>
+      <p>Great typography cannot replace market conventions. Resume norms vary by country—review photos, personal data, and spelling expectations in <a href="/blog/canadian-resume-format-guide">Canadian resume format</a> if you are applying in Canada.</p>
 
       <h2>If LaTeX is overkill, use a simpler builder</h2>
       <p>When you want fast iteration for corporate postings, our <a href="/">resume builder</a> focuses on ATS-friendly structure first.</p>
@@ -231,7 +231,7 @@ export const postContent = {
   },
   "indeed-resume-builder-canada-alternatives": {
     content: `
-      <p><strong>Indeed Canada</strong> is a primary job search channel for millions of people, and the <strong>Indeed resume builder</strong> lowers friction when you want to start quickly. The trade-off is control: easy flows can encourage one generic resume for many “Easy Apply” clicks.</p>
+      <p><strong>Indeed</strong> is a primary job search channel for millions of people, and the <strong>Indeed resume builder</strong> lowers friction when you want to start quickly. The trade-off is control: easy flows can encourage one generic resume for many “Easy Apply” clicks.</p>
 
       <h2>When the Indeed resume is enough</h2>
       <p>If you are applying to similar roles—same title, same industry—and the posting does not demand a highly tailored narrative, a concise Indeed profile plus a clean PDF may work fine for first-round volume.</p>
@@ -240,13 +240,13 @@ export const postContent = {
       <p>For competitive roles, internal referrals, or ATS-heavy employers, you want a targeted resume with mirrored keywords and tight bullets. Follow <a href="/blog/how-to-tailor-resume-to-job">tailoring steps</a> before you upload.</p>
 
       <h2>Boards are not the only gate</h2>
-      <p>Many Canadian companies route you through Greenhouse, Workday, or Lever. Those systems still reward straightforward PDFs. Keep formatting conservative, as outlined in <a href="/blog/how-to-optimize-resume-for-ats-2026">ATS optimization</a>.</p>
+      <p>Many companies route you through Greenhouse, Workday, or Lever. Those systems still reward straightforward PDFs. Keep formatting conservative, as outlined in <a href="/blog/how-to-optimize-resume-for-ats-2026">ATS optimization</a>.</p>
 
       <h2>Keep your “master resume” portable</h2>
       <p>Maintain a version you own outside any single platform. That makes it easier to apply on company sites, email hiring managers, and adjust quickly when a recruiter asks for a tweak tonight.</p>
 
-      <h2>Do not forget spelling and local norms</h2>
-      <p>Canadian conventions still apply on global platforms. If you are unsure, compare against <a href="/blog/canadian-resume-format-guide">Canadian resume format</a>.</p>
+      <h2>Match spelling and local norms</h2>
+      <p>Platform defaults do not always match local conventions. Resume norms vary by country—if you are unsure about Canada-specific expectations, compare against <a href="/blog/canadian-resume-format-guide">Canadian resume format</a>.</p>
 
       <h2>Use AI for tailoring, Indeed for discovery</h2>
       <p>Many job seekers combine both: discover roles on Indeed, refine the resume with our <a href="/">free AI resume builder</a>, then attach the PDF when the posting allows.</p>
@@ -254,7 +254,7 @@ export const postContent = {
   },
   "my-resume-checklist-canada-2026": {
     content: `
-      <p>When you say “<strong>my resume</strong> is done,” what you usually mean is “I cannot look at it anymore.” A short checklist catches the errors that survive spellcheck—especially when you are applying under stress in Canada’s tight rental-and-inflation reality.</p>
+      <p>When you say “<strong>my resume</strong> is done,” what you usually mean is “I cannot look at it anymore.” A short checklist catches the errors that survive spellcheck—especially when you are applying under stress.</p>
 
       <h2>Contact and links (two-minute pass)</h2>
       <p>Verify email, phone, LinkedIn URL, and portfolio links. Click every hyperlink in the exported PDF. If you use a shortened URL, make sure it resolves.</p>
@@ -262,8 +262,8 @@ export const postContent = {
       <h2>Role titles and dates (consistency pass)</h2>
       <p>Align months and years, fix overlapping dates, and ensure titles match what HR will verify. If you changed official titles for clarity, ask whether the wording is still truthful.</p>
 
-      <h2>Canadian spelling and word choice</h2>
-      <p>Pick Canadian or US English intentionally. Mixed spelling looks accidental. For a broader norms refresher, read <a href="/blog/canadian-resume-format-guide">Canadian resume format</a>.</p>
+      <h2>Spelling and word choice</h2>
+      <p>Pick one English convention intentionally. Mixed spelling looks accidental. Resume norms vary by country—for a Canada-focused refresher, read <a href="/blog/canadian-resume-format-guide">Canadian resume format</a>.</p>
 
       <h2>Keyword alignment without stuffing</h2>
       <p>Skim the posting again. Are the must-have tools and responsibilities reflected in your last two roles? If not, adjust bullets before you apply. Use <a href="/blog/resume-keywords-that-get-interviews">keyword guidance</a> as a sanity check.</p>

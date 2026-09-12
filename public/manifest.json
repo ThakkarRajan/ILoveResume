@@ -1,7 +1,7 @@
 {
   "name": "I Love Resumes - AI-Powered Resume Builder",
   "short_name": "I Love Resumes",
-  "description": "Transform your resume with AI-powered insights. Get personalized suggestions, optimize structure, and align keywords with job descriptions.",
+  "description": "Free AI-powered resume tailoring for job seekers. Align your resume to a job description, keep ATS-friendly structure, export Word or PDF.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f4f6f8",

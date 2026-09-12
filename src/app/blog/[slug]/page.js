@@ -20,7 +20,7 @@ export async function generateMetadata({ params }) {
   const post = blogPosts.find((p) => p.slug === slug);
   if (!post) return { title: "Post Not Found" };
 
-  const pageTitle = post.metaTitle ?? `${post.title} | I Love Resumes Blog`;
+  const pageTitle = post.metaTitle ?? `${post.title} | ${SITE_NAME}`;
   const pageDescription = post.metaDescription ?? post.excerpt;
   const base = pageMeta({
     title: pageTitle,
@@ -34,6 +34,7 @@ export async function generateMetadata({ params }) {
 
   return {
     ...base,
+    title: { absolute: pageTitle },
     keywords: post.tags?.join(", "),
     openGraph: {
       ...base.openGraph,

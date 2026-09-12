@@ -3,6 +3,8 @@ export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://iloveresum
 
 export const SITE_NAME = "I Love Resumes";
 
+export const TWITTER_HANDLE = "@iloveresumes_ca";
+
 export const defaultOpenGraphImage = {
   url: `${SITE_URL}/og-image.png`,
   width: 1200,
@@ -18,11 +20,11 @@ export const rootMetadata = {
     apple: "/icon-192.png",
   },
   title: {
-    default: `${SITE_NAME} — Free resume builder, AI resume & ATS-friendly exports`,
+    default: `${SITE_NAME} — Free AI resume tailoring for job seekers`,
     template: `%s | ${SITE_NAME}`,
   },
   description:
-    "I Love Resumes (iloveresumes.ca): free resume builder and AI resume tailoring—upload or paste your resume, align skills and keywords from each posting, get ATS-friendly structure, then export Word or PDF. Templates, examples, and practical guides.",
+    "Free AI-powered resume tailoring for job seekers. Align your resume to each job description, keep ATS-friendly structure, then export Word or PDF.",
   keywords: [
     "free resume",
     "free resume builder",
@@ -55,8 +57,8 @@ export const rootMetadata = {
   },
   twitter: {
     card: "summary_large_image",
-    site: "@iloveresumes",
-    creator: "@iloveresumes",
+    site: TWITTER_HANDLE,
+    creator: TWITTER_HANDLE,
     images: [`${SITE_URL}/og-image.png`],
   },
   robots: { index: true, follow: true },
@@ -79,6 +81,8 @@ export function pageMeta({ title, description, path, ogType = "website" }) {
     },
     twitter: {
       card: "summary_large_image",
+      site: TWITTER_HANDLE,
+      creator: TWITTER_HANDLE,
       title,
       description,
       images: [`${SITE_URL}/og-image.png`],
