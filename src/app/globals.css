@@ -1142,6 +1142,7 @@ body {
   height: 1.85rem;
   width: auto;
   object-fit: contain;
+  background: transparent;
 }
 
 .site-brand-wordmark {
