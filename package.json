@@ -14,21 +14,22 @@
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
     "@heroicons/react": "^2.2.0",
+    "@tailwindcss/postcss": "^4.1.11",
+    "@types/react": "19.1.1",
     "@vercel/speed-insights": "^2.0.0",
     "docx": "^9.3.0",
     "file-saver": "^2.0.5",
     "firebase": "^11.6.0",
     "framer-motion": "^12.7.2",
+    "jose": "^5.10.0",
+    "lenis": "^1.3.26",
     "lucide-react": "^0.525.0",
     "next": "^16.1.6",
     "pdf-lib": "^1.17.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hot-toast": "^2.5.2",
-    "react-router-dom": "^7.5.0",
-    "@tailwindcss/postcss": "^4.1.11",
     "tailwindcss": "^4.1.11",
-    "@types/react": "19.1.1",
     "typescript": "5.8.3"
   }
 }

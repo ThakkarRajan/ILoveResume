@@ -5,7 +5,7 @@ import { pageMeta } from "../../config/site";
 export const metadata = pageMeta({
   title: "Harvard resume template — clean one-page structure",
   description:
-    "Harvard-style resume template explained: tight one-page layout, bold section labels, strong bullets. Canadian ATS notes and links to Canada guides.",
+    "Harvard-style resume template explained: tight one-page layout, bold section labels, strong bullets. ATS notes and links to related guides.",
   path: "/harvard-resume-template",
 });
 
@@ -23,16 +23,17 @@ export default function HarvardResumeTemplatePage() {
         <li>Reverse-chronological experience with 3–5 bullets per recent role.</li>
         <li>Education placed where it supports the story—often after experience once you are mid-career.</li>
       </ul>
-      <h2>Canada-specific tweaks</h2>
+      <h2>Match local expectations</h2>
       <p>
-        Skip photos for most private-sector postings, keep spelling consistent (Canadian English if you apply locally), and
-        export a PDF that preserves fonts. Pair the layout with{" "}
-        <Link href="/resume-builder-canada">Canada builder guidance</Link> so content matches local norms.
+        Resume requirements can vary by country, industry, and employer—photos, personal details, page length, and spelling
+        conventions are common differences. Follow the norms of the market where you are applying. For Canada-specific
+        notes, see{" "}
+        <Link href="/resume-builder-canada">resume norms for Canada</Link>.
       </p>
       <h2>Longer read</h2>
       <p>
         <Link href="/blog/harvard-resume-template-canada-guide">Harvard resume template for Canada</Link> covers margins,
-        headings, and ATS tweaks in depth.
+        headings, and ATS tweaks for that market in depth.
       </p>
     </MarketingGuideLayout>
   );

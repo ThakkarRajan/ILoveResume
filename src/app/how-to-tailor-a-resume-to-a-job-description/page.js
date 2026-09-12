@@ -5,7 +5,7 @@ import { pageMeta } from "../../config/site";
 export const metadata = pageMeta({
   title: "How to tailor a resume to a job description",
   description:
-    "A focused workflow to tailor your resume to a job posting: mine the description, map proof, rewrite bullets, verify truth, export Word/PDF. Links to ATS and Canada guides.",
+    "A focused workflow to tailor your resume to a job posting: mine the description, map proof, rewrite bullets, verify truth, export Word/PDF. Links to ATS guides.",
   path: "/how-to-tailor-a-resume-to-a-job-description",
 });
 
@@ -26,12 +26,13 @@ export default function HowToTailorResumePage() {
         <li>Match each must-have to a bullet you already own; if none exist, skip—do not fabricate.</li>
         <li>Reorder bullets so the two strongest relevant wins sit at the top of each role.</li>
         <li>Sync the skills block to mirror language from the posting where honest.</li>
-        <li>Re-read for tense, dates, and Canadian spelling if applicable.</li>
+        <li>Re-read for tense, dates, and spelling conventions that match your target market.</li>
       </ol>
       <h2>Where the product helps</h2>
       <p>
         I Love Resumes reads your resume and the posting together so you can see suggested phrasing faster than staring at a
-        blank page. You still approve every change before export.
+        blank page. You still approve every change before export. Applicant Tracking System (ATS) behaviour still varies by
+        employer—clean structure and relevant keywords help, but they are not a guarantee.
       </p>
       <h2>Further reading</h2>
       <ul>
@@ -42,7 +43,7 @@ export default function HowToTailorResumePage() {
           <Link href="/ats-friendly-resume">ATS-friendly resume</Link>
         </li>
         <li>
-          <Link href="/resume-builder-canada">Resume builder for Canada</Link>
+          <Link href="/resume-builder-canada">Resume norms for Canada</Link> (market-specific)
         </li>
       </ul>
     </MarketingGuideLayout>

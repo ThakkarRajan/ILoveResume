@@ -31,10 +31,10 @@ export default function ResumeExamplesPage() {
       <h2>Go deeper</h2>
       <ul>
         <li>
-          <Link href="/blog/resume-examples-canada-by-role">Resume examples for Canada by role</Link> (blog)
+          <Link href="/how-to-tailor-a-resume-to-a-job-description">Tailor to a job description</Link>
         </li>
         <li>
-          <Link href="/how-to-tailor-a-resume-to-a-job-description">Tailor to a job description</Link>
+          <Link href="/blog/resume-examples-canada-by-role">Resume examples by role</Link> (blog; Canada-focused)
         </li>
         <li>
           <Link href="/blog/best-skills-to-put-on-resume-canada">Skills for your resume</Link> (blog)

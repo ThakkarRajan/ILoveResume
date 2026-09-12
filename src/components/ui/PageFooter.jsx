@@ -1,37 +1,94 @@
 import Link from "next/link";
-import SiteLegalLinks from "../legal/SiteLegalLinks";
 import SocialLinks from "../SocialLinks";
 
-const footerLinks = [
+const exploreLinks = [
   { href: "/faq", label: "FAQ" },
   { href: "/blog", label: "Blog" },
   { href: "/resume-builder", label: "Guides" },
   { href: "/contact", label: "Contact" },
 ];
 
+const legalLinks = [
+  { href: "/terms", label: "Terms & Conditions" },
+  { href: "/privacy", label: "Privacy Policy" },
+  { href: "/cookies", label: "Cookie Policy" },
+  { href: "/disclaimer", label: "Disclaimer" },
+];
+
+const builders = [
+  { name: "Rajan", href: "https://rajan.codes" },
+  { name: "Aaftab", href: "https://aaftab.tech" },
+];
+
 export default function PageFooter({ className = "" }) {
+  const year = new Date().getFullYear();
+
   return (
-    <footer className={`border-t border-[var(--border)] pt-8 sm:pt-10 ${className}`}>
-      <div className="grid gap-8 sm:grid-cols-[1fr_auto] sm:items-start">
-        <div>
-          <p className="text-sm font-semibold text-[var(--foreground)]">I Love Resumes</p>
-          <p className="mt-2 max-w-sm text-sm leading-relaxed text-[var(--text-secondary)]">
+    <footer className={`site-footer ${className}`.trim()}>
+      <div className="site-footer__grid">
+        <div className="site-footer__brand">
+          <p className="site-footer__brand-name" translate="no">
+            I Love Resumes
+          </p>
+          <p className="site-footer__brand-desc">
             Free resume tailoring for job seekers. Align your draft to each posting, then export Word or PDF.
           </p>
         </div>
-        <nav className="flex flex-col gap-1 sm:items-end" aria-label="Footer navigation">
-          {footerLinks.map(({ href, label }) => (
-            <Link key={href} href={href} className="nav-link w-fit">
-              {label}
-            </Link>
-          ))}
+
+        <nav className="site-footer__nav" aria-labelledby="footer-explore-heading">
+          <h2 id="footer-explore-heading" className="site-footer__heading">
+            Explore
+          </h2>
+          <ul className="site-footer__list">
+            {exploreLinks.map(({ href, label }) => (
+              <li key={href}>
+                <Link href={href} className="site-footer__link">
+                  {label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <nav className="site-footer__nav" aria-labelledby="footer-legal-heading">
+          <h2 id="footer-legal-heading" className="site-footer__heading">
+            Legal
+          </h2>
+          <ul className="site-footer__list">
+            {legalLinks.map(({ href, label }) => (
+              <li key={href}>
+                <Link href={href} className="site-footer__link">
+                  {label}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </nav>
       </div>
-      <SiteLegalLinks className="mt-8" />
+
       <SocialLinks />
-      <p className="mt-6 text-xs text-[var(--muted)] sm:text-sm">
-        © {new Date().getFullYear()} I Love Resumes · Built by Rajan and Aaftab
-      </p>
+
+      <div className="site-footer__bar">
+        <p className="site-footer__copy" translate="no">
+          © {year} I Love Resumes
+        </p>
+        <p className="site-footer__credit">
+          Built by{" "}
+          {builders.map((builder, index) => (
+            <span key={builder.href}>
+              {index > 0 ? " and " : null}
+              <a
+                href={builder.href}
+                className="site-footer__credit-link"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {builder.name}
+              </a>
+            </span>
+          ))}
+        </p>
+      </div>
     </footer>
   );
 }

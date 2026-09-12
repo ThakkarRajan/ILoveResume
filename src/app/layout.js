@@ -32,7 +32,7 @@ export default function RootLayout({ children }) {
   const clarityProjectId = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID;
 
   return (
-    <html lang="en-CA" className={jakarta.variable} data-scroll-behavior="smooth">
+    <html lang="en" className={jakarta.variable} data-scroll-behavior="smooth">
       <head>
         <script
           dangerouslySetInnerHTML={{

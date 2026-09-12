@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import {
   ref,
   uploadBytes,
@@ -52,14 +51,20 @@ import {
   Home,
   Loader2,
 } from "lucide-react";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { wakeBackend, API_BASE, processText } from "../../utils/api.js";
+import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup } from "firebase/auth";
+import { wakeBackend, processText, extractPdf, extractFromUrl } from "../../utils/api.js";
+import { sanitizeResumeFileName } from "../../utils/safeFileName.js";
+import {
+  buildResumeUploadCache,
+  getReusableResumeUpload,
+} from "../../utils/resumeUploadCache.js";
 import { getEmptyResumeDraft } from "../../utils/emptyResumeDraft.js";
 import { unescapeHtml } from "../../utils/safeHtml";
 import SiteLegalLinks from "../../components/legal/SiteLegalLinks";
 import AppPageLayout from "../../components/ui/AppPageLayout";
 import AppPageHeader from "../../components/ui/AppPageHeader";
 import EmptyState from "../../components/ui/EmptyState";
+import TailorProgressScreen, { DraftReadyScreen } from "../../components/progress/TailorProgressScreen";
 
 const JOB_DESCRIPTION_MAX_CHARS = 15_000;
 const RESUME_TEXT_MAX_CHARS = 50_000;
@@ -87,6 +92,8 @@ export default function Dashboard() {
   const [showRecentResults, setShowRecentResults] = useState(false);
   const [recentResults, setRecentResults] = useState([]);
   const fileInputRef = useRef(null);
+  const uploadedPdfCacheRef = useRef(null);
+  const progressIntervalRef = useRef(null);
   const [loadingPhase, setLoadingPhase] = useState('idle'); // 'idle' | 'upload' | 'extract' | 'ai'
   const [uploadAttempts, setUploadAttempts] = useState(0);
   const [user, setUser] = useState(null);
@@ -95,10 +102,25 @@ export default function Dashboard() {
     wakeBackend();
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      setUser(firebaseUser);
+      setUser(firebaseUser || null);
     });
     return () => unsubscribe();
   }, []);
+
+  const ensureGoogleUser = async () => {
+    if (user?.email) return user;
+    try {
+      const auth = getAuth();
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      wakeBackend();
+      setUser(result.user);
+      return result.user;
+    } catch {
+      showError("Sign in with Google to continue");
+      return null;
+    }
+  };
 
   useEffect(() => {
     loadRecentResults();
@@ -186,9 +208,20 @@ export default function Dashboard() {
   const handleDelete = async (file) => {
     if (!user?.email) return;
     try {
+      const email = user.email.toLowerCase();
+      const expectedPrefix = `resumes/${email}/`;
+      if (
+        !file?.path ||
+        typeof file.path !== "string" ||
+        !file.path.startsWith(expectedPrefix) ||
+        file.path.includes("..")
+      ) {
+        showFileDeleteError();
+        return;
+      }
+
       await deleteObject(ref(storage, file.path));
 
-      const email = user.email.toLowerCase();
       const entriesRef = collection(db, `submissions/${email}/entries`);
       const q = query(entriesRef, where("fileName", "==", file.name));
       const snapshot = await getDocs(q);
@@ -198,6 +231,9 @@ export default function Dashboard() {
 
       showFileDeleteSuccess();
       setSelectedResume(null);
+      if (uploadedPdfCacheRef.current?.path === file.path) {
+        uploadedPdfCacheRef.current = null;
+      }
       fetchUploadedResumes();
     } catch (error) {
       showFileDeleteError();
@@ -228,70 +264,98 @@ export default function Dashboard() {
     setFileToDelete(null);
   };
 
-  const simulateProgress = () => {
-    const duration = 3000;
-    const intervalTime = 450;
-    let p = 0;
+  const stopProgressSimulation = () => {
+    if (progressIntervalRef.current) {
+      clearInterval(progressIntervalRef.current);
+      progressIntervalRef.current = null;
+    }
+  };
 
-    const interval = setInterval(() => {
-      p += 1;
-      if (p >= 100) {
-        p = 100;
-        clearInterval(interval);
+  /**
+   * Fake progress for ~90s waits. Ease toward 92% over 90s — never hit 100%
+   * until the real pipeline finishes (caller sets 100).
+   */
+  const simulateProgress = () => {
+    stopProgressSimulation();
+    setProgress(0);
+    const start = performance.now();
+    const DURATION_MS = 90_000;
+    const CAP = 92;
+    progressIntervalRef.current = setInterval(() => {
+      const t = Math.min(1, (performance.now() - start) / DURATION_MS);
+      // Ease-out: moves faster early, crawls near the end so bar doesn't "finish" early
+      const eased = 1 - Math.pow(1 - t, 1.65);
+      setProgress(Math.min(CAP, Math.round(eased * CAP)));
+      if (t >= 1) {
+        stopProgressSimulation();
+        setProgress(CAP);
       }
-      setProgress(p);
-    }, intervalTime);
+    }, 400);
   };
 
   // Refactored: Upload resume (PDF or text)
-  const uploadResume = async () => {
+  const uploadResume = async (authUser = user) => {
     let fileURL = "";
     let fileName = "";
     let resumeText = "";
     if (uploadMode === "pdf") {
       if (pdfFile) {
-        fileName = pdfFile.name;
-        if (!user?.email) {
-          return { success: true, fileName };
-        }
-        setLoadingPhase("upload");
-        setUploadAttempts(1);
-        const userEmail = user.email.toLowerCase();
-        const storageRef = ref(storage, `resumes/${userEmail}/${fileName}`);
-        const uploadToast = showLoading("Uploading...");
-        let uploadSuccess = false;
-        let uploadAttemptsLocal = 0;
-        while (!uploadSuccess && uploadAttemptsLocal < 3) {
-          try {
-            await uploadBytes(storageRef, pdfFile);
-            fileURL = await getDownloadURL(storageRef);
-            if (!fileURL) throw new Error("File upload failed. Please try again.");
-            dismissToast(uploadToast);
-            showFileUploadSuccess();
-            await new Promise(resolve => setTimeout(resolve, 150));
-            uploadSuccess = true;
-          } catch (uploadError) {
-            uploadAttemptsLocal++;
-            setUploadAttempts(uploadAttemptsLocal + 1);
-            if (uploadAttemptsLocal >= 3) {
-              dismissToast(uploadToast);
-              showFileUploadError();
-              setLoading(false);
-              setProgress(0);
-              setLoadingPhase('idle');
-              setUploadAttempts(0);
-              return { success: false };
-            }
-            await new Promise(resolve => setTimeout(resolve, 1000 * (uploadAttemptsLocal + 1)));
-          }
-        }
-        setUploadAttempts(0);
-        if (!uploadSuccess || !fileURL) {
-          showFileUploadError("No valid file URL. Please try again.");
-          setLoading(false);
-          setProgress(0);
-          setLoadingPhase('idle');
+        if (!authUser?.email) {
           return { success: false };
+        }
+        const userEmail = authUser.email.toLowerCase();
+        const reused = getReusableResumeUpload(uploadedPdfCacheRef.current, pdfFile);
+        if (reused) {
+          fileURL = reused.fileURL;
+          fileName = reused.fileName;
+        } else {
+          fileName = sanitizeResumeFileName(pdfFile.name);
+          setLoadingPhase("upload");
+          setUploadAttempts(1);
+          const storageRef = ref(storage, `resumes/${userEmail}/${fileName}`);
+          const uploadToast = showLoading("Uploading...");
+          let uploadSuccess = false;
+          let uploadAttemptsLocal = 0;
+          while (!uploadSuccess && uploadAttemptsLocal < 3) {
+            try {
+              await uploadBytes(storageRef, pdfFile, {
+                contentType: "application/pdf",
+              });
+              fileURL = await getDownloadURL(storageRef);
+              if (!fileURL) throw new Error("File upload failed. Please try again.");
+              dismissToast(uploadToast);
+              showFileUploadSuccess();
+              await new Promise(resolve => setTimeout(resolve, 150));
+              uploadSuccess = true;
+            } catch (uploadError) {
+              uploadAttemptsLocal++;
+              setUploadAttempts(uploadAttemptsLocal + 1);
+              if (uploadAttemptsLocal >= 3) {
+                dismissToast(uploadToast);
+                showFileUploadError();
+                setLoading(false);
+                setProgress(0);
+                setLoadingPhase('idle');
+                setUploadAttempts(0);
+                return { success: false };
+              }
+              await new Promise(resolve => setTimeout(resolve, 1000 * (uploadAttemptsLocal + 1)));
+            }
+          }
+          setUploadAttempts(0);
+          if (!uploadSuccess || !fileURL) {
+            showFileUploadError("No valid file URL. Please try again.");
+            setLoading(false);
+            setProgress(0);
+            setLoadingPhase('idle');
+            return { success: false };
+          }
+          uploadedPdfCacheRef.current = buildResumeUploadCache(pdfFile, {
+            fileURL,
+            fileName,
+            path: `resumes/${userEmail}/${fileName}`,
+          });
+          fetchUploadedResumes();
         }
       } else if (selectedResume) {
         setLoadingPhase("extract");
@@ -316,7 +380,7 @@ export default function Dashboard() {
         setLoadingPhase('idle');
         return { success: false };
       }
-      const firestoreEmail = user?.email?.toLowerCase();
+      const firestoreEmail = authUser?.email?.toLowerCase();
       if (firestoreEmail) {
         try {
           await addDoc(collection(db, `submissions/${firestoreEmail}/entries`), {
@@ -331,7 +395,7 @@ export default function Dashboard() {
     } else {
       // Text resume
       fileName = `text-resume-${Date.now()}.txt`;
-      const email = user?.email?.toLowerCase();
+      const email = authUser?.email?.toLowerCase();
       if (email) {
         try {
           await addDoc(collection(db, `submissions/${email}/entries`), {
@@ -360,11 +424,7 @@ export default function Dashboard() {
           formData.append("file", pdfFile);
           const controller = new AbortController();
           const timeoutId = setTimeout(() => controller.abort(), 45000);
-          const extractRes = await fetch(`${API_BASE}/extract`, {
-            method: "POST",
-            body: formData,
-            signal: controller.signal,
-          });
+          const extractRes = await extractPdf(pdfFile, { signal: controller.signal });
           clearTimeout(timeoutId);
           if (!extractRes.ok) {
             const errData = await extractRes.json().catch(() => ({}));
@@ -426,10 +486,7 @@ export default function Dashboard() {
           if (!navigator.onLine) throw new Error("No internet connection. Please check your network.");
           const controller = new AbortController();
           const timeoutId = setTimeout(() => controller.abort(), 45000);
-          const extractRes = await fetch(`${API_BASE}/extract-from-url`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ url: fileURL }),
+          const extractRes = await extractFromUrl(fileURL, {
             signal: controller.signal,
           });
           clearTimeout(timeoutId);
@@ -575,6 +632,8 @@ export default function Dashboard() {
     localStorage.setItem("tailoredResume", JSON.stringify(aiData.structured));
     setAiData(aiData.structured);
     saveToRecentResults(aiData.structured, jobText);
+    stopProgressSimulation();
+    setProgress(100);
     setShowResultSkeleton(true);
     setLoadingPhase('idle');
     setTimeout(() => router.push("/result"), 400);
@@ -594,20 +653,69 @@ export default function Dashboard() {
       showNetworkError();
       return;
     }
+    const authUser = await ensureGoogleUser();
+    if (!authUser?.email) return;
+
     setLoading(true);
-    setLoadingPhase(uploadMode === "pdf" && pdfFile ? "upload" : uploadMode === "pdf" ? "extract" : "ai");
+    const willUploadPdf =
+      uploadMode === "pdf" &&
+      !!pdfFile &&
+      !getReusableResumeUpload(uploadedPdfCacheRef.current, pdfFile);
+    setLoadingPhase(willUploadPdf ? "upload" : uploadMode === "pdf" ? "extract" : "ai");
     setProgress(0);
     simulateProgress();
+
+    const timingEnabled = process.env.NODE_ENV === "development";
+    const t0 = performance.now();
+    const mark = (label, since) => {
+      if (!timingEnabled) return performance.now();
+      const now = performance.now();
+      const stepMs = Math.round(now - since);
+      const totalMs = Math.round(now - t0);
+      console.log(`[tailor timing] ${label}: ${stepMs}ms (total ${totalMs}ms)`);
+      return now;
+    };
+    if (timingEnabled) {
+      console.log("[tailor timing] submit start", {
+        mode: uploadMode,
+        willUploadPdf,
+        at: new Date().toISOString(),
+      });
+    }
+
     try {
+      let t = t0;
       // 1. Upload
-      const uploadResult = await uploadResume();
-      if (!uploadResult?.success) return;
+      const uploadResult = await uploadResume(authUser);
+      t = mark("upload", t);
+      if (!uploadResult?.success) {
+        if (timingEnabled) console.warn("[tailor timing] stopped after upload (failed)");
+        return;
+      }
       // 2. Extract
       const extractResult = await extractResumeText(uploadResult);
-      if (!extractResult?.success) return;
+      t = mark("extract", t);
+      if (!extractResult?.success) {
+        if (timingEnabled) console.warn("[tailor timing] stopped after extract (failed)");
+        return;
+      }
       // 3. AI
-      await runAI(extractResult.resumeText, jobText, extractResult.fileName);
+      const aiResult = await runAI(extractResult.resumeText, jobText, extractResult.fileName);
+      t = mark("ai", t);
+      if (timingEnabled) {
+        console.log(
+          `[tailor timing] done → result handoff (total ${Math.round(performance.now() - t0)}ms)`,
+          { aiOk: !!aiResult?.success }
+        );
+      }
     } catch (err) {
+      if (timingEnabled) {
+        console.error(
+          `[tailor timing] error after ${Math.round(performance.now() - t0)}ms`,
+          err
+        );
+      }
+      stopProgressSimulation();
       setLoadingPhase('idle');
       if (err.name === 'TypeError' && err.message.includes('fetch')) {
         showNetworkRetry();
@@ -615,6 +723,7 @@ export default function Dashboard() {
         showAIProcessingError();
       }
     } finally {
+      stopProgressSimulation();
       setLoading(false);
       setProgress(0);
     }
@@ -636,6 +745,7 @@ export default function Dashboard() {
 
     setPdfFile(file);
     setSelectedResume(null);
+    uploadedPdfCacheRef.current = null;
   };
 
   const handleDrag = (e) => {
@@ -658,6 +768,7 @@ export default function Dashboard() {
       if (file.type === "application/pdf" && file.size <= 3 * 1024 * 1024) {
         setPdfFile(file);
         setSelectedResume(null);
+        uploadedPdfCacheRef.current = null;
         showFileUploadSuccess();
       } else {
         showFileUploadError("Please upload a valid PDF file under 3MB.");
@@ -671,6 +782,7 @@ export default function Dashboard() {
     setPdfFile(null);
     setTextResume("");
     setSelectedResume(null);
+    uploadedPdfCacheRef.current = null;
     setUploadMode("pdf"); // Reset to default mode
     setDragActive(false);
     setShowFilePreview(false);
@@ -702,6 +814,7 @@ export default function Dashboard() {
     setPdfFile(null);
     setTextResume("");
     setSelectedResume(null);
+    uploadedPdfCacheRef.current = null;
     setDragActive(false);
     setShowFilePreview(false);
     
@@ -789,88 +902,13 @@ export default function Dashboard() {
       .replace(/'/g, "&#039;");
 
   if (loading) {
-    const phaseLabel =
-      loadingPhase === "upload"
-        ? "Uploading your file"
-        : loadingPhase === "extract"
-          ? "Reading your PDF"
-          : loadingPhase === "ai"
-            ? "Tailoring with AI"
-            : "Working on it";
-
     return (
-      <div className="fixed inset-0 z-[9999] flex min-h-screen w-full items-center justify-center bg-zinc-50/95 px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2 }}
-          className="w-full max-w-md rounded-xl border border-zinc-200 bg-white p-8 text-center shadow-sm"
-        >
-          <Image
-            src="/logo.png"
-            alt=""
-            width={1017}
-            height={850}
-            className="mx-auto h-12 w-auto max-w-[3rem] rounded-lg border border-zinc-200 object-contain"
-            priority
-          />
-          <h2 className="mt-6 text-lg font-semibold text-zinc-900">{phaseLabel}</h2>
-          <p className="mt-1 text-sm text-zinc-500">
-            Longer resumes or detailed postings may take up to a minute—we&apos;ll keep this screen updated.
-          </p>
-          <div className="mt-6 h-2 w-full overflow-hidden rounded-full bg-zinc-100">
-            <motion.div
-              className="h-full rounded-full bg-[var(--accent)]"
-              initial={{ width: 0 }}
-              animate={{ width: `${progress}%` }}
-              transition={{ duration: 0.35, ease: "easeOut" }}
-            />
-          </div>
-          <p className="mt-2 text-xs font-medium tabular-nums text-zinc-500">{progress}%</p>
-          <div className="mt-6 flex flex-wrap justify-center gap-2 text-left text-xs text-zinc-600">
-            {[
-              { id: "upload", label: "Upload" },
-              { id: "extract", label: "Extract" },
-              { id: "ai", label: "Tailor" },
-            ].map((step) => (
-              <span
-                key={step.id}
-                className={`rounded-full border px-2.5 py-1 ${
-                  loadingPhase === step.id ? "border-[var(--accent-subtle)] bg-[var(--accent-muted)] text-[var(--accent-hover)]" : "border-[var(--border)] bg-[var(--surface-inset)] text-[var(--muted)]"
-                }`}
-              >
-                {step.label}
-              </span>
-            ))}
-          </div>
-        </motion.div>
-      </div>
+      <TailorProgressScreen phase={loadingPhase || "idle"} progress={progress} />
     );
   }
 
   if (showResultSkeleton) {
-    return (
-      <div className="fixed inset-0 z-[9999] flex min-h-screen w-full flex-col items-center justify-center bg-zinc-50 px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2 }}
-          className="w-full max-w-lg rounded-xl border border-zinc-200 bg-white p-8 text-center shadow-sm"
-        >
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
-            <CheckCircle className="h-6 w-6" strokeWidth={1.75} />
-          </div>
-          <h2 className="mt-5 text-lg font-semibold text-zinc-900">Draft ready</h2>
-          <p className="mt-2 text-sm text-zinc-500">Opening your editor—almost there.</p>
-          <div className="mt-8 space-y-3 text-left">
-            <div className="h-3 w-24 animate-pulse rounded bg-zinc-200" />
-            <div className="h-10 w-full animate-pulse rounded-lg bg-zinc-100" />
-            <div className="h-3 w-32 animate-pulse rounded bg-zinc-200" />
-            <div className="h-24 w-full animate-pulse rounded-lg bg-zinc-100" />
-          </div>
-        </motion.div>
-      </div>
-    );
+    return <DraftReadyScreen />;
   }
 
   const canSubmit =
@@ -1159,6 +1197,7 @@ export default function Dashboard() {
                       onClick={() => {
                         setSelectedResume(resume);
                         setPdfFile(null);
+                        uploadedPdfCacheRef.current = null;
                         setTextResume("");
                         setUploadMode("pdf");
                       }}

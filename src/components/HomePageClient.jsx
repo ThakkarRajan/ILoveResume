@@ -6,6 +6,11 @@ import PageFooter from "./ui/PageFooter";
 import WorkflowStepper from "./ui/WorkflowStepper";
 import GuideCardGrid from "./ui/GuideCardGrid";
 import FaqAccordion from "./ui/FaqAccordion";
+import HomeHero from "./motion/HomeHero";
+import HomeLenis from "./motion/HomeLenis";
+import ScrollReveal from "./motion/ScrollReveal";
+import { motionDistance } from "./motion/motionConfig";
+import HeroProductGraphic from "./graphics/HeroProductGraphic";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -16,7 +21,6 @@ import {
   Download,
   Shield,
   FileCheck,
-  Check,
   TrendingUp,
   Search,
   FileOutput,
@@ -30,7 +34,6 @@ const workflowSteps = [
 ];
 
 const resourceLinks = [
-  { href: "/resume-builder-canada", name: "Resume builder for Canada", description: "Format and conventions for Canadian applications." },
   { href: "/how-to-tailor-a-resume-to-a-job-description", name: "Tailor to a job description", description: "Match posting language without keyword stuffing." },
   { href: "/ats-friendly-resume", name: "ATS-friendly resume", description: "Structure recruiters and parsers can read." },
   { href: "/resume-templates", name: "Resume templates", description: "Layouts that stay readable in Word and PDF." },
@@ -38,6 +41,7 @@ const resourceLinks = [
   { href: "/harvard-resume-template", name: "Harvard-style template", description: "Classic one-page academic layout." },
   { href: "/google-docs-resume-template", name: "Google Docs resume", description: "Editable template for Docs users." },
   { href: "/ai-resume-builder", name: "AI resume builder", description: "Use AI suggestions without losing your voice." },
+  { href: "/resume-builder-canada", name: "Resume norms for Canada", description: "Country-specific format and conventions when applying in Canada." },
 ];
 
 const steps = [
@@ -87,8 +91,8 @@ const faqItems = [
     a: "Google Sign-In secures your account. We don't sell your resume data. Some processing uses trusted service providers as described in our Privacy Policy.",
   },
   {
-    q: "Does it work for Canadian jobs?",
-    a: "Yes. Clear, keyword-aware resumes for Canada and international applications alike.",
+    q: "Does this work for different job markets?",
+    a: "Yes. Suggestions follow the job description you paste. Resume norms can vary by country and industry—match expectations for the market where you apply.",
   },
 ];
 
@@ -129,107 +133,107 @@ export default function HomePageClient() {
   }, [router]);
 
   return (
-    <div className="page-canvas">
+    <HomeLenis>
+    <div className="page-canvas page-canvas-grid">
       <PublicNav fixed />
 
-      <div className="app-container min-w-0 pb-12 pt-[calc(var(--nav-height)+1.25rem)] sm:pb-16 sm:pt-[calc(var(--nav-height)+1.75rem)] lg:pb-20">
-        <section className="grid items-start gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:gap-8 xl:gap-10">
-          <div className="min-w-0">
-            <WorkflowStepper steps={workflowSteps} current={0} className="mb-6" />
-            <h1 className="display-heading max-w-[16ch] sm:max-w-none">
-              Tailor your resume to each job posting
-            </h1>
-            <p className="prose-lead mt-5">
-              <span className="font-medium text-[var(--foreground)]">I Love Resumes</span> helps you align an existing
-              draft to a specific role. Paste the job description, refine keywords for recruiters and ATS parsers, then
-              export Word or PDF. Every line stays yours to approve.
-            </p>
-
-            <div className="mt-8 max-w-md">
-              <Link href="/dashboard" className="btn btn-primary w-full sm:w-auto">
-                Start tailoring free
-                <ArrowRight className="h-4 w-4 opacity-80" aria-hidden />
-              </Link>
-              <p className="mt-3 text-xs text-[var(--muted)]">Free. No credit card required.</p>
-            </div>
-
-            <div className="feature-strip mt-8">
-              {[
-                { icon: Shield, label: "Secure Google sign-in" },
-                { icon: FileCheck, label: "ATS-friendly structure" },
-                { icon: Download, label: "No credit card" },
-              ].map(({ icon: Icon, label }) => (
-                <div key={label} className="flex items-center gap-2.5 text-sm text-[var(--text-secondary)]">
-                  <Icon className="h-4 w-4 shrink-0 text-[var(--accent)]" strokeWidth={1.75} aria-hidden />
-                  {label}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="card-elevated overflow-hidden">
-            <div className="border-b border-[var(--border)] bg-[var(--surface-raised)] px-5 py-3.5">
-              <p className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">How it works</p>
-            </div>
-            <ol className="divide-y divide-[var(--border)]">
-              {steps.map(({ icon: Icon, title, description }) => (
-                <li key={title} className="flex gap-4 px-5 py-4">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-muted)] text-[var(--accent)]">
-                    <Icon className="h-4 w-4" strokeWidth={1.75} aria-hidden />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-sm font-semibold text-[var(--foreground)]">{title}</p>
-                    <p className="mt-0.5 text-sm leading-relaxed text-[var(--text-secondary)]">{description}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-            <div className="border-t border-[var(--border)] bg-[var(--surface-raised)] px-5 py-3">
-              <p className="flex items-center gap-2 text-xs text-[var(--muted)]">
-                <Check className="h-3.5 w-3.5 text-emerald-600" strokeWidth={2} aria-hidden />
-                Export only when you are satisfied with every line
+      <div className="app-container min-w-0 pb-0 pt-[calc(var(--nav-height)+0.85rem)] sm:pt-[calc(var(--nav-height)+1.15rem)]">
+        <HomeHero
+          copy={
+            <>
+              <WorkflowStepper steps={workflowSteps} current={0} className="mb-6" />
+              <h1 className="display-heading max-w-[16ch] sm:max-w-none">
+                Tailor your resume to each job posting
+              </h1>
+              <p className="prose-lead mt-5">
+                <span className="font-medium text-[var(--foreground)]">I Love Resumes</span> helps you align an existing
+                draft to a specific role. Paste the job description, refine keywords for recruiters and ATS parsers, then
+                export Word or PDF. Every line stays yours to approve.
               </p>
-            </div>
-          </div>
+
+              <div className="mt-8 max-w-md">
+                <Link href="/dashboard" className="btn btn-primary w-full sm:w-auto">
+                  Start tailoring free
+                  <ArrowRight className="h-4 w-4 opacity-80" aria-hidden />
+                </Link>
+                <p className="mt-3 text-xs text-[var(--muted)]">Free. No credit card required.</p>
+              </div>
+
+              <div className="feature-strip mt-8">
+                {[
+                  { icon: Shield, label: "Secure Google sign-in" },
+                  { icon: FileCheck, label: "ATS-friendly structure" },
+                  { icon: Download, label: "No credit card" },
+                ].map(({ icon: Icon, label }) => (
+                  <div key={label} className="flex items-center gap-2.5 text-sm text-[var(--text-secondary)]">
+                    <Icon className="h-4 w-4 shrink-0 text-[var(--accent)]" strokeWidth={1.75} aria-hidden />
+                    {label}
+                  </div>
+                ))}
+              </div>
+            </>
+          }
+          panel={<HeroProductGraphic />}
+        />
+
+        <section className="section-gap border-t border-[var(--border)] pt-[var(--section-y)]">
+          <ScrollReveal y={motionDistance.subtle} className="mb-5 max-w-2xl">
+            <h2 className="section-heading">How it works</h2>
+            <p className="mt-2 text-sm text-[var(--text-secondary)] sm:text-base">
+              Four steps from an existing draft to a posting-aligned export.
+            </p>
+          </ScrollReveal>
+          <ol className="home-flow-grid">
+            {steps.map(({ icon: Icon, title, description }, index) => (
+              <ScrollReveal key={title} as="li" className="home-flow-step" delay={index * 0.05} y={motionDistance.item}>
+                <span className="home-flow-index" aria-hidden>
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <div className="home-flow-icon">
+                  <Icon className="h-4 w-4" strokeWidth={1.75} aria-hidden />
+                </div>
+                <p className="text-sm font-semibold text-[var(--foreground)]">{title}</p>
+                <p className="mt-1 text-sm leading-relaxed text-[var(--text-secondary)]">{description}</p>
+              </ScrollReveal>
+            ))}
+          </ol>
         </section>
 
         <section className="section-gap border-t border-[var(--border)] pt-[var(--section-y)]">
-          <div className="mb-6 max-w-2xl">
+          <ScrollReveal y={motionDistance.section} className="mb-6 max-w-2xl">
             <h2 className="section-heading">Built for serious applications</h2>
             <p className="mt-2 text-sm text-[var(--text-secondary)] sm:text-base">
               Most builders stop at templates. This product is for people who already have a draft and need it aligned to
               one posting before they hit submit.
             </p>
-          </div>
+          </ScrollReveal>
           <div className="grid gap-4 sm:grid-cols-3 sm:gap-5">
-            {outcomes.map(({ icon: Icon, title, description }) => (
-              <article key={title} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
+            {outcomes.map(({ icon: Icon, title, description }, index) => (
+              <ScrollReveal key={title} as="article" className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5" delay={index * 0.07} y={motionDistance.item}>
                 <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--accent-muted)]">
                   <Icon className="h-5 w-5 text-[var(--accent)]" strokeWidth={1.75} aria-hidden />
                 </div>
                 <h3 className="text-sm font-semibold text-[var(--foreground)]">{title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-[var(--text-secondary)]">{description}</p>
-              </article>
+              </ScrollReveal>
             ))}
           </div>
-          <p className="mt-6 text-sm leading-relaxed text-[var(--text-secondary)]">
-            Applying in Canada? Start with our{" "}
-            <Link href="/resume-builder-canada" className="font-medium text-[var(--accent)] underline-offset-2 hover:underline">
-              Canada-focused guide
-            </Link>{" "}
-            or learn{" "}
-            <Link
-              href="/how-to-tailor-a-resume-to-a-job-description"
-              className="font-medium text-[var(--accent)] underline-offset-2 hover:underline"
-            >
-              how to tailor to a job description
-            </Link>
-            .
-          </p>
+          <ScrollReveal delay={0.12} y={motionDistance.subtle} className="mt-6">
+            <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
+              New to tailoring? Start with{" "}
+              <Link
+                href="/how-to-tailor-a-resume-to-a-job-description"
+                className="font-medium text-[var(--accent)] underline-offset-2 hover:underline"
+              >
+                how to tailor to a job description
+              </Link>
+              .
+            </p>
+          </ScrollReveal>
         </section>
 
         <section id="guides" className="section-gap scroll-mt-24 border-t border-[var(--border)] pt-[var(--section-y)] sm:scroll-mt-28">
-          <div className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <ScrollReveal className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <h2 className="section-heading">Guides and templates</h2>
               <p className="mt-1 text-sm text-[var(--text-secondary)] sm:text-base">
@@ -240,30 +244,37 @@ export default function HomePageClient() {
               All guides
               <ArrowRight className="h-4 w-4" aria-hidden />
             </Link>
-          </div>
+          </ScrollReveal>
           <GuideCardGrid guides={resourceLinks} />
         </section>
 
         <section id="faq" className="section-gap scroll-mt-24 border-t border-[var(--border)] pt-[var(--section-y)] sm:scroll-mt-28">
-          <h2 className="section-heading mb-6 sm:mb-8">Frequently asked questions</h2>
-          <FaqAccordion items={faqItems} />
+          <ScrollReveal y={motionDistance.subtle}>
+            <h2 className="section-heading mb-6 sm:mb-8">Frequently asked questions</h2>
+          </ScrollReveal>
+          <ScrollReveal delay={0.06} y={motionDistance.item}>
+            <FaqAccordion items={faqItems} />
+          </ScrollReveal>
         </section>
 
         <section className="section-gap border-t border-[var(--border)] pt-[var(--section-y)]">
-          <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-6 py-8 text-center sm:px-10">
-            <h2 className="section-heading text-xl sm:text-2xl">Ready to tailor your next application?</h2>
-            <p className="mx-auto mt-3 max-w-lg text-sm text-[var(--text-secondary)] sm:text-base">
-              Open the dashboard, paste a job posting, and export when the draft reads like you.
-            </p>
-            <Link href="/dashboard" className="btn btn-primary mx-auto mt-6">
-              Start tailoring free
-              <ArrowRight className="h-4 w-4" aria-hidden />
-            </Link>
-          </div>
+          <ScrollReveal y={motionDistance.section}>
+            <div className="home-cta rounded-xl border border-[var(--border)] bg-[var(--surface)] px-6 py-8 text-center sm:px-10">
+              <h2 className="section-heading text-xl sm:text-2xl">Ready to tailor your next application?</h2>
+              <p className="mx-auto mt-3 max-w-lg text-sm text-[var(--text-secondary)] sm:text-base">
+                Open the dashboard, paste a job posting, and export when the draft reads like you.
+              </p>
+              <Link href="/dashboard" className="btn btn-primary mx-auto mt-6">
+                Start tailoring free
+                <ArrowRight className="h-4 w-4" aria-hidden />
+              </Link>
+            </div>
+          </ScrollReveal>
         </section>
 
-        <PageFooter className="section-gap" />
+        <PageFooter className="mt-6 sm:mt-8" />
       </div>
     </div>
+    </HomeLenis>
   );
 }

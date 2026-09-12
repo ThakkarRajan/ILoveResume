@@ -32,10 +32,11 @@ export default function ResumeTemplatesPage() {
       <h2>Further reading</h2>
       <ul>
         <li>
-          <Link href="/blog/resume-templates-canada-pick-right-one">Resume templates in Canada</Link> (blog)
+          <Link href="/ats-friendly-resume">ATS-friendly resume</Link>
         </li>
         <li>
-          <Link href="/ats-friendly-resume">ATS-friendly resume</Link>
+          <Link href="/blog/resume-templates-canada-pick-right-one">Picking a resume template</Link> (blog;
+          Canada-focused)
         </li>
       </ul>
     </MarketingGuideLayout>

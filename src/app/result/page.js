@@ -1,29 +1,25 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { 
-  showSuccess, 
   showError, 
-  showLoading, 
   dismissToast,
   showSaveLoading,
-  showSaveSuccess,
   showSaveError,
   showDownloadLoading,
   showDownloadSuccess,
   showDownloadError,
-  showHighlightAdded,
   showExperienceAdded,
   showExperienceDeleted,
   showEducationAdded,
   showEducationDeleted,
   showProjectAdded,
   showProjectDeleted,
-  showHighlightError
 } from "../../utils/toast";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import EditorHero from "../../components/motion/EditorHero";
+import ScrollReveal from "../../components/motion/ScrollReveal";
 import { 
   User,
   Mail,
@@ -39,7 +35,6 @@ import {
   Code,
   Save,
   Download,
-  X,
   CheckCircle,
   AlertCircle,
   ArrowLeft,
@@ -55,53 +50,10 @@ import SkillsSectionEditor from "../../components/editor/SkillsSectionEditor";
 import EducationSectionEditor from "../../components/editor/EducationSectionEditor";
 import ProjectsSectionEditor from "../../components/editor/ProjectsSectionEditor";
 import CertificatesSectionEditor from "../../components/editor/CertificatesSectionEditor";
+import { ResultProgressScreen } from "../../components/progress/TailorProgressScreen";
 
-// Utility to escape HTML special characters (display only, not inputs)
-const escapeHtml = (unsafe) =>
-  (typeof unsafe === "string" ? unsafe : String(unsafe ?? ""))
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-
-function ResultLoadingScreen({ title, subtitle, icon: Icon = FileText }) {
-  return (
-    <div className="flex min-h-dvh items-center justify-center bg-[var(--background)] px-page py-8">
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-        className="card-elevated w-full max-w-md p-8 text-center sm:p-10"
-      >
-        <Image
-          src="/logo.png"
-          alt=""
-          width={1017}
-          height={850}
-          className="mx-auto h-[52px] w-auto max-w-[3.25rem] rounded-xl border border-zinc-200 bg-white object-contain"
-          priority
-        />
-        <div className="relative mx-auto mt-8 h-[4.5rem] w-[4.5rem]">
-          <div
-            className="absolute inset-0 rounded-full border-[3px] border-[var(--border)] border-t-[var(--accent)] animate-spin"
-            style={{ animationDuration: "0.9s" }}
-            aria-hidden
-          />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <Icon className="h-7 w-7 text-[var(--accent)]" strokeWidth={1.65} aria-hidden />
-          </div>
-        </div>
-        <h2 className="mt-8 text-lg font-semibold tracking-tight text-zinc-900 sm:text-xl">{title}</h2>
-        <p className="mt-2 text-sm leading-relaxed text-zinc-500">{subtitle}</p>
-        <div className="mx-auto mt-8 flex max-w-[240px] flex-col items-center gap-2">
-          <div className="h-1.5 w-full animate-pulse rounded-full bg-zinc-100" />
-          <div className="h-1.5 w-[88%] animate-pulse rounded-full bg-zinc-100" />
-          <div className="h-1.5 w-[64%] animate-pulse rounded-full bg-zinc-100" />
-        </div>
-      </motion.div>
-    </div>
-  );
+function ResultLoadingScreen({ title, subtitle }) {
+  return <ResultProgressScreen title={title} subtitle={subtitle} />;
 }
 
 export default function ResultPage() {
@@ -112,12 +64,24 @@ export default function ResultPage() {
   const router = useRouter();
   const [fieldErrors, setFieldErrors] = useState({});
   const [showSavePopup, setShowSavePopup] = useState(false);
-  const [activeSection, setActiveSection] = useState("personal");
+  const [activeSection, setActiveSection] = useState("hero");
+
+  const sectionNav = [
+    { id: "hero", label: "Profile", icon: User },
+    { id: "summary", label: "Summary", icon: FileText },
+    { id: "experience", label: "Experience", icon: Briefcase },
+    { id: "skills", label: "Skills", icon: Star },
+    { id: "education", label: "Education", icon: GraduationCap },
+    { id: "projects", label: "Projects", icon: Code },
+    { id: "certificates", label: "Certificates", icon: Award },
+  ];
+
   const [isDownloading, setIsDownloading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [autoSaveStatus, setAutoSaveStatus] = useState("saved"); // "saving", "saved", "error"
   const [showDownloadSkeleton, setShowDownloadSkeleton] = useState(false);
   const [showExportGate, setShowExportGate] = useState(false);
+  const reduceMotion = useReducedMotion();
 
   useEffect(() => {
     const auth = getAuth();
@@ -135,7 +99,7 @@ export default function ResultPage() {
   };
 
   const normalizeEducationEntry = (edu) => {
-    if (!edu || typeof edu !== "object") return { program: "", school: "", location: "", start: "", end: "", highlights: ["", ""] };
+    if (!edu || typeof edu !== "object") return { program: "", school: "", location: "", start: "", end: "", highlights: [] };
     const program = (edu.program || edu.degree || edu.area || edu.studyType || "").trim();
     const school = (edu.school || edu.institution || edu.university || edu.college || "").trim();
     const location = (edu.location || edu.city || "").trim();
@@ -208,7 +172,6 @@ export default function ResultPage() {
       <ResultLoadingScreen
         title="Loading your draft"
         subtitle="Retrieving your resume from this browser session."
-        icon={FileText}
       />
     );
   }
@@ -219,7 +182,6 @@ export default function ResultPage() {
       <ResultLoadingScreen
         title="Preparing your download"
         subtitle="Next: choose Word (editable) or PDF (share-ready)."
-        icon={Download}
       />
     );
   }
@@ -231,28 +193,31 @@ export default function ResultPage() {
     // Experience validation
     if (Array.isArray(resumeData.tailored_experience)) {
       resumeData.tailored_experience.forEach((exp, index) => {
-        if (!exp.company) {
+        if (!String(exp.company || "").trim()) {
           errors[`experience_company_${index}`] = "Add a company name.";
           errorSections.add("Experience");
         }
-        if (!exp.title) {
+        if (!String(exp.title || "").trim()) {
           errors[`experience_title_${index}`] = "Add a job title.";
           errorSections.add("Experience");
         }
-        if (!exp.location) {
+        if (!String(exp.location || "").trim()) {
           errors[`experience_location_${index}`] = "Add a location.";
           errorSections.add("Experience");
         }
-        if (!exp.start) {
+        if (!String(exp.start || "").trim()) {
           errors[`experience_start_${index}`] = "Add a start date.";
           errorSections.add("Experience");
         }
-        if (!exp.end) {
+        if (!String(exp.end || "").trim()) {
           errors[`experience_end_${index}`] = "Add an end date.";
           errorSections.add("Experience");
         }
-        if (!exp.highlights || exp.highlights.some((h) => !h.trim())) {
-          errors[`experience_highlights_${index}`] = "Fill in every bullet for this role.";
+        const expHighlights = Array.isArray(exp.highlights)
+          ? exp.highlights.map((h) => String(h || "").trim()).filter(Boolean)
+          : [];
+        if (expHighlights.length === 0) {
+          errors[`experience_highlights_${index}`] = "Add at least one bullet for this role.";
           errorSections.add("Experience");
         }
       });
@@ -292,19 +257,15 @@ export default function ResultPage() {
     // Project validation
     if (Array.isArray(resumeData.projects)) {
       resumeData.projects.forEach((proj, index) => {
-        if (!proj.title) {
+        if (!String(proj.title || "").trim()) {
           errors[`project_title_${index}`] = "Add a project title.";
           errorSections.add("Projects");
         }
-        if (!proj.tech || proj.tech.length === 0) {
-          errors[`project_tech_${index}`] = "Add at least one technology.";
-          errorSections.add("Projects");
-        }
-        if (
-          !Array.isArray(proj.highlights) ||
-          proj.highlights.some((h) => !h.trim())
-        ) {
-          errors[`project_highlights_${index}`] = "Fill in every project bullet.";
+        const projHighlights = Array.isArray(proj.highlights)
+          ? proj.highlights.map((h) => String(h || "").trim()).filter(Boolean)
+          : [];
+        if (projHighlights.length === 0) {
+          errors[`project_highlights_${index}`] = "Add at least one project bullet.";
           errorSections.add("Projects");
         }
       });
@@ -316,11 +277,13 @@ export default function ResultPage() {
       const sectionOrder = ["Experience", "Education", "Projects"];
       const firstErrorSection = sectionOrder.find((s) => errorSections.has(s));
       const sectionIdMap = { Experience: "experience", Education: "education", Projects: "projects" };
+      // Error keys use singular prefixes: experience_*, education_*, project_*
+      const errorKeyPrefix = { Experience: "experience_", Education: "education_", Projects: "project_" };
       if (firstErrorSection) {
         setActiveSection(sectionIdMap[firstErrorSection]);
       }
       const details = Array.from(errorSections).map((section) => {
-        const prefix = sectionIdMap[section] ? `${sectionIdMap[section]}_` : "";
+        const prefix = errorKeyPrefix[section] || "";
         const fields = Object.keys(errors)
           .filter((k) => k.startsWith(prefix))
           .map((k) => {
@@ -526,18 +489,12 @@ export default function ResultPage() {
     return icons[key] || Mail;
   };
 
-  const sections = [
-    { id: "personal", label: "Profile", icon: User },
-    { id: "summary", label: "Summary", icon: FileText },
-    { id: "skills", label: "Skills", icon: Star },
-    { id: "experience", label: "Experience", icon: Briefcase },
-    { id: "education", label: "Education", icon: GraduationCap },
-    { id: "projects", label: "Projects", icon: Code },
-    { id: "certificates", label: "Certificates", icon: Award },
-  ];
+  const handleSectionNav = (sectionId) => {
+    setActiveSection(sectionId);
+  };
 
   return (
-    <div className="relative min-h-dvh overflow-x-hidden bg-[var(--background)]">
+    <div className="relative min-h-dvh overflow-x-hidden bg-[var(--background)] page-canvas-grid">
       <div className="relative z-10 mx-auto min-w-0 max-w-7xl px-page py-3 pb-[max(1rem,env(safe-area-inset-bottom))] sm:py-4 lg:py-5">
         <div className="editor-workspace">
           <div className="editor-sticky-stack">
@@ -586,15 +543,18 @@ export default function ResultPage() {
             <div className="panel min-w-0 max-w-full">
               <div className="editor-tabs-body">
                 <div className="section-tabs editor-section-tabs" role="tablist" aria-label="Resume sections">
-                {sections.map((section) => {
+                {sectionNav.map((section) => {
                   const Icon = section.icon;
                   return (
                     <button
                       key={section.id}
+                      id={`tab-${section.id}`}
                       type="button"
                       role="tab"
                       aria-selected={activeSection === section.id}
-                      onClick={() => setActiveSection(section.id)}
+                      aria-controls={`section-${section.id}`}
+                      tabIndex={activeSection === section.id ? 0 : -1}
+                      onClick={() => handleSectionNav(section.id)}
                       className={`section-tab ${activeSection === section.id ? "section-tab-active" : ""}`}
                     >
                       <Icon className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden />
@@ -607,130 +567,120 @@ export default function ResultPage() {
             </div>
           </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="min-w-0 pt-10"
-          >
-            <div className="panel min-w-0 max-w-full">
-              <div className="editor-panel-body ">
-                <AnimatePresence mode="wait">
-                  {activeSection === "personal" && (
-                    <motion.div
-                      key="personal"
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
-                      className="editor-section-content"
-                    >
-                      <div className="editor-section-header">
-                        <h2 className="editor-section-title">Profile & contact</h2>
-                        <p className="editor-section-desc">Name, email, and links used in your exports</p>
-                      </div>
+          <div className="editor-scroll-canvas min-w-0 pt-8">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeSection}
+                initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={reduceMotion ? undefined : { opacity: 0, y: -6 }}
+                transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              >
+                {activeSection === "hero" && (
+                  <EditorHero role="tabpanel" aria-labelledby="tab-hero">
+                    <div className="panel min-w-0 max-w-full">
+                      <div className="editor-panel-body">
+                        <div className="editor-section-content">
+                          <div className="editor-section-header">
+                            <p className="editor-section-label">Introduction</p>
+                            <h2 className="editor-section-title editor-hero-name">
+                              {resumeData.name ? unescapeHtml(resumeData.name) : "Your name"}
+                            </h2>
+                            <p className="editor-section-desc">Name and contact details</p>
+                          </div>
 
-                      <div className="editor-callout" role="status">
-                        <CheckCircle className="h-5 w-5 shrink-0 text-emerald-600" strokeWidth={2} aria-hidden />
-                        <p>
-                          Double-check your name, email, phone, GitHub, and LinkedIn—Word and PDF exports use this
-                          information exactly as you enter it. Prefer full profile URLs where possible.
-                        </p>
-                      </div>
+                          <ScrollReveal y={10}>
+                            <div className="editor-callout" role="status">
+                              <CheckCircle className="h-5 w-5 shrink-0 text-emerald-600" strokeWidth={2} aria-hidden />
+                              <p>
+                                Double-check your name, email, phone, GitHub, and LinkedIn—Word and PDF exports use this
+                                information exactly as you enter it. Prefer full profile URLs where possible.
+                              </p>
+                            </div>
+                          </ScrollReveal>
 
-                      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                          <ScrollReveal delay={0.05}>
+                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                              <div>
+                                <label className="form-label">Full Name</label>
+                                <input
+                                  value={unescapeHtml(resumeData.name || "")}
+                                  onChange={(e) => handleChange("name", null, e.target.value)}
+                                  className="input-field"
+                                  placeholder="Full name as it should appear on your resume"
+                                />
+                              </div>
+
+                              {Object.entries(resumeData.contact || {}).map(([key, val]) => {
+                                const Icon = getContactIcon(key);
+                                const placeholder =
+                                  key === "github"
+                                    ? "GitHub username or profile URL"
+                                    : key === "linkedin"
+                                      ? "LinkedIn username or profile URL"
+                                      : `Add your ${key}`;
+                                return (
+                                  <div key={key}>
+                                    <label className="form-label capitalize">{key}</label>
+                                    <div className="relative">
+                                      <Icon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+                                      <input
+                                        value={unescapeHtml(val)}
+                                        onChange={(e) => handleChange("contact", key, e.target.value)}
+                                        className="input-field input-field-icon"
+                                        placeholder={placeholder}
+                                      />
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </ScrollReveal>
+                        </div>
+                      </div>
+                    </div>
+                  </EditorHero>
+                )}
+
+                {activeSection === "summary" && (
+                  <section
+                    id="section-summary"
+                    role="tabpanel"
+                    aria-labelledby="tab-summary"
+                    className="editor-scroll-section panel min-w-0 max-w-full"
+                  >
+                    <div className="editor-panel-body">
+                      <div className="editor-section-content">
+                        <div className="editor-section-header">
+                          <p className="editor-section-label">Summary</p>
+                          <h2 className="editor-section-title">Professional summary</h2>
+                          <p className="editor-section-desc">
+                            Short pitch for who you are and what you want next
+                          </p>
+                        </div>
                         <div>
-                          <label className="form-label">
-                            Full Name
-              </label>
-              <input
-                value={unescapeHtml(resumeData.name || "")}
-                onChange={(e) => handleChange("name", null, e.target.value)}
-                                                         className="input-field"
-                             placeholder="Full name as it should appear on your resume"
+                          <label className="form-label">Professional summary</label>
+                          <textarea
+                            value={unescapeHtml(resumeData.tailored_summary || "")}
+                            onChange={(e) => handleChange("tailored_summary", null, e.target.value)}
+                            className="input-field resize-y"
+                            rows={6}
+                            placeholder="Tight summary: who you are, what you ship best, and what you're targeting next…"
                           />
                         </div>
-
-                        {Object.entries(resumeData.contact || {}).map(([key, val]) => {
-                          const Icon = getContactIcon(key);
-                          const placeholder =
-                            key === "github"
-                              ? "GitHub username or profile URL"
-                              : key === "linkedin"
-                                ? "LinkedIn username or profile URL"
-                                : `Add your ${key}`;
-                          return (
-                  <div key={key}>
-                              <label className="form-label capitalize">
-                      {key}
-                    </label>
-                              <div className="relative">
-                                <Icon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <input
-                      value={unescapeHtml(val)}
-                                  onChange={(e) => handleChange("contact", key, e.target.value)}
-                                                                     className="input-field input-field-icon"
-                                   placeholder={placeholder}
-                    />
-                  </div>
-                            </div>
-                          );
-                        })}
                       </div>
-                    </motion.div>
-                  )}
+                    </div>
+                  </section>
+                )}
 
-                  {activeSection === "summary" && (
-                    <motion.div
-                      key="summary"
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
-                      className="editor-section-content"
-                    >
-                      <div className="editor-section-header">
-                        <h2 className="editor-section-title">Professional summary</h2>
-                        <p className="editor-section-desc">Role, years of experience, top skills, and the impact you want next</p>
-                      </div>
-
-                      <div>
-                        <label className="form-label">
-                          Summary
-                        </label>
-              <textarea
-                value={unescapeHtml(resumeData.tailored_summary || "")}
-                          onChange={(e) => handleChange("tailored_summary", null, e.target.value)}
-                                                     className="input-field resize-y"
-                           rows={2}
-                           placeholder="Tight summary: who you are, what you ship best, and what you're targeting next…"
-              />
-                      </div>
-                    </motion.div>
-                  )}
-
-                  {activeSection === "skills" && (
-                    <motion.div
-                      key="skills"
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
-                    >
-                      <SkillsSectionEditor
-                        skills={resumeData.tailored_skills || {}}
-                        onAddCategory={addSkillCategory}
-                        onRemoveCategory={removeSkillCategory}
-                        onRenameCategory={renameSkillCategory}
-                        onChangeSkills={(category, value) => handleChange("tailored_skills", category, value)}
-                      />
-                    </motion.div>
-                  )}
-
-                  {activeSection === "experience" && (
-                    <motion.div
-                      key="experience"
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
-                    >
+                {activeSection === "experience" && (
+                  <section
+                    id="section-experience"
+                    role="tabpanel"
+                    aria-labelledby="tab-experience"
+                    className="editor-scroll-section panel min-w-0 max-w-full"
+                  >
+                    <div className="editor-panel-body">
                       <ExperienceSectionEditor
                         experiences={resumeData.tailored_experience || []}
                         fieldErrors={fieldErrors}
@@ -767,16 +717,37 @@ export default function ResultPage() {
                         }}
                         onChange={(idx, key, value) => handleChange("tailored_experience", key, value, idx)}
                       />
-                    </motion.div>
-                  )}
+                    </div>
+                  </section>
+                )}
 
-                  {activeSection === "education" && (
-                    <motion.div
-                      key="education"
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
-                    >
+                {activeSection === "skills" && (
+                  <section
+                    id="section-skills"
+                    role="tabpanel"
+                    aria-labelledby="tab-skills"
+                    className="editor-scroll-section panel min-w-0 max-w-full"
+                  >
+                    <div className="editor-panel-body">
+                      <SkillsSectionEditor
+                        skills={resumeData.tailored_skills || {}}
+                        onAddCategory={addSkillCategory}
+                        onRemoveCategory={removeSkillCategory}
+                        onRenameCategory={renameSkillCategory}
+                        onChangeSkills={(category, value) => handleChange("tailored_skills", category, value)}
+                      />
+                    </div>
+                  </section>
+                )}
+
+                {activeSection === "education" && (
+                  <section
+                    id="section-education"
+                    role="tabpanel"
+                    aria-labelledby="tab-education"
+                    className="editor-scroll-section panel min-w-0 max-w-full"
+                  >
+                    <div className="editor-panel-body">
                       <EducationSectionEditor
                         education={resumeData.education || []}
                         fieldErrors={fieldErrors}
@@ -792,7 +763,7 @@ export default function ResultPage() {
                                   location: "",
                                   start: "",
                                   end: "",
-                                  highlights: ["", ""],
+                                  highlights: [],
                                 },
                               ],
                             };
@@ -813,16 +784,18 @@ export default function ResultPage() {
                         }}
                         onChange={(idx, key, value) => handleInputChange("education", idx, key, value)}
                       />
-                    </motion.div>
-                  )}
+                    </div>
+                  </section>
+                )}
 
-                  {activeSection === "projects" && (
-                    <motion.div
-                      key="projects"
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
-                    >
+                {activeSection === "projects" && (
+                  <section
+                    id="section-projects"
+                    role="tabpanel"
+                    aria-labelledby="tab-projects"
+                    className="editor-scroll-section panel min-w-0 max-w-full"
+                  >
+                    <div className="editor-panel-body">
                       <ProjectsSectionEditor
                         projects={resumeData.projects || []}
                         fieldErrors={fieldErrors}
@@ -832,7 +805,7 @@ export default function ResultPage() {
                               ...prev,
                               projects: [
                                 ...(Array.isArray(prev.projects) ? prev.projects : []),
-                                { title: "", tech: [], highlights: ["", ""] },
+                                { title: "", tech: [], highlights: [] },
                               ],
                             };
                             persistTailoredResume(updated);
@@ -858,26 +831,28 @@ export default function ResultPage() {
                           handleChange("projects", key, nextValue, idx);
                         }}
                       />
-                    </motion.div>
-                  )}
+                    </div>
+                  </section>
+                )}
 
-                  {activeSection === "certificates" && (
-                    <motion.div
-                      key="certificates"
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
-                    >
+                {activeSection === "certificates" && (
+                  <section
+                    id="section-certificates"
+                    role="tabpanel"
+                    aria-labelledby="tab-certificates"
+                    className="editor-scroll-section panel min-w-0 max-w-full"
+                  >
+                    <div className="editor-panel-body">
                       <CertificatesSectionEditor
                         certificates={resumeData.tailored_certificates || []}
                         onChange={(value) => handleChange("tailored_certificates", null, value)}
                       />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            </div>
-          </motion.div>
+                    </div>
+                  </section>
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </div>
 
         <div className="mt-6 border-t border-zinc-200 pt-5 pb-4">

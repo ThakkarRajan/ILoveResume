@@ -3,42 +3,59 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 
-export default function FaqAccordion({ items, className = "" }) {
+/**
+ * Compact disclosure list — hairline separators, no card chrome.
+ */
+export default function FaqAccordion({ items, className = "", allowMultiple = false, idPrefix = "faq" }) {
   const [openIndex, setOpenIndex] = useState(0);
+  const [openSet, setOpenSet] = useState(() => new Set([0]));
+
+  const isOpen = (index) => (allowMultiple ? openSet.has(index) : openIndex === index);
+
+  const toggle = (index) => {
+    if (allowMultiple) {
+      setOpenSet((prev) => {
+        const next = new Set(prev);
+        if (next.has(index)) next.delete(index);
+        else next.add(index);
+        return next;
+      });
+      return;
+    }
+    setOpenIndex((prev) => (prev === index ? -1 : index));
+  };
 
   return (
-    <div className={`divide-y divide-[var(--border)] rounded-xl border border-[var(--border)] bg-[var(--surface)] ${className}`}>
+    <div className={`faq-list ${className}`}>
       {items.map((item, index) => {
-        const open = openIndex === index;
-        const panelId = `faq-panel-${index}`;
-        const buttonId = `faq-button-${index}`;
+        const open = isOpen(index);
+        const panelId = `${idPrefix}-panel-${index}`;
+        const buttonId = `${idPrefix}-button-${index}`;
         return (
-          <div key={item.q}>
+          <div key={item.q} className={`faq-item${open ? " is-open" : ""}`}>
             <h2 className="m-0">
               <button
                 type="button"
                 id={buttonId}
                 aria-expanded={open}
                 aria-controls={panelId}
-                onClick={() => setOpenIndex(open ? -1 : index)}
-                className="flex w-full min-h-[3.25rem] items-center justify-between gap-4 px-5 py-4 text-left transition-colors hover:bg-[var(--surface-raised)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--accent)] sm:px-6"
+                onClick={() => toggle(index)}
+                className="faq-trigger"
               >
-                <span className="text-sm font-semibold text-[var(--foreground)] sm:text-base">{item.q}</span>
-                <ChevronDown
-                  className={`h-4 w-4 shrink-0 text-[var(--muted)] transition-transform duration-200 ${open ? "rotate-180" : ""}`}
-                  strokeWidth={1.75}
-                  aria-hidden
-                />
+                <span className="faq-question">{item.q}</span>
+                <ChevronDown className="faq-chevron" strokeWidth={1.75} aria-hidden />
               </button>
             </h2>
             <div
               id={panelId}
               role="region"
               aria-labelledby={buttonId}
-              hidden={!open}
-              className="px-5 pb-5 sm:px-6 sm:pb-6"
+              className={`faq-panel${open ? " is-open" : ""}`}
+              inert={open ? undefined : true}
             >
-              <p className="text-sm leading-relaxed text-[var(--text-secondary)]">{item.a}</p>
+              <div className="faq-panel-inner">
+                <p className="faq-answer">{item.a}</p>
+              </div>
             </div>
           </div>
         );

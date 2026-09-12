@@ -43,6 +43,23 @@ const getEduEnd = (edu) => (edu?.end || edu?.endDate || "").trim() || "";
 
 const norm = (v) => (typeof v === "string" ? v.trim() : "");
 
+/**
+ * pdf-lib StandardFonts use WinAnsi. Newlines + many Unicode glyphs throw
+ * "WinAnsi cannot encode" and abort PDF generation.
+ */
+const toPdfSafeText = (raw) =>
+  String(raw ?? "")
+    .replace(/\r\n|\r|\n|\t/g, " ")
+    .replace(/[\u2018\u2019\u201A\u201B]/g, "'")
+    .replace(/[\u201C\u201D\u201E]/g, '"')
+    .replace(/[\u2013\u2014\u2212]/g, "-")
+    .replace(/\u2026/g, "...")
+    .replace(/[\u2022\u25CF\u25E6\u00B7]/g, "-")
+    .replace(/\u00A0/g, " ")
+    .replace(/[^\x20-\x7E\xA0-\xFF]/g, "")
+    .replace(/ {2,}/g, " ")
+    .trim();
+
 /** Non-empty sections only — used by Word + PDF export */
 const hasSummary = (data) => norm(data?.tailored_summary).length > 0;
 
@@ -139,7 +156,9 @@ export default function WordDownloadPage() {
       if (!stored) throw new Error("No resume data found.");
       const parsed = JSON.parse(stored);
       setResumeData(parsed);
-      generateAndSetPdf(parsed);
+      generateAndSetPdf(parsed).catch(() => {
+        setError("Failed to prepare PDF preview. You can still try Download PDF.");
+      });
     } catch (err) {
       setError("Failed to load resume. Redirecting...");
       setTimeout(() => router.push("/result"), 1500);
@@ -393,8 +412,8 @@ export default function WordDownloadPage() {
     const CM_TO_PT = 28.35;
     const MARGIN_TOP = CM_TO_PT * 1;
     const MARGIN_BOTTOM = CM_TO_PT * 1;
-    const MARGIN_LEFT = CM_TO_PT * 1.9;
-    const MARGIN_RIGHT = CM_TO_PT * 1.9;
+    const MARGIN_LEFT = CM_TO_PT * 1.0;
+    const MARGIN_RIGHT = CM_TO_PT * 1.0;
     const PAGE_WIDTH = 595.28;
     const PAGE_HEIGHT = 841.89;
     const usableWidth = PAGE_WIDTH - MARGIN_LEFT - MARGIN_RIGHT;
@@ -421,15 +440,17 @@ export default function WordDownloadPage() {
         maxWidth = usableWidth,
         align = "left",
       } = opts;
+      const safe = toPdfSafeText(text);
+      if (!safe) return;
       const textFont = italics ? italicFont : bold ? boldFont : font;
-      const words = text.split(" ");
+      const words = safe.split(" ");
       let line = "";
 
       words.forEach((word, i) => {
         const testLine = line ? `${line} ${word}` : word;
         const testWidth = textFont.widthOfTextAtSize(testLine, size);
 
-        if (testWidth > maxWidth) {
+        if (testWidth > maxWidth && line) {
           if (y < MARGIN_BOTTOM + LINE_SPACING) newPage();
           const lineWidth = textFont.widthOfTextAtSize(line, size);
           const x0 =
@@ -449,7 +470,7 @@ export default function WordDownloadPage() {
           line = testLine;
         }
 
-        if (i === words.length - 1) {
+        if (i === words.length - 1 && line) {
           if (y < MARGIN_BOTTOM + LINE_SPACING) newPage();
           const lineWidth = textFont.widthOfTextAtSize(line, size);
           const x0 =
@@ -505,14 +526,17 @@ export default function WordDownloadPage() {
       const size = 10;
       const sep = " | ";
       const sepWidth = font.widthOfTextAtSize(sep, size);
-      let totalWidth = (contactSegments.length - 1) * sepWidth;
-      contactSegments.forEach((s) => {
+      const safeSegments = contactSegments
+        .map((s) => ({ ...s, text: toPdfSafeText(s.text) }))
+        .filter((s) => s.text);
+      let totalWidth = Math.max(0, safeSegments.length - 1) * sepWidth;
+      safeSegments.forEach((s) => {
         totalWidth += font.widthOfTextAtSize(s.text, size);
       });
       let x = MARGIN_LEFT + (usableWidth - totalWidth) / 2;
       if (y < MARGIN_BOTTOM + LINE_SPACING) newPage();
       const linkRefs = [];
-      contactSegments.forEach((seg, i) => {
+      safeSegments.forEach((seg, i) => {
         if (i) x += sepWidth;
         const w = font.widthOfTextAtSize(seg.text, size);
         page.drawText(seg.text, { x, y, size, font, color: rgb(0, 0, 0) });
@@ -546,14 +570,14 @@ export default function WordDownloadPage() {
     if (hasExperience(data)) {
       sectionHeader("EXPERIENCE");
       getNonEmptyExperiences(data).forEach((exp) => {
-        drawText(`${exp.company || ""} (${exp.start || ""} – ${exp.end || ""})`, {
+        drawText(`${exp.company || ""} (${exp.start || ""} - ${exp.end || ""})`, {
           size: 11,
           bold: true,
         });
-        drawText(`${exp.title || ""} — ${exp.location || ""}`, { size: 11, italics: true });
+        drawText(`${exp.title || ""} - ${exp.location || ""}`, { size: 11, italics: true });
         (exp.highlights || [])
           .filter((hl) => norm(hl))
-          .forEach((hl) => drawText(`•     ${hl}`, { size: 10, indent: 15 }));
+          .forEach((hl) => drawText(`-  ${hl}`, { size: 10, indent: 15 }));
         y -= 4;
       });
     }
@@ -562,7 +586,57 @@ export default function WordDownloadPage() {
       sectionHeader("TECHNICAL SKILLS");
       getSkillsEntries(data).forEach(([cat, skills]) => {
         const list = (Array.isArray(skills) ? skills : []).filter((s) => norm(s));
-        drawText(`${cat}: ${list.join(", ")}`, { size: 11 });
+        const label = toPdfSafeText(`${cat}:`);
+        const rest = toPdfSafeText(list.join(", "));
+        if (!label && !rest) return;
+        if (y < MARGIN_BOTTOM + LINE_SPACING) newPage();
+        const size = 11;
+        if (label) {
+          page.drawText(label, {
+            x: MARGIN_LEFT,
+            y,
+            size,
+            font: boldFont,
+            color: rgb(0, 0, 0),
+          });
+        }
+        if (rest) {
+          const labelWidth = label ? boldFont.widthOfTextAtSize(`${label} `, size) : 0;
+          const words = rest.split(" ");
+          let line = "";
+          let xPad = labelWidth;
+          words.forEach((word, i) => {
+            const testLine = line ? `${line} ${word}` : word;
+            const testWidth = font.widthOfTextAtSize(testLine, size);
+            if (testWidth > usableWidth - xPad && line) {
+              page.drawText(line, {
+                x: MARGIN_LEFT + xPad,
+                y,
+                size,
+                font,
+                color: rgb(0, 0, 0),
+              });
+              y -= LINE_SPACING;
+              if (y < MARGIN_BOTTOM + LINE_SPACING) newPage();
+              xPad = 0;
+              line = word;
+            } else {
+              line = testLine;
+            }
+            if (i === words.length - 1 && line) {
+              page.drawText(line, {
+                x: MARGIN_LEFT + xPad,
+                y,
+                size,
+                font,
+                color: rgb(0, 0, 0),
+              });
+              y -= LINE_SPACING;
+            }
+          });
+        } else {
+          y -= LINE_SPACING;
+        }
       });
     }
 
@@ -576,7 +650,7 @@ export default function WordDownloadPage() {
         drawText(`${proj.title || ""}${techPart}`, { size: 11, bold: true });
         (proj.highlights || [])
           .filter((hl) => norm(hl))
-          .forEach((hl) => drawText(`•     ${hl}`, { size: 10, indent: 15 }));
+          .forEach((hl) => drawText(`-  ${hl}`, { size: 10, indent: 15 }));
         y -= 4;
       });
     }
@@ -589,15 +663,18 @@ export default function WordDownloadPage() {
         const location = getEduLocation(edu);
         const start = getEduStart(edu);
         const end = getEduEnd(edu);
-        drawText(`${program} (${start} – ${end})`, { size: 11, bold: true });
-        drawText(`${school} — ${location}`, { size: 11, italics: true });
+        drawText(`${program} (${start} - ${end})`, { size: 11, bold: true });
+        drawText(`${school} - ${location}`, { size: 11, italics: true });
+        (edu.highlights || [])
+          .filter((hl) => norm(hl))
+          .forEach((hl) => drawText(`-  ${hl}`, { size: 10, indent: 15 }));
       });
     }
 
     if (hasCertificates(data)) {
       sectionHeader("CERTIFICATES");
       getNonEmptyCertificates(data).forEach((cert) =>
-        drawText(`•     ${cert}`, { size: 10, indent: 15 })
+        drawText(`-  ${cert}`, { size: 10, indent: 15 })
       );
     }
 
@@ -635,8 +712,8 @@ export default function WordDownloadPage() {
       const CM_TO_PT = 28.35;
       const MARGIN_TOP = CM_TO_PT * 1;
       const MARGIN_BOTTOM = CM_TO_PT * 1;
-      const MARGIN_LEFT = CM_TO_PT * 1.9;
-      const MARGIN_RIGHT = CM_TO_PT * 1.9;
+      const MARGIN_LEFT = CM_TO_PT * 1.0;
+      const MARGIN_RIGHT = CM_TO_PT * 1.0;
       const PAGE_WIDTH = 595.28;
       const PAGE_HEIGHT = 841.89;
       const usableWidth = PAGE_WIDTH - MARGIN_LEFT - MARGIN_RIGHT;
@@ -664,15 +741,17 @@ export default function WordDownloadPage() {
           maxWidth = usableWidth,
           align = "left",
         } = opts;
+        const safe = toPdfSafeText(text);
+        if (!safe) return;
         const textFont = italics ? italicFont : bold ? boldFont : font;
-        const words = text.split(" ");
+        const words = safe.split(" ");
         let line = "";
 
         words.forEach((word, i) => {
           const testLine = line ? `${line} ${word}` : word;
           const testWidth = textFont.widthOfTextAtSize(testLine, size);
 
-          if (testWidth > maxWidth) {
+          if (testWidth > maxWidth && line) {
             if (y < MARGIN_BOTTOM + LINE_SPACING) newPage();
             const lineWidth = textFont.widthOfTextAtSize(line, size);
             const x0 =
@@ -692,7 +771,7 @@ export default function WordDownloadPage() {
             line = testLine;
           }
 
-          if (i === words.length - 1) {
+          if (i === words.length - 1 && line) {
             if (y < MARGIN_BOTTOM + LINE_SPACING) newPage();
             const lineWidth = textFont.widthOfTextAtSize(line, size);
             const x0 =
@@ -748,14 +827,17 @@ export default function WordDownloadPage() {
         const size = 10;
         const sep = " | ";
         const sepWidth = font.widthOfTextAtSize(sep, size);
-        let totalWidth = (contactSegments.length - 1) * sepWidth;
-        contactSegments.forEach((s) => {
+        const safeSegments = contactSegments
+          .map((s) => ({ ...s, text: toPdfSafeText(s.text) }))
+          .filter((s) => s.text);
+        let totalWidth = Math.max(0, safeSegments.length - 1) * sepWidth;
+        safeSegments.forEach((s) => {
           totalWidth += font.widthOfTextAtSize(s.text, size);
         });
         let x = MARGIN_LEFT + (usableWidth - totalWidth) / 2;
         if (y < MARGIN_BOTTOM + LINE_SPACING) newPage();
         const linkRefs = [];
-        contactSegments.forEach((seg, i) => {
+        safeSegments.forEach((seg, i) => {
           if (i) x += sepWidth;
           const w = font.widthOfTextAtSize(seg.text, size);
           page.drawText(seg.text, { x, y, size, font, color: rgb(0, 0, 0) });
@@ -789,14 +871,14 @@ export default function WordDownloadPage() {
       if (hasExperience(resumeData)) {
         sectionHeader("EXPERIENCE");
         getNonEmptyExperiences(resumeData).forEach((exp) => {
-          drawText(`${exp.company || ""} (${exp.start || ""} – ${exp.end || ""})`, {
+          drawText(`${exp.company || ""} (${exp.start || ""} - ${exp.end || ""})`, {
             size: 11,
             bold: true,
           });
-          drawText(`${exp.title || ""} — ${exp.location || ""}`, { size: 11, italics: true });
+          drawText(`${exp.title || ""} - ${exp.location || ""}`, { size: 11, italics: true });
           (exp.highlights || [])
             .filter((hl) => norm(hl))
-            .forEach((hl) => drawText(`•     ${hl}`, { size: 10, indent: 15 }));
+            .forEach((hl) => drawText(`-  ${hl}`, { size: 10, indent: 15 }));
           y -= 4;
         });
       }
@@ -805,7 +887,57 @@ export default function WordDownloadPage() {
         sectionHeader("TECHNICAL SKILLS");
         getSkillsEntries(resumeData).forEach(([cat, skills]) => {
           const list = (Array.isArray(skills) ? skills : []).filter((s) => norm(s));
-          drawText(`${cat}: ${list.join(", ")}`, { size: 11 });
+          const label = toPdfSafeText(`${cat}:`);
+          const rest = toPdfSafeText(list.join(", "));
+          if (!label && !rest) return;
+          if (y < MARGIN_BOTTOM + LINE_SPACING) newPage();
+          const size = 11;
+          if (label) {
+            page.drawText(label, {
+              x: MARGIN_LEFT,
+              y,
+              size,
+              font: boldFont,
+              color: rgb(0, 0, 0),
+            });
+          }
+          if (rest) {
+            const labelWidth = label ? boldFont.widthOfTextAtSize(`${label} `, size) : 0;
+            const words = rest.split(" ");
+            let line = "";
+            let xPad = labelWidth;
+            words.forEach((word, i) => {
+              const testLine = line ? `${line} ${word}` : word;
+              const testWidth = font.widthOfTextAtSize(testLine, size);
+              if (testWidth > usableWidth - xPad && line) {
+                page.drawText(line, {
+                  x: MARGIN_LEFT + xPad,
+                  y,
+                  size,
+                  font,
+                  color: rgb(0, 0, 0),
+                });
+                y -= LINE_SPACING;
+                if (y < MARGIN_BOTTOM + LINE_SPACING) newPage();
+                xPad = 0;
+                line = word;
+              } else {
+                line = testLine;
+              }
+              if (i === words.length - 1 && line) {
+                page.drawText(line, {
+                  x: MARGIN_LEFT + xPad,
+                  y,
+                  size,
+                  font,
+                  color: rgb(0, 0, 0),
+                });
+                y -= LINE_SPACING;
+              }
+            });
+          } else {
+            y -= LINE_SPACING;
+          }
         });
       }
 
@@ -819,7 +951,7 @@ export default function WordDownloadPage() {
           drawText(`${proj.title || ""}${techPart}`, { size: 11, bold: true });
           (proj.highlights || [])
             .filter((hl) => norm(hl))
-            .forEach((hl) => drawText(`•     ${hl}`, { size: 10, indent: 15 }));
+            .forEach((hl) => drawText(`-  ${hl}`, { size: 10, indent: 15 }));
           y -= 4;
         });
       }
@@ -832,15 +964,18 @@ export default function WordDownloadPage() {
           const location = getEduLocation(edu);
           const start = getEduStart(edu);
           const end = getEduEnd(edu);
-          drawText(`${program} (${start} – ${end})`, { size: 11, bold: true });
-          drawText(`${school} — ${location}`, { size: 11, italics: true });
+          drawText(`${program} (${start} - ${end})`, { size: 11, bold: true });
+          drawText(`${school} - ${location}`, { size: 11, italics: true });
+          (edu.highlights || [])
+            .filter((hl) => norm(hl))
+            .forEach((hl) => drawText(`-  ${hl}`, { size: 10, indent: 15 }));
         });
       }
 
       if (hasCertificates(resumeData)) {
         sectionHeader("CERTIFICATES");
         getNonEmptyCertificates(resumeData).forEach((cert) =>
-          drawText(`•     ${cert}`, { size: 10, indent: 15 })
+          drawText(`-  ${cert}`, { size: 10, indent: 15 })
         );
       }
 

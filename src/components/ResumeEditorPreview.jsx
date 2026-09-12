@@ -150,9 +150,9 @@ export default function ResumeEditorPreview({ data }) {
         <h3 className="text-sm font-semibold text-zinc-900">Preview</h3>
       </div>
       <div className="max-h-[min(65vh,680px)] overflow-y-auto px-3 py-4 sm:px-4 sm:py-5">
-        {/* A4-ish width (~595pt) and side margins similar to PDF (1.9cm) */}
+        {/* A4-ish width (~595pt) and side margins similar to PDF (1.0cm) */}
         <div
-          className="mx-auto w-full max-w-[595px] bg-white px-[clamp(1rem,4vw,54px)] py-[clamp(1.25rem,3vw,28px)] font-serif text-black shadow-md ring-1 ring-zinc-200/80"
+          className="mx-auto w-full max-w-[595px] bg-white px-[clamp(0.75rem,3vw,28px)] py-[clamp(1.25rem,3vw,28px)] font-serif text-black shadow-md ring-1 ring-zinc-200/80"
           style={{ fontFamily: 'Times, "Times New Roman", Georgia, serif' }}
         >
           {name ? (
@@ -229,7 +229,8 @@ export default function ResumeEditorPreview({ data }) {
                   const list = (Array.isArray(arr) ? arr : []).filter((s) => norm(s));
                   return (
                     <p key={cat} className="text-left text-[11pt] leading-snug text-black">
-                      {unescapeHtml(cat)}: {list.map((s) => unescapeHtml(s)).join(", ")}
+                      <strong>{unescapeHtml(cat)}:</strong>{" "}
+                      {list.map((s) => unescapeHtml(s)).join(", ")}
                     </p>
                   );
                 })}

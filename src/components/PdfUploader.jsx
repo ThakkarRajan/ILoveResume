@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { API_BASE } from "../utils/api.js";
+import { extractPdf } from "../utils/api.js";
 import { showError } from "../utils/toast.js";
 import { getFriendlyError } from "../utils/errorMessages.js";
 
@@ -20,14 +20,8 @@ export default function PdfUploader({ onExtract }) {
     if (!pdfFile) return;
 
     setLoading(true);
-    const formData = new FormData();
-    formData.append("file", pdfFile);
-
     try {
-      const res = await fetch(`${API_BASE}/extract`, {
-        method: "POST",
-        body: formData,
-      });
+      const res = await extractPdf(pdfFile);
       const data = await res.json();
       if (!res.ok) {
         showError(getFriendlyError(data?.error, "extract"));
@@ -35,7 +29,7 @@ export default function PdfUploader({ onExtract }) {
       }
       onExtract(data.text || "No selectable text found in this PDF. Try a text-based export or paste your resume as text.");
     } catch (error) {
-      showError("Something broke");
+      showError(error?.message === "Sign in required" ? "Sign in first" : "Something broke");
     } finally {
       setLoading(false);
     }
@@ -47,7 +41,7 @@ export default function PdfUploader({ onExtract }) {
       <input
         id="resume"
         type="file"
-        accept=".pdf"
+        accept=".pdf,application/pdf"
         onChange={handleFileChange}
         style={{ display: "block", marginTop: "10px" }}
       />
