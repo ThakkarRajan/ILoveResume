@@ -867,19 +867,22 @@ export default function ResultPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/40 p-4 backdrop-blur-[2px]"
+            className="modal-overlay fixed inset-0 z-50 flex items-end justify-center overflow-y-auto bg-zinc-900/40 p-4 backdrop-blur-[2px] sm:items-center"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="save-success-title"
           >
             <motion.div
-              initial={{ scale: 0.98, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.98, opacity: 0 }}
+              initial={{ scale: 0.98, opacity: 0, y: 12 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.98, opacity: 0, y: 12 }}
               transition={{ duration: 0.15 }}
-              className="modal-panel mx-4 w-full max-w-md rounded-xl border border-zinc-200 bg-white p-6 text-center shadow-xl sm:p-8"
+              className="modal-panel mx-auto my-auto w-full max-w-md rounded-xl border border-zinc-200 bg-white p-6 text-center shadow-xl sm:p-8"
             >
               <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50">
                 <CheckCircle className="h-7 w-7 text-emerald-600" strokeWidth={1.75} />
               </div>
-              <h2 className="text-lg font-semibold text-zinc-900">Changes saved</h2>
+              <h2 id="save-success-title" className="text-lg font-semibold text-zinc-900">Changes saved</h2>
               <p className="mt-2 text-sm text-zinc-600">Your resume is updated in this session.</p>
               <motion.button
                 type="button"
@@ -900,15 +903,18 @@ export default function ResultPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/40 p-4 backdrop-blur-[2px]"
+            className="modal-overlay fixed inset-0 z-50 flex items-end justify-center overflow-y-auto bg-zinc-900/40 p-4 backdrop-blur-[2px] sm:items-center"
             onClick={() => setShowExportGate(false)}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="result-export-title"
           >
             <motion.div
-              initial={{ scale: 0.98, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.98, opacity: 0 }}
+              initial={{ scale: 0.98, opacity: 0, y: 12 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.98, opacity: 0, y: 12 }}
               transition={{ duration: 0.15 }}
-              className="modal-panel w-full max-w-lg rounded-xl"
+              className="modal-panel my-auto w-full max-w-lg rounded-xl border border-zinc-200 bg-white p-4 shadow-xl sm:p-5"
               onClick={(e) => e.stopPropagation()}
             >
               <ExportAccessGate
@@ -917,6 +923,7 @@ export default function ResultPage() {
                 onUserChange={setUser}
                 title="Before you export"
                 description="Accept our terms and sign in to download Word or PDF."
+                compact
                 onReady={() => {
                   setShowExportGate(false);
                   localStorage.setItem("tailoredResume", JSON.stringify(resumeData));

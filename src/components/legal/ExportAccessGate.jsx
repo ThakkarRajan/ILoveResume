@@ -59,14 +59,14 @@ export default function ExportAccessGate({
   }
 
   return (
-    <div className={`rounded-xl border border-[var(--border)] bg-[var(--surface)] ${compact ? "" : "panel"}`}>
-      <div className={compact ? "space-y-4 p-5 sm:p-6" : "panel-body space-y-4"}>
-        {!compact ? (
-          <div>
-            <h2 className="text-lg font-semibold text-[var(--foreground)]">{title}</h2>
-            <p className="mt-1 text-sm text-[var(--text-secondary)]">{description}</p>
-          </div>
-        ) : null}
+    <div className={compact ? undefined : "panel"}>
+      <div className={compact ? "space-y-4" : "panel-body space-y-4"}>
+        <div>
+          <h2 id={`${idPrefix}-title`} className="text-lg font-semibold text-[var(--foreground)]">
+            {title}
+          </h2>
+          <p className="mt-1 text-sm text-[var(--text-secondary)]">{description}</p>
+        </div>
 
         <LegalConsentCheckbox
           id={`${idPrefix}-legal-consent`}

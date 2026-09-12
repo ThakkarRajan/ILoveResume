@@ -1983,7 +1983,8 @@ textarea.input-field {
   background: radial-gradient(ellipse 70% 45% at 50% -10%, rgb(13 148 136 / 0.08), transparent 60%);
 }
 
-.page-canvas-grid > * {
+/* Stack content above the fixed grid wash — exclude overlays so they stay viewport-fixed */
+.page-canvas-grid > *:not(.modal-overlay) {
   position: relative;
   z-index: 1;
 }
