@@ -3921,3 +3921,58 @@ textarea.input-field {
     animation: none !important;
   }
 }
+
+/* ── Dashboard layout helpers (uses global teal tokens) ──── */
+.dashboard-theme {
+  min-height: 100dvh;
+}
+
+.dashboard-theme .panel-header {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+.dashboard-theme .panel-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.dashboard-theme .panel-desc {
+  display: none;
+}
+
+.dashboard-theme .app-container {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.dashboard-theme .dash-dock {
+  background: var(--surface);
+  color: var(--foreground);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-card);
+}
+
+.dashboard-theme .dash-dock .dash-muted {
+  color: var(--muted);
+}
+
+.dashboard-theme .dash-ring {
+  font-variant-numeric: tabular-nums;
+}
+
+.dashboard-theme .dash-check-done {
+  color: var(--accent-hover);
+}
+
+.dashboard-theme .dash-check-todo {
+  color: var(--muted);
+}
+
+.dashboard-theme .dash-mobile-bar {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+}

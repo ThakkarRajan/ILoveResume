@@ -1,9 +1,13 @@
-"use client";
-
 import Link from "next/link";
-import { ArrowLeft, FileQuestion, Home } from "lucide-react";
+import { FileQuestion, Home } from "lucide-react";
 import MarketingShell from "../components/ui/MarketingShell";
+import NotFoundBackButton from "../components/ui/NotFoundBackButton";
 import PageHeader from "../components/ui/PageHeader";
+
+export const metadata = {
+  title: "Page not found",
+  robots: { index: false, follow: true },
+};
 
 const helpfulLinks = [
   { href: "/resume-builder", label: "Resume guides" },
@@ -49,10 +53,7 @@ export default function NotFound() {
               <Home className="h-4 w-4" aria-hidden />
               Go to homepage
             </Link>
-            <button type="button" onClick={() => window.history.back()} className="btn btn-secondary">
-              <ArrowLeft className="h-4 w-4" aria-hidden />
-              Go back
-            </button>
+            <NotFoundBackButton />
           </div>
         </div>
       </div>
