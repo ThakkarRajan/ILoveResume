@@ -468,56 +468,56 @@ body {
 
 .editor-panel-body {
   min-width: 0;
-  padding: var(--editor-space-md);
+  padding: var(--editor-space-sm) var(--editor-space-md);
 }
 
 @media (min-width: 640px) {
   .editor-panel-body {
-    padding: 0.75rem 1rem;
+    padding: 0.5rem 0.75rem;
   }
 }
 
 @media (min-width: 1024px) {
   .editor-panel-body {
-    padding: 0.875rem 1.125rem;
+    padding: 0.625rem 0.875rem;
   }
 }
 
 .editor-section-content {
   display: flex;
   flex-direction: column;
-  gap: var(--editor-space-md);
+  gap: var(--editor-space-sm);
   min-width: 0;
 }
 
 @media (min-width: 640px) {
   .editor-section-content {
-    gap: 0.875rem;
+    gap: 0.625rem;
   }
 }
 
 .editor-section-header {
   margin: 0;
-  padding-bottom: var(--editor-space-sm);
+  padding-bottom: var(--editor-space-xs);
   border-bottom: 1px solid var(--border);
 }
 
 .editor-section-header-with-action {
   display: flex;
   flex-direction: column;
-  gap: var(--editor-space-md);
+  gap: var(--editor-space-sm);
 }
 
 @media (min-width: 640px) {
   .editor-section-header {
-    padding-bottom: var(--editor-space-sm);
+    padding-bottom: var(--editor-space-xs);
   }
 
   .editor-section-header-with-action {
     flex-direction: row;
     align-items: flex-start;
     justify-content: space-between;
-    gap: var(--editor-space-md);
+    gap: var(--editor-space-sm);
   }
 }
 
@@ -595,13 +595,13 @@ body {
 .editor-bullet-list {
   display: flex;
   flex-direction: column;
-  gap: var(--editor-space-sm);
+  gap: var(--editor-space-xs);
 }
 
 .editor-bullet-item {
   display: flex;
   align-items: flex-start;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
 .editor-bullet-marker {
@@ -626,8 +626,8 @@ body {
 .exp-timeline-item {
   display: grid;
   grid-template-columns: 1.25rem minmax(0, 1fr);
-  gap: var(--editor-space-md);
-  padding-bottom: var(--editor-space-md);
+  gap: var(--editor-space-sm);
+  padding-bottom: var(--editor-space-sm);
 }
 
 .exp-timeline-item:last-child {
@@ -685,14 +685,14 @@ body {
 .exp-timeline-top {
   display: flex;
   flex-direction: column;
-  gap: var(--editor-space-md);
+  gap: var(--editor-space-sm);
 }
 
 @media (min-width: 768px) {
   .exp-timeline-top {
     flex-direction: row;
     align-items: flex-start;
-    gap: var(--editor-space-md);
+    gap: var(--editor-space-sm);
   }
 }
 
@@ -718,20 +718,45 @@ body {
 }
 
 .exp-highlights-block {
-  margin-top: var(--editor-space-sm);
-  padding-top: var(--editor-space-sm);
+  margin-top: var(--editor-space-xs);
+  padding-top: var(--editor-space-xs);
   border-top: 1px dashed var(--border);
 }
 
 .exp-item-actions {
-  margin-top: var(--editor-space-sm);
+  margin-top: var(--editor-space-xs);
+}
+
+.exp-remove-confirm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 22rem;
+  padding: 0.75rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: var(--surface-raised);
+}
+
+.exp-remove-confirm-text {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.exp-remove-confirm-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 /* ── Skills matrix ───────────────────────────────────────────── */
 .skills-matrix {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--editor-space-md);
+  gap: var(--editor-space-sm);
 }
 
 @media (min-width: 640px) {
@@ -748,7 +773,7 @@ body {
 
 .skills-matrix-col {
   min-width: 0;
-  padding: var(--editor-space-sm) 0 0;
+  padding: var(--editor-space-xs) 0 0;
   border-top: 2px solid var(--accent-subtle);
 }
 
@@ -756,8 +781,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--editor-space-sm);
-  margin-bottom: var(--editor-space-sm);
+  gap: var(--editor-space-xs);
+  margin-bottom: var(--editor-space-xs);
 }
 
 .skills-matrix-icon {
@@ -795,14 +820,14 @@ body {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--editor-space-md);
+  gap: var(--editor-space-sm);
 }
 
 .edu-row {
   display: flex;
   flex-direction: column;
-  gap: var(--editor-space-md);
-  padding-bottom: var(--editor-space-md);
+  gap: var(--editor-space-xs);
+  padding-bottom: var(--editor-space-sm);
   border-bottom: 1px solid var(--border);
 }
 
@@ -814,13 +839,13 @@ body {
 .edu-row-primary {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--editor-space-md);
+  gap: var(--editor-space-sm);
 }
 
 @media (min-width: 768px) {
   .edu-row-primary {
     grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.9fr);
-    gap: var(--editor-space-md);
+    gap: var(--editor-space-sm);
   }
 }
 
@@ -828,32 +853,47 @@ body {
 .edu-row-meta {
   display: flex;
   flex-direction: column;
-  gap: var(--editor-space-sm);
+  gap: var(--editor-space-xs);
 }
 
 .edu-row-meta {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--editor-space-sm);
+  gap: var(--editor-space-xs);
   align-content: start;
 }
 
 .edu-row-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-top: 0;
   padding-top: 0;
+}
+
+.edu-row-details .form-label,
+.edu-row-details .editor-field-label {
+  margin-bottom: 0;
+}
+
+.edu-row-details .input-field {
+  min-height: 0;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
 }
 
 /* ── Projects showcase ───────────────────────────────────────── */
 .proj-showcase-list {
   display: flex;
   flex-direction: column;
-  gap: var(--editor-space-md);
+  gap: var(--editor-space-sm);
 }
 
 .proj-showcase {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--editor-space-md);
-  padding-bottom: var(--editor-space-md);
+  gap: var(--editor-space-sm);
+  padding-bottom: var(--editor-space-sm);
   border-bottom: 1px solid var(--border);
 }
 
@@ -865,13 +905,13 @@ body {
 .proj-showcase-content {
   display: flex;
   flex-direction: column;
-  gap: var(--editor-space-sm);
+  gap: var(--editor-space-xs);
   min-width: 0;
 }
 
 /* ── Certificates list ───────────────────────────────────────── */
 .cert-composer {
-  margin-bottom: var(--editor-space-md);
+  margin-bottom: var(--editor-space-sm);
 }
 
 .cert-composer-row {
@@ -900,8 +940,8 @@ body {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: var(--editor-space-sm);
-  padding: var(--editor-space-sm) var(--editor-space-md);
+  gap: var(--editor-space-xs);
+  padding: var(--editor-space-xs) var(--editor-space-sm);
   border-bottom: 1px solid var(--border);
   background: var(--surface);
 }
@@ -1616,13 +1656,13 @@ textarea.input-field {
 
 .editor-callout {
   display: flex;
-  gap: var(--editor-space-md);
+  gap: var(--editor-space-sm);
   border-radius: var(--radius-lg);
   border: 1px solid #bbf7d0;
   background: #f0fdf4;
-  padding: var(--editor-space-md) 0.875rem;
-  font-size: 0.875rem;
-  line-height: 1.5;
+  padding: var(--editor-space-sm) 0.75rem;
+  font-size: 0.8125rem;
+  line-height: 1.45;
   color: #14532d;
 }
 
@@ -1630,12 +1670,12 @@ textarea.input-field {
   border-radius: var(--radius-xl);
   border: 1px solid var(--border);
   background: var(--surface-raised);
-  padding: var(--editor-space-md) 1rem;
+  padding: var(--editor-space-sm) 0.75rem;
 }
 
 @media (min-width: 640px) {
   .field-group {
-    padding: 0.875rem 1.125rem;
+    padding: 0.625rem 0.875rem;
   }
 }
 
@@ -2009,11 +2049,11 @@ textarea.input-field {
   .editor-tabs-body,
   .editor-toolbar-body,
   .editor-panel-body {
-    padding: var(--editor-space-md);
+    padding: var(--editor-space-sm) var(--editor-space-md);
   }
 
   .editor-section-content {
-    gap: var(--editor-space-sm);
+    gap: var(--editor-space-xs);
   }
 }
 
@@ -2420,16 +2460,16 @@ textarea.input-field {
 .edu-program-row {
   display: flex;
   align-items: flex-start;
-  gap: 0.65rem;
+  gap: 0.5rem;
 }
 
 .exp-company-mark,
 .edu-school-mark {
   display: inline-flex;
-  height: 2.25rem;
-  width: 2.25rem;
+  height: 2rem;
+  width: 2rem;
   flex-shrink: 0;
-  margin-top: 1.15rem;
+  margin-top: 1.05rem;
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-md);

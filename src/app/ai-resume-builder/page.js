@@ -3,9 +3,9 @@ import MarketingGuideLayout from "../../components/seo/MarketingGuideLayout";
 import { pageMeta } from "../../config/site";
 
 export const metadata = pageMeta({
-  title: "AI resume builder — use AI without sounding generic",
+  title: "AI Resume Builder Tips",
   description:
-    "Practical take on AI resume builders: match job descriptions, keep facts accurate, edit for voice, export Word/PDF. Links to tailoring and ATS guides.",
+    "Use an AI resume builder without sounding generic: match the job post, verify facts, edit for voice, export Word or PDF.",
   path: "/ai-resume-builder",
 });
 

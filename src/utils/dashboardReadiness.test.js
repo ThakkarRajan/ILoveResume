@@ -12,6 +12,8 @@ const base = {
   isOnline: true,
 };
 
+const readyJob = "x".repeat(500);
+
 describe("getDashboardReadiness", () => {
   it("starts empty at 0/3", () => {
     const r = getDashboardReadiness(base);
@@ -20,8 +22,12 @@ describe("getDashboardReadiness", () => {
     assert.match(r.tip, /job/i);
   });
 
-  it("marks job ready when trimmed text present", () => {
-    const r = getDashboardReadiness({ ...base, jobText: "  Engineer  " });
+  it("marks job ready when trimmed text meets min length", () => {
+    const short = getDashboardReadiness({ ...base, jobText: "  Engineer  " });
+    assert.equal(short.jobReady, false);
+    assert.equal(short.completed, 0);
+
+    const r = getDashboardReadiness({ ...base, jobText: `  ${readyJob}  ` });
     assert.equal(r.jobReady, true);
     assert.equal(r.completed, 1);
   });
@@ -29,7 +35,7 @@ describe("getDashboardReadiness", () => {
   it("marks resume ready for pdf file or selected resume", () => {
     const withFile = getDashboardReadiness({
       ...base,
-      jobText: "x",
+      jobText: readyJob,
       pdfFile: { name: "a.pdf" },
     });
     assert.equal(withFile.resumeReady, true);
@@ -37,7 +43,7 @@ describe("getDashboardReadiness", () => {
 
     const withSelected = getDashboardReadiness({
       ...base,
-      jobText: "x",
+      jobText: readyJob,
       selectedResume: { path: "p" },
     });
     assert.equal(withSelected.resumeReady, true);
@@ -47,7 +53,7 @@ describe("getDashboardReadiness", () => {
     const r = getDashboardReadiness({
       ...base,
       uploadMode: "text",
-      jobText: "x",
+      jobText: readyJob,
       textResume: "experience",
     });
     assert.equal(r.resumeReady, true);
@@ -56,7 +62,7 @@ describe("getDashboardReadiness", () => {
   it("counts auth when user present", () => {
     const r = getDashboardReadiness({
       ...base,
-      jobText: "x",
+      jobText: readyJob,
       pdfFile: { name: "a.pdf" },
       user: { email: "a@b.com" },
     });
@@ -68,7 +74,7 @@ describe("getDashboardReadiness", () => {
   it("allows canSubmit without auth when job+resume ready and online", () => {
     const r = getDashboardReadiness({
       ...base,
-      jobText: "x",
+      jobText: readyJob,
       pdfFile: { name: "a.pdf" },
       user: null,
     });
@@ -79,7 +85,7 @@ describe("getDashboardReadiness", () => {
   it("blocks canSubmit when offline", () => {
     const r = getDashboardReadiness({
       ...base,
-      jobText: "x",
+      jobText: readyJob,
       pdfFile: { name: "a.pdf" },
       isOnline: false,
     });

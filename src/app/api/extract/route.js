@@ -1,11 +1,10 @@
 import { requireFirebaseUser } from "../../../server/auth";
 import { backendHeaders, getBackendBase } from "../../../server/backend";
 import { clientKey, rateLimit } from "../../../server/rateLimit";
+import { PDF_MAX_BYTES, PDF_MAX_LABEL } from "../../../utils/pdfLimits.js";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
-
-const MAX_BYTES = 3 * 1024 * 1024;
 
 export async function POST(request) {
   const auth = await requireFirebaseUser(request);
@@ -40,8 +39,11 @@ export async function POST(request) {
     return Response.json({ error: "Only PDF files are allowed" }, { status: 415 });
   }
 
-  if (typeof file.size === "number" && file.size > MAX_BYTES) {
-    return Response.json({ error: "File too large (max 3MB)" }, { status: 413 });
+  if (typeof file.size === "number" && file.size > PDF_MAX_BYTES) {
+    return Response.json(
+      { error: `File too large (max ${PDF_MAX_LABEL})` },
+      { status: 413 }
+    );
   }
 
   const forward = new FormData();

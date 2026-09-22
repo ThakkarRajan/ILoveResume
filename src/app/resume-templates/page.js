@@ -3,9 +3,9 @@ import MarketingGuideLayout from "../../components/seo/MarketingGuideLayout";
 import { pageMeta } from "../../config/site";
 
 export const metadata = pageMeta({
-  title: "Resume templates — pick structure before decoration",
+  title: "Resume Templates Guide",
   description:
-    "Choose resume templates for ATS and recruiters: headings, one column, sensible fonts, and export hygiene. Links to Harvard-style and Google Docs guides.",
+    "Choose resume templates for ATS and recruiters: clear headings, one column, sensible fonts, and clean Word or PDF exports.",
   path: "/resume-templates",
 });
 

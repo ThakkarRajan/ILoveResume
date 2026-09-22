@@ -11,6 +11,7 @@ import {
   Type,
 } from "lucide-react";
 import EmptyState from "../ui/EmptyState";
+import { PDF_MAX_LABEL } from "../../utils/pdfLimits.js";
 import { unescapeHtml } from "../../utils/safeHtml";
 
 export default function ResumePanel({
@@ -119,7 +120,7 @@ export default function ResumePanel({
                       {pdfFile ? pdfFile.name : "Drop a PDF here or click to browse"}
                     </p>
                     <p className="text-gray-500">
-                      {pdfFile ? "Ready to process · up to 10MB" : "Up to 10MB · text-based PDFs work best"}
+                      {pdfFile ? `Ready to process · up to ${PDF_MAX_LABEL}` : `Up to ${PDF_MAX_LABEL} · text-based PDFs work best`}
                     </p>
                   </div>
                   {pdfFile ? (

@@ -1,9 +1,9 @@
 import { pageMeta } from "../../config/site";
 
 export const metadata = pageMeta({
-  title: "Resume & career tips",
+  title: "Resume & Career Tips",
   description:
-    "Friendly, practical articles on resumes, Applicant Tracking Systems (ATS), tailoring, and job search—with visuals and clear takeaways. From I Love Resumes (iloveresumes.ca).",
+    "Practical articles on resumes, ATS, tailoring, and job search—with clear takeaways from I Love Resumes.",
   path: "/blog",
 });
 

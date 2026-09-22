@@ -1,7 +1,7 @@
 export const homeFaqItems = [
   {
     q: "Is I Love Resumes really free?",
-    a: "Yes. Create tailored drafts and export Word or PDF at no charge. No credit card.",
+    a: "Yes—100% free. Create tailored drafts and export Word or PDF at no charge. No credit card.",
   },
   {
     q: "How does AI resume tailoring work?",
@@ -9,7 +9,7 @@ export const homeFaqItems = [
   },
   {
     q: "Will this help with ATS resume screening?",
-    a: "We focus on clean structure and role-relevant keywords so automated parsers and recruiters can read your resume reliably. Results still depend on the employer's system and your qualifications.",
+    a: "We focus on clean structure and role-relevant keywords so automated parsers and recruiters can read your resume reliably. Results still depend on the employer's system and your qualifications. For a full checklist, see our ATS-friendly resume guide.",
   },
   {
     q: "What formats can I export?",

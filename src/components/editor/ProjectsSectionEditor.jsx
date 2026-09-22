@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { Plus, Trash2 } from "lucide-react";
 import { unescapeHtml } from "../../utils/safeHtml";
@@ -9,8 +10,12 @@ import HighlightsEditor from "./HighlightsEditor";
 import ScrollReveal from "../motion/ScrollReveal";
 import { motionDistance, motionTransitions } from "../motion/motionConfig";
 
+const removeBtnClass =
+  "inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-700 transition-colors hover:bg-red-100 hover:text-red-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400/30";
+
 function ProjectShowcase({ proj, idx, fieldErrors, onChange, onRemove }) {
   const reduceMotion = useReducedMotion();
+  const [confirmRemove, setConfirmRemove] = useState(false);
 
   return (
     <motion.article
@@ -33,7 +38,7 @@ function ProjectShowcase({ proj, idx, fieldErrors, onChange, onRemove }) {
           <p className="editor-field-error">{fieldErrors[`project_title_${idx}`]}</p>
         ) : null}
 
-        <EditorFieldLabel className="mt-2">Technologies / project link</EditorFieldLabel>
+        <EditorFieldLabel>Technologies / project link</EditorFieldLabel>
         <input
           value={unescapeHtml(Array.isArray(proj.tech) ? proj.tech.join(", ") : proj.tech || "")}
           onChange={(e) => onChange(idx, "tech", e.target.value)}
@@ -41,7 +46,7 @@ function ProjectShowcase({ proj, idx, fieldErrors, onChange, onRemove }) {
           placeholder="React, Node.js — or https://github.com/you/project"
         />
 
-        <EditorFieldLabel required className="mt-2">What you built & impact</EditorFieldLabel>
+        <EditorFieldLabel required>What you built & impact</EditorFieldLabel>
         <HighlightsEditor
           highlights={proj.highlights}
           onChange={(value) => onChange(idx, "highlights", value)}
@@ -51,10 +56,39 @@ function ProjectShowcase({ proj, idx, fieldErrors, onChange, onRemove }) {
           <p className="editor-field-error">{fieldErrors[`project_highlights_${idx}`]}</p>
         ) : null}
 
-        <button type="button" onClick={() => onRemove(idx)} className="btn btn-ghost mt-2 text-red-600 hover:bg-red-50">
-          <Trash2 className="h-4 w-4" />
-          Remove project
-        </button>
+        <div className="exp-item-actions">
+          {confirmRemove ? (
+            <div className="exp-remove-confirm" role="status">
+              <p className="exp-remove-confirm-text">Are you sure you want to remove this project?</p>
+              <div className="exp-remove-confirm-actions">
+                <button type="button" onClick={() => setConfirmRemove(false)} className="btn btn-ghost">
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setConfirmRemove(false);
+                    onRemove(idx);
+                  }}
+                  className={removeBtnClass}
+                >
+                  <Trash2 className="h-4 w-4" />
+                  Yes, remove
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setConfirmRemove(true)}
+              aria-label="Remove project"
+              className={removeBtnClass}
+            >
+              <Trash2 className="h-4 w-4" />
+              Remove project
+            </button>
+          )}
+        </div>
       </div>
     </motion.article>
   );

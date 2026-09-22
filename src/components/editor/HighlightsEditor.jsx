@@ -33,7 +33,7 @@ export default function HighlightsEditor({
   const listClass = variant === "compact" ? "editor-bullet-list editor-bullet-list-compact" : "editor-bullet-list";
 
   return (
-    <div className="w-full min-w-0 space-y-2">
+    <div className="w-full min-w-0 space-y-1.5">
       <div className="w-full min-w-0">
         <textarea
           value={inputValue}

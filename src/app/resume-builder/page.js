@@ -8,9 +8,9 @@ import ScrollReveal from "../../components/motion/ScrollReveal";
 import { pageMeta, SITE_NAME, SITE_URL } from "../../config/site";
 
 export const metadata = pageMeta({
-  title: "Resume builder guides: ATS, tailoring, templates",
+  title: "Resume Builder Guides",
   description:
-    "Guides from I Love Resumes: ATS-friendly formats, Harvard-style and Google Docs templates, tailoring to job descriptions, examples, and country-specific notes where useful.",
+    "Resume builder guides: ATS-friendly formats, templates, tailoring to job descriptions, examples, and Canada notes from I Love Resumes.",
   path: "/resume-builder",
 });
 
@@ -160,7 +160,7 @@ export default function ResumeBuilderHubPage() {
             </Link>
             , for example{" "}
             <Link
-              href="/blog/how-to-tailor-resume-to-job"
+              href="/how-to-tailor-a-resume-to-a-job-description"
               className="font-medium text-[var(--accent)] underline-offset-2 hover:underline"
             >
               how to tailor your resume to each job

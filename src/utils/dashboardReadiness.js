@@ -6,8 +6,10 @@ export function getDashboardReadiness({
   textResume,
   user,
   isOnline,
+  jobMinChars = 500,
 }) {
-  const jobReady = Boolean(jobText?.trim());
+  const jobLen = jobText?.trim()?.length || 0;
+  const jobReady = jobLen >= jobMinChars;
   const resumeReady =
     uploadMode === "text"
       ? Boolean(textResume?.trim())
@@ -17,8 +19,10 @@ export function getDashboardReadiness({
   const canSubmit = jobReady && resumeReady && isOnline !== false;
 
   let tip = "Add a job description to continue";
-  if (!jobReady) tip = "Add a job description to continue";
-  else if (!resumeReady) {
+  if (!jobText?.trim()) tip = "Add a job description to continue";
+  else if (!jobReady) {
+    tip = `Job description needs at least ${jobMinChars.toLocaleString()} characters (now ${jobLen.toLocaleString()})`;
+  } else if (!resumeReady) {
     tip =
       uploadMode === "pdf"
         ? "Upload or select a PDF to continue"

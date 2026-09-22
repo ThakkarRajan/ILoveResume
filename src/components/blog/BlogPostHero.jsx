@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { getBlogCover } from "../../data/blog-visuals";
+import { IMAGE_BLUR_DATA_URL, IMAGE_QUALITY_PHOTO } from "../../utils/imagePerf";
 
 export default function BlogPostHero({ slug, alt }) {
   const cover = getBlogCover(slug);
@@ -14,6 +15,9 @@ export default function BlogPostHero({ slug, alt }) {
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 42rem, 672px"
           className="object-cover"
           priority
+          quality={IMAGE_QUALITY_PHOTO}
+          placeholder="blur"
+          blurDataURL={IMAGE_BLUR_DATA_URL}
         />
       </div>
       <figcaption className="mt-2 flex flex-wrap items-center gap-x-1 gap-y-1 text-xs leading-relaxed text-zinc-500">
