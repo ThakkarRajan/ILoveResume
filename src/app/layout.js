@@ -1,6 +1,7 @@
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import Script from "next/script";
+import BackendWake from "../components/BackendWake";
 import NavbarWrapper from "../components/NavbarWrapper";
 import AppToaster from "../components/ui/AppToast";
 import RootSchema from "../components/seo/RootSchema";
@@ -63,6 +64,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           />
         </noscript>
         <RootSchema />
+        <BackendWake />
         <NavbarWrapper />
         <AppToaster />
         <main id="main-content" className="min-h-0 min-w-0">{children}</main>

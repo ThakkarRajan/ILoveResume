@@ -29,7 +29,7 @@ export function getBackendBase() {
 }
 
 /**
- * Headers for Next → backend. Secret stays server-side only.
+ * Headers for Next → Railway. Secret stays server-side only.
  * @param {Record<string, string>} [extra]
  */
 export function backendHeaders(extra = {}) {
