@@ -4,27 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../utils/firebase";
-import { processText, extractFromUrl } from "../../utils/api.js";
-import { showError } from "../../utils/toast.js";
-import { getFriendlyError } from "../../utils/errorMessages.js";
-import { motion, AnimatePresence } from "framer-motion";
-import { 
-  User, 
-  FileText, 
-  Calendar, 
-  Eye, 
-  ExternalLink, 
-  ChevronDown, 
-  ChevronUp,
-  Sparkles,
-  Clock,
-  CheckCircle,
-  AlertCircle,
-  Download,
-  Trash2,
-  Settings,
-  Briefcase
-} from "lucide-react";
+import { User, FileText, Calendar, ChevronDown, ChevronUp } from "lucide-react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import "../../utils/firebase.js";
 import SiteLegalLinks from "../../components/legal/SiteLegalLinks";
@@ -38,9 +18,6 @@ export default function MyProfilePage() {
   const [submissions, setSubmissions] = useState([]);
   const [expanded, setExpanded] = useState({});
   const [loading, setLoading] = useState(true);
-  const [processing, setProcessing] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [selectedSubmission, setSelectedSubmission] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -77,100 +54,6 @@ export default function MyProfilePage() {
     }
   };
 
-  const simulateProgress = () => {
-    let p = 0;
-    const interval = setInterval(() => {
-      p += Math.floor(Math.random() * 5) + 1;
-      setProgress(Math.min(p, 100));
-      if (p >= 100) clearInterval(interval);
-    }, 60000 / 100);
-  };
-
-  const handleView = async (submission) => {
-    try {
-      if (submission.structured) {
-        localStorage.setItem(
-          "tailoredResume",
-          JSON.stringify(submission.structured)
-        );
-        router.push("/result");
-        return;
-      }
-
-      setProcessing(true);
-      setProgress(0);
-      simulateProgress();
-
-      // Sanitize the resumeUrl before sending to backend
-      const isValidUrl = (url) => {
-        try {
-          const parsed = new URL(url);
-          return parsed.protocol === 'http:' || parsed.protocol === 'https:';
-        } catch {
-          return false;
-        }
-      };
-      if (!isValidUrl(submission.resumeUrl)) {
-        showError("Need a valid http/https URL");
-        setProcessing(false);
-        return;
-      }
-
-      const extractRes = await extractFromUrl(submission.resumeUrl);
-      const extractData = await extractRes.json();
-      if (!extractRes.ok) {
-        showError(getFriendlyError(extractData?.error, "extract"));
-        setProcessing(false);
-        return;
-      }
-      const resumeText = extractData?.text;
-      if (!resumeText || resumeText.trim().length < 100) {
-        showError("PDF too short");
-        setProcessing(false);
-        return;
-      }
-
-      const processRes = await processText(resumeText, submission.jobText);
-      const aiData = await processRes.json();
-      if (!processRes.ok) {
-        showError(getFriendlyError(aiData?.error, "process"));
-        setProcessing(false);
-        return;
-      }
-      if (!aiData?.structured) {
-        showError("Something broke");
-        setProcessing(false);
-        return;
-      }
-      const structured = aiData.structured;
-      if (structured.certificates !== undefined && structured.tailored_certificates === undefined) {
-        structured.tailored_certificates = structured.certificates;
-      }
-      const toArray = (v) => (!v ? [] : Array.isArray(v) ? v : Object.values(v));
-      const normEdu = (edu) => {
-        if (!edu || typeof edu !== "object") return { program: "", school: "", location: "", start: "", end: "", highlights: ["", ""] };
-        return {
-          program: (edu.program || edu.degree || edu.area || edu.studyType || "").trim(),
-          school: (edu.school || edu.institution || edu.university || edu.college || "").trim(),
-          location: (edu.location || edu.city || "").trim(),
-          start: (edu.start || edu.startDate || "").trim(),
-          end: (edu.end || edu.endDate || "").trim(),
-          highlights: Array.isArray(edu.highlights) ? edu.highlights : edu.courses ? [].concat(edu.courses) : ["", ""],
-        };
-      };
-      structured.education = toArray(structured.education).map(normEdu);
-      structured.tailored_experience = toArray(structured.tailored_experience);
-      structured.projects = toArray(structured.projects);
-
-      localStorage.setItem("tailoredResume", JSON.stringify(structured));
-      router.push("/result");
-    } catch (error) {
-      showError("Something broke");
-    } finally {
-      setProcessing(false);
-    }
-  };
-
   const toggleExpand = (id) => {
     setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
   };
@@ -179,23 +62,6 @@ export default function MyProfilePage() {
     return (
       <div className="flex min-h-dvh items-center justify-center bg-zinc-50 text-sm text-zinc-500">
         Loading…
-      </div>
-    );
-  }
-
-  if (processing) {
-    return (
-      <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-zinc-900/70 px-4 backdrop-blur-[2px]">
-        <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-sm rounded-xl border border-zinc-200 bg-white p-8 text-center shadow-xl">
-          <div className="mx-auto mb-5 h-10 w-10 animate-spin rounded-full border-2 border-zinc-200 border-t-blue-600" />
-          <Sparkles className="mx-auto mb-4 h-6 w-6 text-blue-600" strokeWidth={1.5} />
-          <h3 className="text-base font-semibold text-zinc-900">Processing resume</h3>
-          <p className="mt-1 text-sm text-zinc-500">This may take a few moments.</p>
-          <div className="mt-5 h-2 w-full overflow-hidden rounded-full bg-zinc-100">
-            <motion.div className="h-full rounded-full bg-blue-600" initial={{ width: 0 }} animate={{ width: `${progress}%` }} transition={{ duration: 0.3 }} />
-          </div>
-          <p className="mt-2 text-xs tabular-nums text-zinc-500">{progress}%</p>
-        </motion.div>
       </div>
     );
   }
@@ -314,25 +180,11 @@ export default function MyProfilePage() {
                           </button>
                         )}
                       </div>
-                      <div className="flex shrink-0 flex-col gap-2 sm:items-end">
-                        {submission.resumeUrl ? (
-                          <a
-                            href={submission.resumeUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="btn btn-secondary w-full sm:w-auto"
-                          >
-                            <ExternalLink className="h-4 w-4" />
-                            View PDF
-                          </a>
-                        ) : submission.resumeText ? (
+                      {!submission.resumeUrl && submission.resumeText ? (
+                        <div className="flex shrink-0 flex-col gap-2 sm:items-end">
                           <span className="badge badge-neutral">Text resume</span>
-                        ) : null}
-                        <button type="button" onClick={() => handleView(submission)} className="btn btn-primary w-full sm:w-auto">
-                          <Eye className="h-4 w-4" />
-                          Open result
-                        </button>
-                      </div>
+                        </div>
+                      ) : null}
                     </div>
                   </article>
                 );

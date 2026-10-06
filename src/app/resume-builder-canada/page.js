@@ -3,9 +3,9 @@ import MarketingGuideLayout from "../../components/seo/MarketingGuideLayout";
 import { pageMeta } from "../../config/site";
 
 export const metadata = pageMeta({
-  title: "Resume norms for Canada — Word, PDF, ATS-friendly",
+  title: "Resume Norms for Canada",
   description:
-    "How resumes typically work for Canadian applications: clean exports, no photo for most private-sector roles, local spelling conventions, and tailoring to each posting. Links to templates and ATS tips.",
+    "Canadian resume norms: clean Word/PDF exports, no photo for most private-sector roles, local spelling, and tailoring tips.",
   path: "/resume-builder-canada",
 });
 

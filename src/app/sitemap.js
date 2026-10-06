@@ -37,7 +37,8 @@ export default function sitemap() {
     priority: 0.85,
   }));
 
-  const blogEntries = blogPosts.map((post) => {
+  /** Omit posts that permanently redirect to a stronger guide URL. */
+  const blogEntries = blogPosts.filter((post) => post.slug !== "how-to-tailor-resume-to-job").map((post) => {
     const entry = {
       url: `${SITE_URL}/blog/${post.slug}`,
       changeFrequency: "monthly",

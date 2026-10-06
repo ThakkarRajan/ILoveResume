@@ -5,7 +5,8 @@
 const ERROR_MAP = [
   ["No file provided or invalid file object.", "Pick a file"],
   ["Invalid file format. Please upload a PDF file.", "PDF only"],
-  ["File size too large. Please upload a PDF under 10MB.", "Too big (10MB max)"],
+  ["File size too large. Please upload a PDF under 5MB.", "Too big (5MB max)"],
+  ["File too large (max 5MB)", "Too big (5MB max)"],
   ["Could not extract text from PDF.", "Couldn't read PDF"],
   ["Extracted text is too short.", "PDF too short"],
   ["The uploaded PDF doesn't appear to be a resume.", "Not a resume?"],
@@ -16,7 +17,7 @@ const ERROR_MAP = [
   ["Request timeout.", "Timed out"],
   ["Failed to fetch file from URL", "Couldn't fetch file"],
   ["URL does not point to a PDF file.", "URL isn't a PDF"],
-  ["File size too large. Please use a PDF under 10MB.", "Too big (10MB max)"],
+  ["File size too large. Please use a PDF under 5MB.", "Too big (5MB max)"],
   ["Error reading PDF", "Couldn't read PDF"],
   ["Failed to read from URL", "Something broke"],
 

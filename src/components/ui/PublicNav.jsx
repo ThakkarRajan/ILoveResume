@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 import SiteBrand from "./SiteBrand";
+import { showError } from "../../utils/toast";
 
 const baseLinks = [
   { href: "/resume-builder", label: "Guides" },
@@ -20,9 +21,12 @@ export default function PublicNav({ fixed = false, extraLinks = [] }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [signingIn, setSigningIn] = useState(false);
   const menuId = useId();
   const closeRef = useRef(null);
   const links = [...baseLinks, ...extraLinks];
+  const isDashboard = pathname.startsWith("/dashboard");
+  const ctaLabel = isDashboard ? "Login" : "Start free";
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -50,11 +54,32 @@ export default function PublicNav({ fixed = false, extraLinks = [] }) {
     };
   }, [open]);
 
+  const handleGoogleLogin = async () => {
+    if (signingIn) return;
+    setSigningIn(true);
+    setOpen(false);
+    try {
+      await import("../../utils/firebase.js");
+      const { getAuth, GoogleAuthProvider, signInWithPopup } = await import("firebase/auth");
+      const { wakeBackend } = await import("../../utils/api");
+      const auth = getAuth();
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+      wakeBackend();
+    } catch {
+      showError("Sign in with Google to continue");
+    } finally {
+      setSigningIn(false);
+    }
+  };
+
   const shellClass = [
     "site-header",
     fixed ? "site-header-fixed" : "site-header-static",
     scrolled || open ? "site-header-solid" : "site-header-transparent",
   ].join(" ");
+
+  const ctaText = signingIn ? "Signing in…" : ctaLabel;
 
   return (
     <header className={shellClass}>
@@ -75,18 +100,43 @@ export default function PublicNav({ fixed = false, extraLinks = [] }) {
               </li>
             ))}
           </ul>
-          <Link href="/dashboard" className="site-nav-cta">
-            Start free
-            <span className="site-nav-cta-arrow" aria-hidden>
-              →
-            </span>
-          </Link>
+          {isDashboard ? (
+            <button
+              type="button"
+              className="site-nav-cta"
+              onClick={handleGoogleLogin}
+              disabled={signingIn}
+            >
+              {ctaText}
+              <span className="site-nav-cta-arrow" aria-hidden>
+                →
+              </span>
+            </button>
+          ) : (
+            <Link href="/dashboard" className="site-nav-cta">
+              {ctaLabel}
+              <span className="site-nav-cta-arrow" aria-hidden>
+                →
+              </span>
+            </Link>
+          )}
         </nav>
 
         <div className="site-nav-mobile-bar">
-          <Link href="/dashboard" className="site-nav-cta site-nav-cta-compact">
-            Start free
-          </Link>
+          {isDashboard ? (
+            <button
+              type="button"
+              className="site-nav-cta site-nav-cta-compact"
+              onClick={handleGoogleLogin}
+              disabled={signingIn}
+            >
+              {ctaText}
+            </button>
+          ) : (
+            <Link href="/dashboard" className="site-nav-cta site-nav-cta-compact">
+              {ctaLabel}
+            </Link>
+          )}
           <button
             type="button"
             className="site-menu-toggle"
@@ -136,10 +186,22 @@ export default function PublicNav({ fixed = false, extraLinks = [] }) {
               ))}
             </ul>
           </nav>
-          <Link href="/dashboard" className="site-mobile-cta" onClick={() => setOpen(false)}>
-            Start free
-            <span aria-hidden>→</span>
-          </Link>
+          {isDashboard ? (
+            <button
+              type="button"
+              className="site-mobile-cta"
+              onClick={handleGoogleLogin}
+              disabled={signingIn}
+            >
+              {ctaText}
+              <span aria-hidden>→</span>
+            </button>
+          ) : (
+            <Link href="/dashboard" className="site-mobile-cta" onClick={() => setOpen(false)}>
+              {ctaLabel}
+              <span aria-hidden>→</span>
+            </Link>
+          )}
         </div>
       </div>
     </header>

@@ -22,6 +22,7 @@
 
 # misc
 .DS_Store
+Thumbs.db
 *.pem
 .superpowers/
 
@@ -43,5 +44,17 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 *.md
+
 # Playwright CLI output (may contain credentials)
 .playwright-cli/
+
+# Agent skills (local installs; restore with: npx skills experimental_install)
+.agents/
+agent/
+.claude/skills/
+.cursor/skills/
+.cursor/rules/
+
+# Keep project MCP + lockfile tracked
+!.cursor/mcp.json
+!skills-lock.json

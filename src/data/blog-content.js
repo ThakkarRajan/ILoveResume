@@ -36,7 +36,7 @@ export const postContent = {
       <p>Fancy columns and skill bars can break parsing. Before you commit, skim <a href="/blog/how-to-optimize-resume-for-ats-2026">ATS optimization basics</a> and compare your output to a plain template. If an ATS cannot find your job titles, you may be filtered out before a human reads a single bullet.</p>
 
       <h2>Downloads are not the finish line</h2>
-      <p>Even a perfect file fails if the content is generic. Spend ten minutes tailoring to each posting. The fastest workflow is: master resume → targeted copy → export. Our guide on <a href="/blog/how-to-tailor-resume-to-job">how to tailor your resume to each job</a> keeps that process lightweight.</p>
+      <p>Even a perfect file fails if the content is generic. Spend ten minutes tailoring to each posting. The fastest workflow is: master resume → targeted copy → export. Our guide on <a href="/how-to-tailor-a-resume-to-a-job-description">how to tailor your resume to each job</a> keeps that process lightweight.</p>
 
       <h2>Pair your resume with a quick sanity pass</h2>
       <p>Typos in contact info, wrong company names, and inconsistent dates are surprisingly common after late-night edits. If something feels off, browse <a href="/blog/common-resume-mistakes">common resume mistakes</a> before you upload anywhere.</p>
@@ -148,7 +148,7 @@ export const postContent = {
       <p>Samples from another country sometimes include photos or “expected salary” prompts—neither is standard in many markets. Resume norms vary by country; if you are targeting Canada, keep your baseline aligned with <a href="/blog/canadian-resume-format-guide">Canadian resume format</a>.</p>
 
       <h2>Samples will not fix a mismatch</h2>
-      <p>If the posting asks for project leadership and your sample resume obsesses over individual contributor tasks, you still lose. Samples cannot replace tailoring; follow <a href="/blog/how-to-tailor-resume-to-job">how to tailor your resume</a> for a repeatable workflow.</p>
+      <p>If the posting asks for project leadership and your sample resume obsesses over individual contributor tasks, you still lose. Samples cannot replace tailoring; follow <a href="/how-to-tailor-a-resume-to-a-job-description">how to tailor your resume</a> for a repeatable workflow.</p>
 
       <h2>When samples clash with ATS advice</h2>
       <p>A sample may look beautiful but hide parsing risks. If you are unsure, default to simpler layout and verify headings. <a href="/blog/how-to-optimize-resume-for-ats-2026">ATS optimization</a> remains the technical backstop.</p>
@@ -237,7 +237,7 @@ export const postContent = {
       <p>If you are applying to similar roles—same title, same industry—and the posting does not demand a highly tailored narrative, a concise Indeed profile plus a clean PDF may work fine for first-round volume.</p>
 
       <h2>When you should break out of the default</h2>
-      <p>For competitive roles, internal referrals, or ATS-heavy employers, you want a targeted resume with mirrored keywords and tight bullets. Follow <a href="/blog/how-to-tailor-resume-to-job">tailoring steps</a> before you upload.</p>
+      <p>For competitive roles, internal referrals, or ATS-heavy employers, you want a targeted resume with mirrored keywords and tight bullets. Follow <a href="/how-to-tailor-a-resume-to-a-job-description">tailoring steps</a> before you upload.</p>
 
       <h2>Boards are not the only gate</h2>
       <p>Many companies route you through Greenhouse, Workday, or Lever. Those systems still reward straightforward PDFs. Keep formatting conservative, as outlined in <a href="/blog/how-to-optimize-resume-for-ats-2026">ATS optimization</a>.</p>
@@ -295,6 +295,7 @@ export const postContent = {
       
       <h2>Use Our Free AI Resume Builder</h2>
       <p>I Love Resumes helps you optimize your resume for ATS by analyzing job descriptions and suggesting the right keywords. Upload your resume, paste the job description, and get tailored recommendations in seconds.</p>
+      <p>For a section-by-section checklist (headings, one-column layout, and a PDF text-select test), read the <a href="/ats-friendly-resume">ATS-friendly resume guide</a>.</p>
     `,
   },
   "best-resume-format-2026": {

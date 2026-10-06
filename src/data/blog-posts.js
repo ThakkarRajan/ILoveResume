@@ -225,7 +225,7 @@ export const blogPosts = [
   },
   {
     slug: "how-to-explain-employment-gaps",
-    title: "How to Explain Employment Gaps on Your Resume",
+    title: "Explain Employment Gaps on a Resume",
     excerpt: "Career breaks happen—raising kids, health, layoffs. Learn how to address gaps honestly without hurting your chances.",
     date: "2026-03-07",
     readTime: "6 min read",
@@ -257,7 +257,7 @@ export const blogPosts = [
   },
   {
     slug: "resume-summary-vs-objective",
-    title: "Resume Summary vs Objective: What to Use in 2026",
+    title: "Resume Summary vs Objective in 2026",
     excerpt: "Should you start with a summary or objective? The answer has changed. Here's what recruiters want to see now.",
     date: "2026-03-03",
     readTime: "5 min read",
@@ -273,7 +273,7 @@ export const blogPosts = [
   },
   {
     slug: "should-you-include-references",
-    title: "Should You Include References on Your Resume?",
+    title: "Should Resumes Include References?",
     excerpt: "The old rule was 'References available upon request.' Here's what to do in 2026.",
     date: "2026-03-01",
     readTime: "4 min read",
@@ -305,7 +305,7 @@ export const blogPosts = [
   },
   {
     slug: "common-resume-mistakes",
-    title: "10 Common Resume Mistakes That Cost You Jobs",
+    title: "10 Resume Mistakes That Cost Jobs",
     excerpt: "Small errors can disqualify you. Avoid these mistakes that recruiters see every day.",
     date: "2026-02-25",
     readTime: "7 min read",

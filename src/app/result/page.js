@@ -51,6 +51,10 @@ import EducationSectionEditor from "../../components/editor/EducationSectionEdit
 import ProjectsSectionEditor from "../../components/editor/ProjectsSectionEditor";
 import CertificatesSectionEditor from "../../components/editor/CertificatesSectionEditor";
 import { ResultProgressScreen } from "../../components/progress/TailorProgressScreen";
+import {
+  CONTACT_LINK_FIELDS,
+  displayContactLinkValue,
+} from "../../utils/resumeContactUrls.js";
 
 function ResultLoadingScreen({ title, subtitle }) {
   return <ResultProgressScreen title={title} subtitle={subtitle} />;
@@ -591,14 +595,15 @@ export default function ResultPage() {
                             <div className="editor-callout" role="status">
                               <CheckCircle className="h-5 w-5 shrink-0 text-emerald-600" strokeWidth={2} aria-hidden />
                               <p>
-                                Double-check your name, email, phone, GitHub, and LinkedIn—Word and PDF exports use this
-                                information exactly as you enter it. Prefer full profile URLs where possible.
+                                Double-check your name, email, phone, GitHub, LinkedIn, and website—Word and PDF exports
+                                use this information exactly as you enter it. Username or site path is enough; we build
+                                the full link for you.
                               </p>
                             </div>
                           </ScrollReveal>
 
                           <ScrollReveal delay={0.05}>
-                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                            <div className="grid grid-cols-1 gap-2.5 md:grid-cols-2 md:gap-3">
                               <div>
                                 <label className="form-label">Full Name</label>
                                 <input
@@ -611,24 +616,50 @@ export default function ResultPage() {
 
                               {Object.entries(resumeData.contact || {}).map(([key, val]) => {
                                 const Icon = getContactIcon(key);
-                                const placeholder =
-                                  key === "github"
-                                    ? "GitHub username or profile URL"
-                                    : key === "linkedin"
-                                      ? "LinkedIn username or profile URL"
-                                      : `Add your ${key}`;
+                                const linkField = CONTACT_LINK_FIELDS[key];
+                                const displayVal = linkField
+                                  ? displayContactLinkValue(key, unescapeHtml(val || ""))
+                                  : unescapeHtml(val || "");
+                                const placeholder = linkField
+                                  ? linkField.placeholder
+                                  : `Add your ${key}`;
                                 return (
                                   <div key={key}>
                                     <label className="form-label capitalize">{key}</label>
-                                    <div className="relative">
-                                      <Icon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
-                                      <input
-                                        value={unescapeHtml(val)}
-                                        onChange={(e) => handleChange("contact", key, e.target.value)}
-                                        className="input-field input-field-icon"
-                                        placeholder={placeholder}
-                                      />
-                                    </div>
+                                    {linkField ? (
+                                      <div className="flex min-w-0 items-stretch overflow-hidden rounded-lg border border-[var(--border)] bg-white focus-within:ring-2 focus-within:ring-blue-600/25">
+                                        <span className="flex shrink-0 items-center gap-1.5 border-r border-[var(--border)] bg-zinc-50 px-2.5 text-xs text-zinc-500 sm:text-sm">
+                                          <Icon className="h-4 w-4 shrink-0 text-zinc-400" aria-hidden />
+                                          <span className="max-w-[9.5rem] truncate sm:max-w-none">
+                                            {linkField.prefix}
+                                          </span>
+                                        </span>
+                                        <input
+                                          value={displayVal}
+                                          onChange={(e) =>
+                                            handleChange(
+                                              "contact",
+                                              key,
+                                              displayContactLinkValue(key, e.target.value)
+                                            )
+                                          }
+                                          className="min-w-0 flex-1 border-0 bg-transparent px-3 py-2.5 text-sm text-zinc-900 outline-none placeholder:text-zinc-400"
+                                          placeholder={placeholder}
+                                          autoComplete="off"
+                                          spellCheck={false}
+                                        />
+                                      </div>
+                                    ) : (
+                                      <div className="relative">
+                                        <Icon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+                                        <input
+                                          value={displayVal}
+                                          onChange={(e) => handleChange("contact", key, e.target.value)}
+                                          className="input-field input-field-icon"
+                                          placeholder={placeholder}
+                                        />
+                                      </div>
+                                    )}
                                   </div>
                                 );
                               })}
@@ -662,7 +693,7 @@ export default function ResultPage() {
                             value={unescapeHtml(resumeData.tailored_summary || "")}
                             onChange={(e) => handleChange("tailored_summary", null, e.target.value)}
                             className="input-field resize-y"
-                            rows={6}
+                            rows={4}
                             placeholder="Tight summary: who you are, what you ship best, and what you're targeting next…"
                           />
                         </div>

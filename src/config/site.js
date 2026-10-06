@@ -20,12 +20,14 @@ export const rootMetadata = {
     apple: "/icon-192.png",
   },
   title: {
-    default: `${SITE_NAME} — Free AI resume tailoring for job seekers`,
+    default: `100% Free AI Resume Tailor | ${SITE_NAME}`,
     template: `%s | ${SITE_NAME}`,
   },
   description:
-    "Free AI-powered resume tailoring for job seekers. Align your resume to each job description, keep ATS-friendly structure, then export Word or PDF.",
+    "100% free AI resume tailor for job seekers. Match each job description, keep ATS-friendly structure, export Word or PDF.",
   keywords: [
+    "100% free resume",
+    "100% free resume builder",
     "free resume",
     "free resume builder",
     "my resume",
@@ -66,12 +68,14 @@ export const rootMetadata = {
 
 export function pageMeta({ title, description, path, ogType = "website" }) {
   const url = `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`;
+  /** Absolute title avoids double suffixes and keeps length under typical SERP limits. */
+  const absoluteTitle = title.includes(SITE_NAME) ? title : `${title} | ${SITE_NAME}`;
   return {
-    title,
+    title: { absolute: absoluteTitle },
     description,
     alternates: { canonical: url },
     openGraph: {
-      title,
+      title: absoluteTitle,
       description,
       url,
       type: ogType,
@@ -83,7 +87,7 @@ export function pageMeta({ title, description, path, ogType = "website" }) {
       card: "summary_large_image",
       site: TWITTER_HANDLE,
       creator: TWITTER_HANDLE,
-      title,
+      title: absoluteTitle,
       description,
       images: [`${SITE_URL}/og-image.png`],
     },

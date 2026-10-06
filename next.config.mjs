@@ -5,8 +5,12 @@ const nextConfig = {
   images: {
     /** Match `quality` values used in <Image /> (e.g. wordmarks at 60). */
     qualities: [60, 75],
+    formats: ["image/avif", "image/webp"],
+    /** Cache optimized remotes (Pexels) so repeat views skip re-fetch. */
+    minimumCacheTTL: 60 * 60 * 24 * 30,
     /** Fills 384–640 gap so logos/wordmarks near ~2× DPR use 480w instead of 640w (smaller LCP bytes). */
     deviceSizes: [480, 640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     remotePatterns: [
       {
         protocol: 'https',
@@ -29,6 +33,11 @@ const nextConfig = {
       {
         source: "/blog/best-resume-format-2025",
         destination: "/blog/best-resume-format-2026",
+        permanent: true,
+      },
+      {
+        source: "/blog/how-to-tailor-resume-to-job",
+        destination: "/how-to-tailor-a-resume-to-a-job-description",
         permanent: true,
       },
       {

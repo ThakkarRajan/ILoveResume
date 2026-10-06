@@ -9,11 +9,13 @@ const UTM = "utm_source=iloveresumes&utm_medium=referral";
 export const pexelsSiteUrl = `https://www.pexels.com?${UTM}`;
 export const pexelsLicenseUrl = "https://www.pexels.com/license/";
 
-const PEXELS_SIZE = "auto=compress&cs=tinysrgb&w=1600&h=1000&dpr=1";
+const PEXELS_HERO = "auto=compress&cs=tinysrgb&w=1200&h=750&dpr=1";
+const PEXELS_THUMB = "auto=compress&cs=tinysrgb&w=240&h=240&dpr=1&fit=crop";
 
 /** Pexels CDN url — IDs verified (jpeg 200) on their image host. */
-export function pexelsPhotoSrc(id) {
-  return `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?${PEXELS_SIZE}`;
+export function pexelsPhotoSrc(id, variant = "hero") {
+  const qs = variant === "thumb" ? PEXELS_THUMB : PEXELS_HERO;
+  return `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?${qs}`;
 }
 
 /**
@@ -126,11 +128,11 @@ function slugBucket(slug, modulo) {
 }
 
 /** Cover image + Pexels credit (unique photo per post when slug is in `BLOG_COVER_PEXELS_ID_BY_SLUG`). */
-export function getBlogCover(slug) {
+export function getBlogCover(slug, variant = "hero") {
   const id =
     BLOG_COVER_PEXELS_ID_BY_SLUG[slug] ?? FALLBACK_PEXELS_IDS[slugBucket(slug, FALLBACK_PEXELS_IDS.length)];
   return {
-    src: pexelsPhotoSrc(id),
+    src: pexelsPhotoSrc(id, variant),
     creditLabel: "Pexels",
     creditUrl: pexelsSiteUrl,
     licenseUrl: pexelsLicenseUrl,

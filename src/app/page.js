@@ -4,9 +4,9 @@ import { pageMeta } from "../config/site";
 import { homeFaqItems } from "../data/home-faq";
 
 export const metadata = pageMeta({
-  title: "Free resume builder & AI resume — templates, skills, ATS export",
+  title: "100% Free AI Resume Tailor",
   description:
-    "Free AI resume builder for job seekers—paste your resume and job description, tighten skills and keywords for ATS screening, then export Word or PDF. Templates, examples, and tailoring guides—no credit card.",
+    "100% free AI resume tailor for job seekers. Match each job description, keep ATS-friendly structure, export Word or PDF. No credit card.",
   path: "/",
 });
 

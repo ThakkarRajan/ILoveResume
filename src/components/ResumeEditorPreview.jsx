@@ -223,7 +223,7 @@ export default function ResumeEditorPreview({ data }) {
 
           {hasSkills(data) && (
             <section>
-              <PdfSectionHeader title="TECHNICAL SKILLS" />
+              <PdfSectionHeader title="SKILLS" />
               <div className="mt-1 space-y-1">
                 {skillsPairs.map(([cat, arr]) => {
                   const list = (Array.isArray(arr) ? arr : []).filter((s) => norm(s));

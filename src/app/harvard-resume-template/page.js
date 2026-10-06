@@ -3,9 +3,9 @@ import MarketingGuideLayout from "../../components/seo/MarketingGuideLayout";
 import { pageMeta } from "../../config/site";
 
 export const metadata = pageMeta({
-  title: "Harvard resume template — clean one-page structure",
+  title: "Harvard Resume Template",
   description:
-    "Harvard-style resume template explained: tight one-page layout, bold section labels, strong bullets. ATS notes and links to related guides.",
+    "Harvard-style resume template explained: one-page layout, bold section labels, strong bullets, plus ATS-friendly notes.",
   path: "/harvard-resume-template",
 });
 

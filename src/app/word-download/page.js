@@ -296,7 +296,7 @@ export default function WordDownloadPage() {
     }
 
     if (hasSkills(resumeData)) {
-      sections.push(...sectionHeader("TECHNICAL SKILLS"));
+      sections.push(...sectionHeader("SKILLS"));
       getSkillsEntries(resumeData).forEach(([cat, skills]) => {
         const list = (Array.isArray(skills) ? skills : []).filter((s) => norm(s));
         sections.push(
@@ -581,7 +581,7 @@ export default function WordDownloadPage() {
     }
 
     if (hasSkills(data)) {
-      sectionHeader("TECHNICAL SKILLS");
+      sectionHeader("SKILLS");
       getSkillsEntries(data).forEach(([cat, skills]) => {
         const list = (Array.isArray(skills) ? skills : []).filter((s) => norm(s));
         const label = toPdfSafeText(`${cat}:`);
@@ -882,7 +882,7 @@ export default function WordDownloadPage() {
       }
 
       if (hasSkills(resumeData)) {
-        sectionHeader("TECHNICAL SKILLS");
+        sectionHeader("SKILLS");
         getSkillsEntries(resumeData).forEach(([cat, skills]) => {
           const list = (Array.isArray(skills) ? skills : []).filter((s) => norm(s));
           const label = toPdfSafeText(`${cat}:`);

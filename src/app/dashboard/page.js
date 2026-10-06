@@ -60,6 +60,7 @@ import {
 } from "../../utils/resumeUploadCache.js";
 import { getEmptyResumeDraft } from "../../utils/emptyResumeDraft.js";
 import { getSavedUploadsView } from "../../utils/savedUploadsView.js";
+import { PDF_MAX_BYTES, PDF_MAX_LABEL } from "../../utils/pdfLimits.js";
 import { unescapeHtml } from "../../utils/safeHtml";
 import SiteLegalLinks from "../../components/legal/SiteLegalLinks";
 import AppPageLayout from "../../components/ui/AppPageLayout";
@@ -67,7 +68,8 @@ import AppPageHeader from "../../components/ui/AppPageHeader";
 import EmptyState from "../../components/ui/EmptyState";
 import TailorProgressScreen, { DraftReadyScreen } from "../../components/progress/TailorProgressScreen";
 
-const JOB_DESCRIPTION_MAX_CHARS = 15_000;
+const JOB_DESCRIPTION_MIN_CHARS = 500;
+const JOB_DESCRIPTION_MAX_CHARS = 7_000;
 const RESUME_TEXT_MAX_CHARS = 50_000;
 
 const recentResultsKey = (email) => `recentResults_${email?.toLowerCase() || "guest"}`;
@@ -99,6 +101,11 @@ export default function Dashboard() {
   const [uploadAttempts, setUploadAttempts] = useState(0);
   const [user, setUser] = useState(null);
   const [showAllUploads, setShowAllUploads] = useState(false);
+  const [fieldError, setFieldError] = useState(null); // "job" | "resume" | null
+  const jobSectionRef = useRef(null);
+  const resumeSectionRef = useRef(null);
+  const jobInputRef = useRef(null);
+  const resumeTextRef = useRef(null);
 
   useEffect(() => {
     wakeBackend();
@@ -421,7 +428,9 @@ export default function Dashboard() {
         const extractToast = showLoading("Reading PDF...");
         try {
           if (!navigator.onLine) throw new Error("No internet connection. Please check your network.");
-          if (pdfFile.size > 10 * 1024 * 1024) throw new Error("File size too large. Please upload a PDF under 10MB.");
+          if (pdfFile.size > PDF_MAX_BYTES) {
+            throw new Error(`File size too large. Please upload a PDF under ${PDF_MAX_LABEL}.`);
+          }
           const formData = new FormData();
           formData.append("file", pdfFile);
           const controller = new AbortController();
@@ -643,18 +652,46 @@ export default function Dashboard() {
   };
 
   // Refactored handleSubmit
+  const focusMissingSection = (section) => {
+    setFieldError(section);
+    const sectionEl = section === "job" ? jobSectionRef.current : resumeSectionRef.current;
+    sectionEl?.scrollIntoView({ behavior: "smooth", block: "center" });
+    window.setTimeout(() => {
+      if (section === "job") {
+        jobInputRef.current?.focus({ preventScroll: true });
+        return;
+      }
+      if (uploadMode === "text") {
+        resumeTextRef.current?.focus({ preventScroll: true });
+      }
+    }, 280);
+  };
+
   const handleSubmit = async () => {
-    if (!jobText.trim()) return showValidationError("Add a job description to continue.");
+    const jobLen = jobText.trim().length;
+    if (!jobLen) {
+      focusMissingSection("job");
+      return showValidationError("Step 1 — Job description is empty. Paste the posting in the box above.");
+    }
+    if (jobLen < JOB_DESCRIPTION_MIN_CHARS) {
+      focusMissingSection("job");
+      return showValidationError(
+        `Step 1 — Job description needs at least ${JOB_DESCRIPTION_MIN_CHARS.toLocaleString()} characters (now ${jobLen.toLocaleString()}). Paste more of the posting.`
+      );
+    }
     if (uploadMode === "pdf" && !pdfFile && !selectedResume) {
-      return showValidationError("Upload or select a PDF to continue.");
+      focusMissingSection("resume");
+      return showValidationError("Step 2 — Your resume is missing. Upload a PDF or pick a saved file.");
     }
     if (uploadMode === "text" && !textResume.trim()) {
-      return showValidationError("Paste your resume text to continue.");
+      focusMissingSection("resume");
+      return showValidationError("Step 2 — Your resume is missing. Paste your resume text in Step 2.");
     }
     if (!navigator.onLine) {
       showNetworkError();
       return;
     }
+    setFieldError(null);
     const authUser = await ensureGoogleUser();
     if (!authUser?.email) return;
 
@@ -735,8 +772,8 @@ export default function Dashboard() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 3 * 1024 * 1024) {
-      showFileUploadError("Max 3MB PDF only.");
+    if (file.size > PDF_MAX_BYTES) {
+      showFileUploadError(`Max ${PDF_MAX_LABEL} PDF only.`);
       return;
     }
 
@@ -748,6 +785,7 @@ export default function Dashboard() {
     setPdfFile(file);
     setSelectedResume(null);
     uploadedPdfCacheRef.current = null;
+    if (fieldError === "resume") setFieldError(null);
   };
 
   const handleDrag = (e) => {
@@ -767,13 +805,14 @@ export default function Dashboard() {
     
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const file = e.dataTransfer.files[0];
-      if (file.type === "application/pdf" && file.size <= 3 * 1024 * 1024) {
+      if (file.type === "application/pdf" && file.size <= PDF_MAX_BYTES) {
         setPdfFile(file);
         setSelectedResume(null);
         uploadedPdfCacheRef.current = null;
+        if (fieldError === "resume") setFieldError(null);
         showFileUploadSuccess();
       } else {
-        showFileUploadError("Please upload a valid PDF file under 3MB.");
+        showFileUploadError(`Please upload a valid PDF file under ${PDF_MAX_LABEL}.`);
       }
     }
   };
@@ -913,9 +952,22 @@ export default function Dashboard() {
     return <DraftReadyScreen />;
   }
 
-  const canSubmit =
-    jobText.trim() &&
-    ((uploadMode === "pdf" && (pdfFile || selectedResume)) || (uploadMode === "text" && textResume.trim()));
+  const jobReady = jobText.trim().length >= JOB_DESCRIPTION_MIN_CHARS;
+  const resumeReady =
+    (uploadMode === "pdf" && (pdfFile || selectedResume)) ||
+    (uploadMode === "text" && Boolean(textResume.trim()));
+  const canSubmit = jobReady && resumeReady;
+
+  const jobHint = !jobText.trim()
+    ? "Missing Step 1 — paste a job description above."
+    : jobText.trim().length < JOB_DESCRIPTION_MIN_CHARS
+      ? `Step 1 — need ${JOB_DESCRIPTION_MIN_CHARS.toLocaleString()}+ characters (now ${jobText.trim().length.toLocaleString()}).`
+      : null;
+  const resumeHint =
+    uploadMode === "pdf"
+      ? "Missing Step 2 — upload or select a PDF resume."
+      : "Missing Step 2 — paste your resume text.";
+  const submitHint = jobHint || (!resumeReady ? resumeHint : null);
 
   const uploadsView = getSavedUploadsView(uploadedResumes, showAllUploads);
 
@@ -961,43 +1013,67 @@ export default function Dashboard() {
           }
         />
 
-        <div className="grid lg:grid-cols-3 gap-6 sm:gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6 sm:space-y-8">
+        <div className="space-y-6 sm:space-y-8">
+          {/* Step 1 | Step 2 */}
+          <div className="grid gap-6 sm:gap-8 md:grid-cols-2">
             {/* Job Description Card */}
             <motion.div
+              ref={jobSectionRef}
+              id="dash-step-job"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="panel min-w-0 max-w-full"
+              className={`panel flex h-full min-w-0 max-w-full flex-col${fieldError === "job" ? " ring-2 ring-amber-500/80" : ""}`}
             >
               <div className="panel-header">
                 <div className="min-w-0">
                   <p className="mb-1 text-xs font-semibold tabular-nums text-[var(--accent)]">Step 1</p>
                   <h2 className="panel-title">Job description</h2>
                   <p className="panel-desc">
-                    Paste the full posting—role overview, requirements, responsibilities (max{" "}
-                    {JOB_DESCRIPTION_MAX_CHARS.toLocaleString()} chars).
+                    Paste the full posting—role overview, requirements, responsibilities (min{" "}
+                    {JOB_DESCRIPTION_MIN_CHARS.toLocaleString()}, max {JOB_DESCRIPTION_MAX_CHARS.toLocaleString()} chars).
                   </p>
+                  {fieldError === "job" ? (
+                    <p className="mt-2 flex items-start gap-2 text-sm text-amber-800" role="alert">
+                      <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+                      {jobText.trim().length > 0 && jobText.trim().length < JOB_DESCRIPTION_MIN_CHARS
+                        ? `Need at least ${JOB_DESCRIPTION_MIN_CHARS.toLocaleString()} characters here before tailoring.`
+                        : "Add the job description here before tailoring."}
+                    </p>
+                  ) : null}
                 </div>
               </div>
-              <div className="panel-body">
+              <div className="panel-body flex flex-1 flex-col">
         <textarea
-                className="input-field input-field-lg h-40 resize-none sm:h-48"
+                ref={jobInputRef}
+                className="input-field input-field-lg min-h-40 flex-1 resize-none sm:min-h-48"
                 placeholder="Paste the job description here—including must-have skills, tools, and responsibilities."
           value={unescapeHtml(jobText)}
-          onChange={(e) => setJobText(e.target.value.slice(0, JOB_DESCRIPTION_MAX_CHARS))}
+          onChange={(e) => {
+            setJobText(e.target.value.slice(0, JOB_DESCRIPTION_MAX_CHARS));
+            if (fieldError === "job") setFieldError(null);
+          }}
           maxLength={JOB_DESCRIPTION_MAX_CHARS}
+          aria-invalid={fieldError === "job"}
         />
 
               {jobText && (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className={`mt-4 flex items-center gap-2 text-sm ${jobText.length >= JOB_DESCRIPTION_MAX_CHARS ? "text-amber-600" : "text-green-600"}`}
+                  className={`mt-4 flex items-center gap-2 text-sm ${
+                    jobText.length >= JOB_DESCRIPTION_MAX_CHARS || jobText.trim().length < JOB_DESCRIPTION_MIN_CHARS
+                      ? "text-amber-600"
+                      : "text-green-600"
+                  }`}
                 >
                   <CheckCircle className="w-4 h-4" />
-                  <span>{jobText.length.toLocaleString()} / {JOB_DESCRIPTION_MAX_CHARS.toLocaleString()} characters</span>
+                  <span>
+                    {jobText.length.toLocaleString()} / {JOB_DESCRIPTION_MAX_CHARS.toLocaleString()} characters
+                    {jobText.trim().length < JOB_DESCRIPTION_MIN_CHARS
+                      ? ` · min ${JOB_DESCRIPTION_MIN_CHARS.toLocaleString()}`
+                      : ""}
+                  </span>
                 </motion.div>
               )}
               </div>
@@ -1005,19 +1081,29 @@ export default function Dashboard() {
 
             {/* Resume Upload Card */}
             <motion.div
+              ref={resumeSectionRef}
+              id="dash-step-resume"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="panel min-w-0 max-w-full"
+              className={`panel flex h-full min-w-0 max-w-full flex-col${fieldError === "resume" ? " ring-2 ring-amber-500/80" : ""}`}
             >
               <div className="panel-header">
                 <div className="min-w-0">
                   <p className="mb-1 text-xs font-semibold tabular-nums text-[var(--accent)]">Step 2</p>
                   <h2 className="panel-title">Your resume</h2>
                   <p className="panel-desc">Upload a PDF or paste the full text of your resume.</p>
+                  {fieldError === "resume" ? (
+                    <p className="mt-2 flex items-start gap-2 text-sm text-amber-800" role="alert">
+                      <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+                      {uploadMode === "pdf"
+                        ? "Upload a PDF or select a saved resume here."
+                        : "Paste your resume text in this section."}
+                    </p>
+                  ) : null}
                 </div>
               </div>
-              <div className="panel-body">
+              <div className="panel-body flex flex-1 flex-col">
               {/* Upload Mode Toggle */}
               <div className="mb-6">
                 <div className="flex flex-col gap-1 rounded-lg bg-zinc-100 p-1 sm:flex-row">
@@ -1091,7 +1177,7 @@ export default function Dashboard() {
                             {pdfFile ? pdfFile.name : "Drop a PDF here or click to browse"}
                           </p>
                           <p className="text-gray-500">
-                            {pdfFile ? "Ready to process · up to 10MB" : "Up to 10MB · text-based PDFs work best"}
+                            {pdfFile ? `Ready to process · up to ${PDF_MAX_LABEL}` : `Up to ${PDF_MAX_LABEL} · text-based PDFs work best`}
                           </p>
                         </div>
                         {pdfFile && (
@@ -1131,7 +1217,11 @@ export default function Dashboard() {
                       className="input-field input-field-lg h-64 resize-none sm:text-lg"
                       placeholder="Paste your full resume—experience, skills, education, and links. Clear section headings help us map your content accurately."
                       value={unescapeHtml(textResume)}
-                      onChange={(e) => setTextResume(e.target.value.slice(0, RESUME_TEXT_MAX_CHARS))}
+                      onChange={(e) => {
+                        setTextResume(e.target.value.slice(0, RESUME_TEXT_MAX_CHARS));
+                        if (fieldError === "resume") setFieldError(null);
+                      }}
+                      ref={resumeTextRef}
                       maxLength={RESUME_TEXT_MAX_CHARS}
                     />
                     
@@ -1152,13 +1242,36 @@ export default function Dashboard() {
             </motion.div>
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Previous Resumes Card */}
+          {/* Row 2 — Tailor CTA */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.35 }}
+            className="hidden md:block"
+          >
+            <button
+              type="button"
+              onClick={handleSubmit}
+              className="btn btn-primary w-full py-3.5 text-base"
+            >
+              <Sparkles className="h-5 w-5" />
+              Tailor my resume
+              <ArrowRight className="h-5 w-5" />
+            </button>
+            {!canSubmit && submitHint && fieldError ? (
+              <p className="mt-3 flex items-start justify-center gap-2 text-sm text-amber-800">
+                <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+                {submitHint}
+              </p>
+            ) : null}
+          </motion.div>
+
+          {/* Saved uploads — logged-in only */}
+          {user?.email ? (
             <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
               className="panel min-w-0 max-w-full"
             >
               <div className="panel-header">
@@ -1195,6 +1308,7 @@ export default function Dashboard() {
                         uploadedPdfCacheRef.current = null;
                         setTextResume("");
                         setUploadMode("pdf");
+                        if (fieldError === "resume") setFieldError(null);
                       }}
                     >
                       <div className="flex items-center justify-between">
@@ -1220,7 +1334,7 @@ export default function Dashboard() {
                           >
                             <Download className="h-4 w-4" />
                           </button>
-        <button
+                          <button
                             type="button"
                             disabled={isDeletingResume || showDeleteConfirm}
                             onClick={(e) => {
@@ -1231,8 +1345,8 @@ export default function Dashboard() {
                             title="Delete"
                           >
                             <Trash2 className="h-4 w-4" />
-        </button>
-      </div>
+                          </button>
+                        </div>
                       </div>
                     </motion.div>
                   ))}
@@ -1251,49 +1365,22 @@ export default function Dashboard() {
               )}
               </div>
             </motion.div>
-
-            {/* Submit — desktop sidebar */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="hidden lg:block"
-            >
-              <button
-                type="button"
-                onClick={handleSubmit}
-                disabled={!canSubmit}
-                className="btn btn-primary w-full py-3.5 text-base"
-              >
-                <Sparkles className="h-5 w-5" />
-                Tailor my resume
-                <ArrowRight className="h-5 w-5" />
-              </button>
-              {!canSubmit && (
-                <p className="mt-3 flex items-start gap-2 text-sm text-amber-800">
-                  <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
-                  {!jobText.trim()
-                    ? "Add a job description to continue"
-                    : uploadMode === "pdf"
-                      ? "Upload or select a PDF to continue"
-                      : "Paste your resume text to continue"}
-                </p>
-              )}
-            </motion.div>
-          </div>
+          ) : null}
         </div>
 
         {/* Mobile sticky CTA */}
-        <div className="sticky-cta-bar lg:hidden">
+        <div className="sticky-cta-bar md:hidden">
           <button
             type="button"
             onClick={handleSubmit}
-            disabled={!canSubmit}
             className="btn btn-primary w-full"
           >
             <Sparkles className="h-4 w-4" />
             Tailor my resume
           </button>
+          {!canSubmit && submitHint && fieldError ? (
+            <p className="mt-2 text-center text-xs text-amber-800">{submitHint}</p>
+          ) : null}
         </div>
 
         <div className="mt-8 border-t border-zinc-200 pt-6 pb-6">

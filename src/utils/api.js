@@ -2,7 +2,7 @@ import { getAuth } from "firebase/auth";
 import "../utils/firebase.js";
 
 /**
- * Client calls same-origin Next.js proxies (never the Railway host directly).
+ * Client calls same-origin Next.js proxies (never the backend host directly).
  * Proxies require a Firebase ID token.
  */
 async function authHeaders(extra = {}) {

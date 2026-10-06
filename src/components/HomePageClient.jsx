@@ -121,8 +121,9 @@ export default function HomePageClient() {
               </h1>
               <p className="prose-lead mt-5">
                 <span className="font-medium text-[var(--foreground)]">I Love Resumes</span> helps you align an existing
-                draft to a specific role. Paste the job description, refine keywords for recruiters and ATS parsers, then
-                export Word or PDF. Every line stays yours to approve.
+                draft to a specific role—<span className="font-medium text-[var(--foreground)]">100% free</span>. Paste the
+                job description, refine keywords for recruiters and ATS parsers, then export Word or PDF. Every line stays
+                yours to approve.
               </p>
 
               <div className="mt-8 max-w-md">
@@ -130,12 +131,12 @@ export default function HomePageClient() {
                   Start tailoring free
                   <ArrowRight className="h-4 w-4 opacity-80" aria-hidden />
                 </Link>
-                <p className="mt-3 text-xs text-[var(--muted)]">Free. No credit card required.</p>
+                <p className="mt-3 text-xs text-[var(--muted)]">100% free. No credit card required.</p>
               </div>
 
               <div className="feature-strip mt-8">
                 {[
-                  { icon: Shield, label: "Secure Google sign-in" },
+                  { icon: Shield, label: "100% free" },
                   { icon: FileCheck, label: "ATS-friendly structure" },
                   { icon: Download, label: "No credit card" },
                 ].map(({ icon: Icon, label }) => (
@@ -228,6 +229,23 @@ export default function HomePageClient() {
           </ScrollReveal>
           <ScrollReveal delay={0.06} y={motionDistance.item}>
             <FaqAccordion items={homeFaqItems} />
+            <p className="mt-6 text-sm text-[var(--text-secondary)]">
+              More detail:{" "}
+              <Link href="/ats-friendly-resume" className="font-medium text-[var(--accent)] underline-offset-2 hover:underline">
+                ATS-friendly resume guide
+              </Link>
+              {" · "}
+              <Link
+                href="/how-to-tailor-a-resume-to-a-job-description"
+                className="font-medium text-[var(--accent)] underline-offset-2 hover:underline"
+              >
+                Tailor to a job description
+              </Link>
+              {" · "}
+              <Link href="/faq" className="font-medium text-[var(--accent)] underline-offset-2 hover:underline">
+                Full FAQ
+              </Link>
+            </p>
           </ScrollReveal>
         </section>
 
@@ -236,7 +254,7 @@ export default function HomePageClient() {
             <div className="home-cta rounded-xl border border-[var(--border)] bg-[var(--surface)] px-6 py-8 text-center sm:px-10">
               <h2 className="section-heading text-xl sm:text-2xl">Ready to tailor your next application?</h2>
               <p className="mx-auto mt-3 max-w-lg text-sm text-[var(--text-secondary)] sm:text-base">
-                Open the dashboard, paste a job posting, and export when the draft reads like you.
+                100% free. Open the dashboard, paste a job posting, and export when the draft reads like you.
               </p>
               <Link href="/dashboard" className="btn btn-primary mx-auto mt-6">
                 Start tailoring free

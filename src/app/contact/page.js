@@ -139,6 +139,22 @@ export default function Contact() {
           <p className="prose-lead mt-3">
             Product questions, partnerships, or support—send a message and we&apos;ll reply within about one business day.
           </p>
+          <p className="prose-lead mt-3 text-[var(--text-secondary)]">
+            I Love Resumes is a free AI resume tailor: paste a job description, edit suggested wording, and export Word or
+            PDF. For how-tos first, browse the{" "}
+            <a href="/faq" className="underline underline-offset-2">
+              FAQ
+            </a>
+            ,{" "}
+            <a href="/ats-friendly-resume" className="underline underline-offset-2">
+              ATS-friendly resume guide
+            </a>
+            , or{" "}
+            <a href="/how-to-tailor-a-resume-to-a-job-description" className="underline underline-offset-2">
+              tailoring walkthrough
+            </a>
+            . Use this page for account issues, privacy requests, feedback, and partnership inquiries.
+          </p>
           <a href="mailto:thakkarrajanca@gmail.com" className="contact-primary-cta">
             <Mail className="h-4 w-4" strokeWidth={1.75} aria-hidden />
             Email Rajan

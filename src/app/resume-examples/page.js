@@ -3,9 +3,9 @@ import MarketingGuideLayout from "../../components/seo/MarketingGuideLayout";
 import { pageMeta } from "../../config/site";
 
 export const metadata = pageMeta({
-  title: "Resume examples — borrow structure, not wording",
+  title: "Resume Examples Guide",
   description:
-    "How to use resume examples responsibly: mirror impact and section flow, avoid copying, stay truthful. Links to tailoring and skills content.",
+    "Use resume examples responsibly: borrow structure and impact, never copy wording, stay truthful, then tailor to each job.",
   path: "/resume-examples",
 });
 

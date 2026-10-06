@@ -5,6 +5,7 @@ import { blogPosts } from "../../data/blog-posts";
 import { getBlogCover } from "../../data/blog-visuals";
 import MarketingShell from "../../components/ui/MarketingShell";
 import ScrollReveal from "../../components/motion/ScrollReveal";
+import { IMAGE_BLUR_DATA_URL, IMAGE_QUALITY_PHOTO } from "../../utils/imagePerf";
 
 export default function BlogPage() {
   const [featured, ...rest] = blogPosts;
@@ -34,6 +35,9 @@ export default function BlogPage() {
                 priority
                 sizes="(max-width: 768px) 100vw, 55vw"
                 className="object-cover"
+                quality={IMAGE_QUALITY_PHOTO}
+                placeholder="blur"
+                blurDataURL={IMAGE_BLUR_DATA_URL}
               />
             </Link>
             <div className="blog-featured-copy">
@@ -60,13 +64,23 @@ export default function BlogPage() {
           </h2>
           <ul className="blog-recent-list">
             {recent.map((post) => {
-              const cover = getBlogCover(post.slug);
+              const cover = getBlogCover(post.slug, "thumb");
               const alt = post.coverImageAlt ?? `${post.title} — article cover`;
               return (
                 <li key={post.slug}>
                   <Link href={`/blog/${post.slug}`} className="blog-recent-item">
                     <span className="blog-recent-thumb">
-                      <Image src={cover.src} alt={alt} fill sizes="96px" className="object-cover" />
+                      <Image
+                        src={cover.src}
+                        alt={alt}
+                        fill
+                        sizes="96px"
+                        className="object-cover"
+                        quality={IMAGE_QUALITY_PHOTO}
+                        loading="lazy"
+                        placeholder="blur"
+                        blurDataURL={IMAGE_BLUR_DATA_URL}
+                      />
                     </span>
                     <span className="blog-recent-copy">
                       <span className="blog-meta">

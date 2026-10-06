@@ -1,10 +1,10 @@
 const LOCAL_BACKEND = "http://127.0.0.1:8000";
-const PROD_BACKEND = "https://jobdraftai-backend-production.up.railway.app";
+const PROD_BACKEND = "https://airesumepro-backend.onrender.com";
 
 /**
  * Server-only backend URL + shared secret headers.
  * Prefer BACKEND_API_BASE / BACKEND_API_SECRET (never NEXT_PUBLIC_*).
- * Development default → local FastAPI; production → Railway.
+ * Development default → local FastAPI; production → Render.
  */
 export function getBackendBase() {
   const explicit =
@@ -29,7 +29,7 @@ export function getBackendBase() {
 }
 
 /**
- * Headers for Next → Railway. Secret stays server-side only.
+ * Headers for Next → backend. Secret stays server-side only.
  * @param {Record<string, string>} [extra]
  */
 export function backendHeaders(extra = {}) {
